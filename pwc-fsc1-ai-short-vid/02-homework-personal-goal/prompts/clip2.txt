@@ -1,4 +1,4 @@
-@Image 1 is a headshot of the main character: use only the face, facial proportions, skin tone, and short textured black hair; do not use the white photo background or the head-only framing.
+@Image 1 is the character reference sheet of the main character, an East Asian businessman around 30: use only his face, hairstyle, and outfit; do not use the grey sheet background or the three-view side-by-side layout.
 
 [Generation Goal]
 Generate an energetic networking moment. The central subject is the person from @Image 1, and the primary event is connecting with an experienced professional at a large fintech conference.
