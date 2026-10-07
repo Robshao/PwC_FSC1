@@ -1,0 +1,8 @@
+# 個人照片與生成素材不進版本控制
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.heic
+*.mp4
+*.mov
