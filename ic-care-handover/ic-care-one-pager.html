@@ -1,0 +1,250 @@
+<title>IC Care 專案一頁總覽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: one-page brief (max 1120px). A top-down org-chart tree is the centerpiece; supporting blocks sit in a two-column grid below it. */
+:root {
+  --paper: #f4f6f7;
+  --surface: #ffffff;
+  --ink: #17212b;
+  --muted: #5a6571;
+  --line: #cfd7de;
+  --accent: #0d5e63;
+  --accent-soft: #e2eeee;
+  --ok: #2f7a4a;
+  --part: #a8730c;
+  --open: #c04b1c;
+  --miss: #9c2b3a;
+  --f-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2c3946;
+    --accent: #62b8ba; --accent-soft: #15302f;
+    --ok: #6cc58e; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2c3946;
+  --accent: #62b8ba; --accent-soft: #15302f;
+  --ok: #6cc58e; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 14.5px; line-height: 1.7; padding: 0 20px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 56px; display: grid; gap: 26px; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; line-height: 1.35; text-wrap: balance; }
+p { margin: 0; }
+ul { margin: 0; padding-left: 1.15em; }
+li + li { margin-top: 3px; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font-size: 11.5px; font-weight: 500; line-height: 1; padding: 4px 8px 4px 6px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); border: 1px solid color-mix(in srgb, var(--c) 32%, transparent); }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.s-ok { --c: var(--ok); } .s-part { --c: var(--part); } .s-open { --c: var(--open); } .s-miss { --c: var(--miss); } .s-act { --c: var(--accent); }
+
+/* Header */
+header { display: grid; gap: 12px; padding-bottom: 20px; border-bottom: 3px solid var(--ink); }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+header h1 { font-size: clamp(28px, 4.4vw, 40px); font-weight: 900; }
+.status { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--muted); }
+.status b { color: var(--ink); font-weight: 500; }
+.thesis { font-family: var(--f-display); font-size: 17.5px; font-weight: 600; line-height: 1.65; max-width: 80ch; padding-left: 14px; border-left: 3px solid var(--accent); }
+
+/* Top-down tree */
+.tree-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px 18px 20px; display: grid; gap: 14px; }
+.tree-card .cap { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; justify-content: space-between; }
+.tree-card .cap h2 { font-size: 19px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.org { display: grid; justify-items: center; }
+.org-root { position: relative; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 14px 22px; text-align: center; max-width: 520px; display: grid; gap: 4px; }
+.org-root b { font-family: var(--f-display); font-size: 18px; }
+.org-root span { font-size: 12.5px; color: color-mix(in srgb, var(--paper) 75%, transparent); }
+.org-root::after { content: ""; position: absolute; left: 50%; bottom: -26px; height: 26px; border-left: 2px solid var(--muted); }
+.org-l1 { position: relative; width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; padding-top: 26px; margin-top: 26px; }
+.org-l1::before { content: ""; position: absolute; top: 0; left: calc(10% - 5px); right: calc(10% - 5px); border-top: 2px solid var(--muted); }
+.col { position: relative; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.col::before { content: ""; position: absolute; left: 50%; top: -26px; height: 26px; border-left: 2px solid var(--muted); }
+.node { background: var(--accent-soft); border: 1.5px solid var(--accent); border-radius: 6px; padding: 10px 12px; text-align: center; display: grid; gap: 2px; }
+.node .k { font-family: var(--f-mono); font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .06em; }
+.node b { font-size: 15px; line-height: 1.4; }
+.node i { font-style: normal; font-size: 12px; color: var(--muted); }
+.leaves { list-style: none; margin: 0 0 0 10px; padding: 0 0 0 12px; border-left: 2px solid var(--line); display: grid; gap: 6px; }
+.leaves li { margin: 0; position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px; font-size: 13px; line-height: 1.5; display: grid; gap: 4px; }
+.leaves li::before { content: ""; position: absolute; left: -14px; top: 15px; width: 12px; border-top: 2px solid var(--line); }
+.leaves li .chip { justify-self: start; }
+
+/* Lower grid */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.panel h2 { font-size: 18px; }
+.panel .sub { font-size: 12.5px; color: var(--muted); }
+.qa { display: grid; gap: 10px; }
+.qa > div { display: grid; gap: 3px; padding-top: 10px; border-top: 1px solid var(--line); }
+.qa > div:first-child { border-top: 0; padding-top: 0; }
+.qa .q { font-size: 13px; color: var(--muted); }
+.qa .a { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; line-height: 1.55; }
+th { text-align: left; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; color: var(--muted); font-weight: 600; padding: 0 8px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 8px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+tr:first-child td { border-top: 0; }
+td.n { font-family: var(--f-display); font-weight: 900; color: var(--accent); font-size: 16px; white-space: nowrap; }
+
+.chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; }
+.chain span { background: var(--paper); border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; }
+.chain span.future { border-style: dashed; color: var(--muted); }
+.chain i { font-style: normal; color: var(--accent); display: flex; align-items: center; font-weight: 700; }
+
+.alert { border: 1px solid color-mix(in srgb, var(--miss) 40%, transparent); background: color-mix(in srgb, var(--miss) 8%, var(--surface)); border-radius: 8px; padding: 14px 18px; display: grid; gap: 6px; }
+.alert b { font-family: var(--f-display); font-size: 16px; }
+
+footer { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--line); }
+
+@media (max-width: 900px) {
+  body { padding: 0 16px; }
+  .org-root::after, .org-l1::before, .col::before { display: none; }
+  .org-l1 { grid-template-columns: 1fr; margin-top: 14px; padding-top: 0; gap: 16px; }
+  .node { text-align: left; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">IC Care 商業模式設計案 · 接手一頁總覽</div>
+    <h1>IC Care 專案一頁總覽</h1>
+    <div class="status">
+      <span class="chip s-act">專案進行中</span>
+      <span>更新日期 <b>2026-10-07</b></span>
+      <span>前手 <b>Farrah（已離職）</b></span>
+      <span>下一個交付 <b>下週四項成果（暫定 10/16）</b></span>
+    </div>
+    <p class="thesis">IC Care 是從「健保不足由商保補位」出發的海外醫療協助平台，想從既有服務延伸出可以規模化的新商業模式。第一階段已完成並提出「合規健康服務編排者」定位，第二階段草稿再收斂成「跨境醫療協調平台」。接下來要在下週把第二階段剩下的部分和第三階段的核心交出來。</p>
+  </header>
+
+  <section class="tree-card" aria-labelledby="tree-h">
+    <div class="cap">
+      <h2 id="tree-h">專案全貌：由上往下看</h2>
+      <div class="legend">
+        <span class="chip s-ok">已完成／已確認</span>
+        <span class="chip s-part">草稿／部分</span>
+        <span class="chip s-open">未開始／待確認</span>
+        <span class="chip s-act">下一步</span>
+      </div>
+    </div>
+    <div class="org">
+      <div class="org-root">
+        <b>IC Care 平台商業模式設計案</b>
+        <span>目標：為 IC Care 設計在健康生態圈中的平台商業模式</span>
+      </div>
+      <div class="org-l1">
+        <div class="col">
+          <div class="node"><span class="k">1 ・ WHY</span><b>為什麼有這個案子</b><i>平台使命與委託原因</i></div>
+          <ul class="leaves">
+            <li>海外台灣人持有健保卡，但保障仍有缺口</li>
+            <li>用商業保險補足健保不足的部分</li>
+            <li>讓海外台灣人能及時取得醫療協助</li>
+            <li>想從既有服務延伸出新商業模式，因此委託 PwC</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="node"><span class="k">2 ・ SCOPE</span><b>原本要交什麼</b><i>原計畫 4/7–7/29</i></div>
+          <ul class="leaves">
+            <li><b>Phase 1</b>　市場研究與現況分析</li>
+            <li><b>Phase 2</b>　商業模式設計：生態系藍圖、價值主張、商模</li>
+            <li><b>Phase 3</b>　差異分析與發展藍圖</li>
+            <li><b>Final report</b>　整合各階段成果</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="node"><span class="k">3 ・ STATUS</span><b>做到哪裡了</b><i>比原計畫落後約 16 週</i></div>
+          <ul class="leaves">
+            <li><span class="chip s-ok">已完成</span>Phase 1：5/12 已向客戶匯報</li>
+            <li><span class="chip s-part">草稿</span>Phase 2：9 月草稿，尚未確認是否對客</li>
+            <li><span class="chip s-part">部分</span>生態系藍圖：Farrah 留下部分簡報</li>
+            <li><span class="chip s-open">未開始</span>Phase 3 與 Final report</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="node"><span class="k">4 ・ INSIGHT</span><b>已經有的觀點</b><i>前手的核心結論</i></div>
+          <ul class="leaves">
+            <li>現在是「服務型平台」，下一步要平台化</li>
+            <li>六項能力缺口：資料結構化、Token 漏斗、SLA 產品化、客服自助化、合作方治理、AI 邊界</li>
+            <li>定位：<b>合規健康服務編排者</b>，醫療由持照夥伴負責</li>
+            <li>模式：<b>B2B2C 優先</b>，保險公司約占營收 83%</li>
+            <li>方向：<b>跨境醫療協調平台</b>，三層產品</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="node"><span class="k">5 ・ NEXT</span><b>接下來要做什麼</b><i>下週交付與待釐清</i></div>
+          <ul class="leaves">
+            <li><span class="chip s-act">下週</span>交出四項成果（右下表）</li>
+            <li><span class="chip s-act">下週</span>修正 P1 與 P2 對「醫療判斷由誰做」的矛盾說法</li>
+            <li><span class="chip s-open">待確認</span>向 Sam 取得五年目標的年份與數字</li>
+            <li><span class="chip s-open">待確認</span>找回 Farrah 留下的檔案與原始素材</li>
+            <li><span class="chip s-open">潛在</span>AI 影片：客戶教育與招商工具</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>接手時最大的四個問題，現在的答案</h2>
+      <p class="sub">讀完 Phase 1 簡報、Phase 2 草稿與 Sam 10/07 的指示之後更新。</p>
+      <div class="qa">
+        <div><span class="q">專案現在是進行中、暫停，還是已結案？</span><span class="a"><span class="chip s-ok">已回答</span>進行中。Sam 已指派下週交付四項成果。</span></div>
+        <div><span class="q">第三階段和 Final report 去哪了？</span><span class="a"><span class="chip s-ok">已回答</span>沒有遺失，而是從來沒開始。Phase 1 簡報裡的進度表顯示，截至 5/19 只有 Phase 1 完成。</span></div>
+        <div><span class="q">第二階段草稿是不是正式方向？</span><span class="a"><span class="chip s-open">待確認</span>草稿自己寫明「尚未包含市場驗證」，也沒有對客紀錄。明天問 Sam。</span></div>
+        <div><span class="q">客戶已經認同哪些內容？</span><span class="a"><span class="chip s-part">部分</span>Phase 1 已匯報；Phase 2 之後沒有任何客戶回饋紀錄。</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>下週要交的四項成果</h2>
+      <p class="sub">正好是原計畫中還沒完成的四個工作項目。</p>
+      <table>
+        <thead><tr><th></th><th>成果</th><th>原計畫</th><th>現有素材</th></tr></thead>
+        <tbody>
+          <tr><td class="n">①</td><td><b>健康生態系藍圖</b></td><td>Phase 2</td><td>Farrah 部分簡報、P1 生態系全景</td></tr>
+          <tr><td class="n">②</td><td><b>商業模式草案</b></td><td>Phase 2</td><td>P2 草稿（9 月），需補定價邏輯</td></tr>
+          <tr><td class="n">③</td><td><b>現況與未來差異（條列）</b></td><td>Phase 3</td><td>P1 現況分析，已有九構面草案</td></tr>
+          <tr><td class="n">④</td><td><b>五年內及五年後目標</b></td><td>Phase 3</td><td>P2 路徑（缺年份與數字）</td></tr>
+        </tbody>
+      </table>
+      <p class="sub">依賴順序：先定 ①②（未來的樣子），再寫 ③（差多少），最後訂 ④（何時到）。</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>對內對外的統一說法</h2>
+    <div class="chain">
+      <span>健保不足由商保補位</span><i>→</i>
+      <span>海外台人醫療協助平台</span><i>→</i>
+      <span>保險 B2B2C 與 Token 模式</span><i>→</i>
+      <span>合規健康服務編排者</span><i>→</i>
+      <span>跨境醫療協調平台</span><i>→</i>
+      <span class="future">AI 影片：客戶教育與招商</span>
+    </div>
+    <p class="sub">最後一格是高層正在考慮的方向，尚未確認是否納入本案範圍。</p>
+  </section>
+
+  <div class="alert">
+    <b>Farrah 離職帶來的影響</b>
+    <ul>
+      <li>沒有人能再說明 Farrah 留下的藍圖簡報與 Phase 2 草稿的細節，因此一切以 Phase 1 簡報與 Phase 2 草稿的文字為準。</li>
+      <li>需要從共用資料夾或請 IT 依離職資料保存政策取回 Farrah 的檔案，包括 Phase 2 草稿引用的兩份原始素材：「市場第一版.html」與「服務與能力.docx」。</li>
+      <li>客戶那邊需要知道窗口已更換，建議由 Sam 決定何時、以什麼方式告知。</li>
+    </ul>
+  </div>
+
+  <footer>
+    <span>依據：Phase 1 成果簡報（2026/05/19）、Phase 2 商業模式草稿（2026/09）、Sam 10/07 指示、Senior Manager 口述</span>
+    <span>內部工作稿・未對客</span>
+  </footer>
+</div>
