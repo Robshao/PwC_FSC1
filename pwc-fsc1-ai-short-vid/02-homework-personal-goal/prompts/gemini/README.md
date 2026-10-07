@@ -1,6 +1,10 @@
-# Gemini 版提示詞
+# 製作分工：Gemini 生參考圖 → Seedance 生影片
 
-- 生圖：Gemini 圖片生成，上傳角色設定圖 `character.png`，依序使用 1–3。
-- 生影片：Gemini 影片生成（Veo，相片轉影片），每段固定 8 秒，上傳對應的鏡頭圖片，依序使用 4–6。
-- 剪輯：每段在 CapCut 只保留前 5 秒，三段合成 15 秒。
-- 提示詞要求動作在前 5 秒內完成，之後停住，方便剪成 5 秒。
+| 階段 | 工具 | 提示詞 | 產出 |
+|---|---|---|---|
+| 1 角色設定圖 | 已完成 | `../character-sheet.txt` | `character.png` |
+| 2 鏡頭圖片 | Gemini 圖片生成（上傳 `character.png`） | `1-keyframe1.txt`、`2-keyframe2.txt`、`3-keyframe3.txt` | `shot1–3.png` |
+| 3 圖生影片 | Dreamina Seedance（首幀模式，5 秒，16:9） | `../i2v1.zh.txt`、`../i2v2.zh.txt`、`../i2v3.zh.txt` | 三段 5 秒影片 |
+| 4 剪輯 | CapCut | 見 `../../storyboard.md` | 15 秒成品 |
+
+臉跑掉時：Dreamina 改用全能參考模式，`@Image 1` 放鏡頭圖片（首幀）、`@Image 2` 放 `character.png`，並在 i2v 提示詞開頭加上：「@Image 2 只控制主角的臉、髮型和服裝，不使用它的背景與構圖。」
