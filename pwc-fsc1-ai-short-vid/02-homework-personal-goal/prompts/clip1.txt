@@ -1,0 +1,23 @@
+@Image 1 defines the main character: use only face, hairstyle, and wardrobe; do not use the image background or layout. The output contains exactly one person.
+
+[Generation Goal]
+Generate a calm, hopeful opening shot. The central subject is the character from @Image 1, and the primary event is deciding to step out and attend industry conferences.
+
+[Stage 1]
+Initial state: early evening in a quiet modern office, the character sits alone at a desk by a tall window, laptop open, city skyline turning blue outside. On the desk lies one blank teal conference lanyard with an empty white badge card.
+Primary event: the character stops typing, glances at the city, then picks up the lanyard and studies it.
+End state: the lanyard rests in both hands at chest height.
+
+[Stage 2]
+Continue from the previous stage; keep the desk, window, and wardrobe unchanged.
+Primary event: the character takes a slow breath, a small determined smile appears, and they stand up and slip the lanyard over their neck.
+End state: the character stands facing the window, lanyard on, shoulders relaxed and upright.
+
+[Camera and Light]
+Begin with a medium side shot at desk height. The camera dollies in slowly and settles on a medium close-up as the character stands. The main light is cool blue window light from the left with a warm desk lamp from the right, creating a soft teal-and-amber contrast on the face.
+
+[Sound]
+Quiet office ambience, faint distant city traffic, a soft rustle as the lanyard is lifted. No dialogue, no background music.
+
+[Continuity and Exclusions]
+Keep identity, navy blazer, white shirt, and the single teal lanyard consistent. Do not add subtitles, readable text, logos, or other people.
