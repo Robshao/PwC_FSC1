@@ -1,0 +1,740 @@
+<title>IC Care 交接手冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: single-column handoff manual (max 1060px) with a numbered section rail; trees, matrices and process maps scroll inside their own containers. */
+:root {
+  --paper: #f4f6f7;
+  --surface: #ffffff;
+  --ink: #17212b;
+  --muted: #5a6571;
+  --line: #d3dae0;
+  --accent: #0d5e63;
+  --accent-soft: #e2eeee;
+  --ok: #2f7a4a;
+  --rel: #2b6c8c;
+  --part: #a8730c;
+  --open: #c04b1c;
+  --miss: #9c2b3a;
+  --f-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2a3642;
+    --accent: #62b8ba; --accent-soft: #15302f;
+    --ok: #6cc58e; --rel: #6eb4d6; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2a3642;
+  --accent: #62b8ba; --accent-soft: #15302f;
+  --ok: #6cc58e; --rel: #6eb4d6; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15.5px; line-height: 1.75; padding: 0 20px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 40px 80px; }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; line-height: 1.35; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+strong { font-weight: 700; }
+
+.cover { display: grid; gap: 20px; padding-bottom: 26px; border-bottom: 3px solid var(--ink); }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.cover h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 900; }
+.cover .sub { font-size: 17px; color: var(--muted); max-width: 64ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 10px 32px; font-size: 13px; color: var(--muted); }
+.meta b { display: block; color: var(--ink); font-weight: 500; font-size: 14px; }
+.meta span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+nav.toc a { color: var(--muted); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc a span { font-family: var(--f-mono); color: var(--accent); margin-right: 4px; }
+
+section { padding-top: 56px; display: grid; gap: 22px; }
+.sec-head { display: grid; grid-template-columns: 64px 1fr; gap: 0 16px; align-items: baseline; }
+.sec-num { font-family: var(--f-mono); font-size: 13px; color: var(--accent); font-weight: 600; border-top: 2px solid var(--accent); padding-top: 6px; }
+.sec-head h2 { font-size: 26px; font-weight: 900; }
+.sec-head .lede { grid-column: 2; color: var(--muted); margin-top: 6px; max-width: 72ch; }
+.body { display: grid; gap: 18px; padding-left: 80px; min-width: 0; }
+.body > p { max-width: 72ch; }
+h3 { font-size: 18px; font-weight: 600; }
+.kicker { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.note { font-size: 13px; color: var(--muted); max-width: 80ch; }
+ul.plain { margin: 0; padding-left: 1.2em; }
+ul.plain li + li { margin-top: 3px; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font-size: 12px; font-weight: 500; line-height: 1; padding: 5px 9px 5px 7px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); border: 1px solid color-mix(in srgb, var(--c) 32%, transparent); }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); flex: none; }
+.s-ok { --c: var(--ok); } .s-rel { --c: var(--rel); } .s-part { --c: var(--part); } .s-open { --c: var(--open); } .s-miss { --c: var(--miss); } .s-act { --c: var(--accent); }
+.s-miss::before { border-radius: 1px; transform: rotate(45deg); }
+.src { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; padding: 2px 6px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.src.oral { border-style: dashed; }
+.tag { font-family: var(--f-mono); font-size: 10.5px; padding: 2px 6px; border-radius: 3px; background: color-mix(in srgb, var(--part) 15%, transparent); color: var(--part); white-space: nowrap; }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.6; }
+th { text-align: left; font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 11px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--ink) 3%, transparent); white-space: nowrap; }
+td { padding: 11px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+tr:first-child td { border-top: 0; }
+td.code { font-family: var(--f-mono); font-size: 12.5px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+td.nowrap { white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.panel.quote { border-left: 3px solid var(--accent); }
+
+.scqa { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.scqa-row { display: grid; grid-template-columns: 150px 1fr; border-top: 1px solid var(--line); }
+.scqa-row:first-child { border-top: 0; }
+.scqa-row > div:first-child { padding: 16px 18px; background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.scqa-row > div:first-child b { display: block; font-family: var(--f-display); font-size: 17px; }
+.scqa-row > div:first-child span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.scqa-row > div:last-child { padding: 16px 22px; min-width: 0; }
+.scqa-row.answer > div:first-child { background: var(--accent); color: var(--surface); }
+.scqa-row.answer > div:first-child span { color: color-mix(in srgb, var(--surface) 75%, transparent); }
+.scqa-row.answer > div:last-child { background: var(--accent-soft); }
+.answer-lead { font-family: var(--f-display); font-size: 19px; font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+
+/* Process maps (Mermaid, rendered natively by the viewer) */
+.map { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px; overflow-x: auto; display: grid; gap: 10px; }
+.map .cap { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.map .cap b { font-family: var(--f-display); font-size: 16px; }
+.map .cap span { font-size: 13px; color: var(--muted); }
+pre.mermaid { margin: 0; background: transparent; font-family: var(--f-body); text-align: center; min-width: 640px; }
+
+/* Lifecycle matrix */
+.matrix { display: grid; grid-template-columns: 150px repeat(5, minmax(120px, 1fr)); min-width: 780px; }
+.matrix > div { padding: 10px 12px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); display: grid; gap: 4px; align-content: start; font-size: 13px; }
+.matrix > div:nth-child(6n+1) { border-left: 0; }
+.matrix .hd { border-top: 0; font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: color-mix(in srgb, var(--ink) 3%, transparent); }
+.matrix .hd i { font-style: normal; display: block; color: var(--accent); }
+.matrix .rh b { font-size: 14px; }
+.matrix .rh span { font-size: 12px; color: var(--muted); }
+.matrix .cell { background: color-mix(in srgb, var(--c, transparent) 9%, transparent); }
+.matrix .cell small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* Issue tree */
+.tree-scroll { overflow-x: auto; margin-left: 80px; padding: 4px 2px 10px; }
+.tree { display: grid; grid-template-columns: 230px 1fr; align-items: center; min-width: 960px; }
+.root { position: relative; background: var(--ink); color: var(--paper); border-radius: 6px; padding: 18px; margin-right: 34px; display: grid; gap: 8px; }
+.root .kicker { color: color-mix(in srgb, var(--paper) 70%, transparent); }
+.root p { font-family: var(--f-display); font-size: 16px; line-height: 1.55; font-weight: 600; }
+.root small { font-size: 12px; color: color-mix(in srgb, var(--paper) 72%, transparent); line-height: 1.5; }
+.root::after { content: ""; position: absolute; right: -34px; top: 50%; width: 34px; border-top: 2px solid var(--muted); }
+.branches, .leaves { list-style: none; margin: 0; padding: 0; }
+.branch { position: relative; display: grid; grid-template-columns: 220px 1fr; align-items: center; padding: 8px 0 8px 28px; }
+.branch::before, .leaf::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; border-left: 2px solid var(--muted); }
+.branch:first-child::before, .leaf:first-child::before { top: 50%; }
+.branch:last-child::before, .leaf:last-child::before { bottom: 50%; }
+.branch::after, .leaf::after { content: ""; position: absolute; left: 0; top: 50%; width: 28px; border-top: 2px solid var(--muted); }
+.bnode { position: relative; background: var(--surface); border: 1.5px solid var(--accent); border-radius: 6px; padding: 12px 14px; margin-right: 30px; display: grid; gap: 3px; }
+.bnode::after { content: ""; position: absolute; right: -32px; top: 50%; width: 30px; border-top: 2px solid var(--line); }
+.bnode .k { font-family: var(--f-mono); font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .06em; }
+.bnode b { font-size: 15px; line-height: 1.4; }
+.bnode i { font-style: normal; font-size: 12.5px; color: var(--muted); }
+.leaf { position: relative; padding: 3px 0 3px 26px; }
+.leaf::before { border-left-color: var(--line); }
+.leaf::after { border-top-color: var(--line); width: 26px; }
+.lnode { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); font-size: 13.5px; line-height: 1.45; }
+.lnode .k { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); flex: none; width: 26px; }
+.lnode .t { flex: 1; min-width: 0; }
+.lnode .chip { flex: none; }
+.tree-note { font-size: 13px; color: var(--muted); margin-left: 80px; max-width: 82ch; }
+
+/* MECE brainstorm grid */
+.bucket { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.bucket > div { background: var(--surface); padding: 14px; display: grid; gap: 6px; align-content: start; }
+.bucket h4 { font-size: 14px; }
+.bucket h4 span { font-family: var(--f-mono); color: var(--accent); margin-right: 4px; }
+.bucket ul { margin: 0; padding-left: 1.1em; font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* Hypothesis cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: grid; align-content: start; min-width: 0; }
+.card header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.card header .k { font-family: var(--f-mono); font-size: 12px; color: var(--accent); font-weight: 600; }
+.card header b { font-family: var(--f-display); font-size: 16px; line-height: 1.45; }
+.card dl { margin: 0; display: grid; grid-template-columns: 78px 1fr; font-size: 13px; line-height: 1.6; }
+.card dt { padding: 8px 0 8px 16px; color: var(--muted); font-weight: 500; border-top: 1px solid var(--line); }
+.card dd { margin: 0; padding: 8px 16px 8px 8px; border-top: 1px solid var(--line); }
+.card dl > :nth-child(1), .card dl > :nth-child(2) { border-top: 0; }
+
+.callout { border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-soft); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; }
+.callout b { font-family: var(--f-display); font-size: 17px; }
+
+/* Rubric */
+.score { font-family: var(--f-mono); font-weight: 600; white-space: nowrap; }
+.bar { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 6px; }
+.bar i { width: 14px; height: 8px; border-radius: 2px; background: var(--line); }
+.bar i.on { background: var(--accent); }
+.total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.total .big { font-family: var(--f-display); font-weight: 900; font-size: 44px; line-height: 1; }
+.total .big small { font-size: 20px; color: var(--muted); font-weight: 600; }
+
+footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 760px) {
+  body { padding: 0 16px; font-size: 15px; }
+  .body, .tree-scroll, .tree-note { padding-left: 0; margin-left: 0; }
+  .sec-head { grid-template-columns: 1fr; gap: 8px; }
+  .sec-head .lede { grid-column: 1; }
+  .sec-num { width: 48px; }
+  .scqa-row { grid-template-columns: 1fr; }
+  .scqa-row > div:first-child { padding: 12px 16px; display: flex; gap: 10px; align-items: baseline; }
+  .scqa-row > div:first-child b { display: inline; }
+  .tree { grid-template-columns: 1fr; min-width: 0; gap: 14px; }
+  .root { margin-right: 0; }
+  .root::after, .bnode::after { display: none; }
+  .branch { grid-template-columns: 1fr; padding: 0 0 14px 0; gap: 8px; }
+  .branch::before, .branch::after { display: none; }
+  .bnode { margin-right: 0; }
+  .leaves { padding-left: 14px; border-left: 2px solid var(--line); margin-left: 12px; display: grid; gap: 6px; }
+  .leaf { padding: 0; }
+  .leaf::before, .leaf::after { display: none; }
+  .lnode { flex-wrap: wrap; }
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+
+  <header class="cover">
+    <div class="eyebrow">Handoff Package v2 · 專案交接手冊</div>
+    <h1>IC Care 專案交接手冊</h1>
+    <p class="sub">依 Consulting Master 審閱結果重建：以「交付生命週期」為恆等式重拆 Issue Tree，加入流程圖（Process Map）、狀態假設樹、分析計畫與交接清單。</p>
+    <div class="meta">
+      <div><span>版本</span><b>v2（取代 v1 診斷報告）</b></div>
+      <div><span>日期</span><b class="num">2026-10-07</b></div>
+      <div><span>建議分析截止</span><b class="num">2026-10-16（建議值）</b></div>
+      <div><span>文件性質</span><b>內部工作稿・未對客</b></div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="目錄">
+    <a href="#exec"><span>00</span>執行摘要</a>
+    <a href="#assume"><span>01</span>工作假設</a>
+    <a href="#frame"><span>02</span>決策與利害關係人</a>
+    <a href="#ps"><span>03</span>問題陳述</a>
+    <a href="#process"><span>04</span>流程圖</a>
+    <a href="#tree"><span>05</span>Issue Tree</a>
+    <a href="#where"><span>06</span>問題定位</a>
+    <a href="#hyp"><span>07</span>假設與排序</a>
+    <a href="#plan"><span>08</span>分析計畫</a>
+    <a href="#handoff"><span>09</span>交接清單與決策</a>
+    <a href="#review"><span>R</span>審閱紀錄</a>
+  </nav>
+
+  <!-- 00 -->
+  <section id="exec">
+    <div class="sec-head"><div class="sec-num">00</div><h2>執行摘要</h2><p class="lede">結論先講：先用 7 個工作天確認專案的真實狀態，再走決策閘門。</p></div>
+    <div class="body">
+      <div class="scqa">
+        <div class="scqa-row"><div><span>Situation</span><b>現況</b></div><div>IC Care 健康生態圈平台商業模式專案原規劃 2026/04–07，三階段加 Final report。Phase 1 成果匯報已存在，Phase 2 有一份日期為 9 月的草稿。</div></div>
+        <div class="scqa-row"><div><span>Complication</span><b>難點</b></div><div>前任負責人離職，Phase 1 之後的資訊全部斷線：Phase 2 卡在哪一關、Phase 3 與 Final 是否存在、客戶認同了什麼、合約還剩多少，目前都無紀錄可查。</div></div>
+        <div class="scqa-row"><div><span>Question</span><b>關鍵問題</b></div><div>IC Care 專案應以 Proceed、Modify 或 Stop 的哪一種方式延續？要做這個決定，必須先知道專案真實處於哪一種狀態。</div></div>
+        <div class="scqa-row answer"><div><span>Answer</span><b>答案</b></div><div>
+          <p class="answer-lead">專案狀態只有四種可能（S1–S4），三項快速測試就能分辨。建議 10/16 前完成測試，再由 Senior Manager 在決策閘門選定策略。</p>
+          <ul class="plain">
+            <li>第一個測試是 30 分鐘的主管與 Partner 狀態訪談，一次可同時檢驗 S1–S4。</li>
+            <li>第二個是合約與請款紀錄。這是最客觀的證據，可直接區分「暫停」與「已結案」。</li>
+            <li>第三個是檔案版本盤點與前手信箱調閱，用來排除「找不到檔案不等於沒做」的偏誤。</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 -->
+  <section id="assume">
+    <div class="sec-head"><div class="sec-num">01</div><h2>需確認的工作假設</h2><p class="lede">以下內容不是事實，是本手冊為了往前推進而暫時採用的前提，每一項都要在分析期間確認。</p></div>
+    <div class="body">
+      <div class="tbl"><table>
+        <thead><tr><th>#</th><th>工作假設</th><th>若不成立的影響</th><th>向誰確認</th></tr></thead>
+        <tbody>
+          <tr><td class="code">WA-1</td><td>專案合約仍有效，尚未正式結案</td><td>改走 Stop 路徑，工作轉為歸檔與結案說明</td><td>財務／PMO、Partner</td></tr>
+          <tr><td class="code">WA-2</td><td>現有 Phase 2 草稿是最新版本</td><td>可能另有對客版本，需改以該版本為準</td><td>檔案盤點、IT</td></tr>
+          <tr><td class="code">WA-3</td><td>平台原始使命（健保不足由商保補位）為客戶認可的正式說法</td><td>敘事需重寫，影響 AI 影片內容</td><td>Senior Manager、客戶</td></tr>
+          <tr><td class="code">WA-4</td><td>前手的工作檔案依事務所政策仍保存，可經 IT 申請調閱</td><td>只能靠訪談重建，信心度下降</td><td>IT</td></tr>
+          <tr><td class="code">WA-5</td><td>分析截止日 10/16 為建議值</td><td>依主管期望調整</td><td>Senior Manager</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section id="frame">
+    <div class="sec-head"><div class="sec-num">02</div><h2>決策與利害關係人</h2><p class="lede">每個人「心中的解釋」都列為待驗證的假設，不寫進結論。</p></div>
+    <div class="body">
+      <div class="callout">
+        <b>要支援的決策</b>
+        <p>Senior Manager 於 10/16 前決定：IC Care 專案要直接進入 Phase 3（Proceed）、先與客戶重新對齊 Phase 2 再推進（Modify），還是整理歸檔並結案（Stop）。<span class="tag">日期為建議值</span></p>
+        <p class="note">主要成功指標：四項交付物都能標出生命週期階段（見 04），而且每個階段都有證據來源。</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>利害關係人</th><th>是否在場</th><th>在意什麼</th><th>心中的解釋（待驗證）</th><th>權力／關注</th><th>如何接觸</th></tr></thead>
+        <tbody>
+          <tr><td><b>Senior Manager</b></td><td><span class="chip s-ok">在場</span></td><td>專案能否順利延續、對客信用</td><td>原始使命是商保補位健保；AI 影片可做教育與招商（→ H-C1、A3）</td><td class="nowrap">高／高</td><td>狀態訪談，Day 1</td></tr>
+          <tr><td><b>Engagement Partner</b></td><td><span class="chip s-open">未納入</span></td><td>合約、收入、客戶關係</td><td>未知，需訪談</td><td class="nowrap">高／中</td><td>與 SM 同場或分開 15 分鐘</td></tr>
+          <tr><td><b>前任負責人（已離職）</b></td><td><span class="chip s-miss">缺席</span></td><td>—</td><td>唯一知道 Phase 2 之後經過的人</td><td class="nowrap">低／低</td><td>經 SM 確認可否禮貌聯繫一次</td></tr>
+          <tr><td><b>財務／PMO</b></td><td><span class="chip s-open">未納入</span></td><td>請款里程碑、剩餘預算</td><td>—（提供客觀證據）</td><td class="nowrap">中／低</td><td>書面查詢，Day 1</td></tr>
+          <tr><td><b>IC Care Sponsor／決策者</b></td><td><span class="chip s-open">身分未知</span></td><td>商業模式能否落地、對外如何說明</td><td>未知</td><td class="nowrap">高／待確認</td><td>決策閘門後才接觸</td></tr>
+          <tr><td><b>IC Care PM、CTO、BD、法遵</b></td><td><span class="chip s-part">訪談過</span></td><td>各自的營運痛點</td><td>見訪談彙整</td><td class="nowrap">中／中</td><td>暫不接觸</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section id="ps">
+    <div class="sec-head"><div class="sec-num">03</div><h2>問題陳述（初始版）</h2><p class="lede">尚未完成診斷，因此只寫初始版，內容不放任何原因。</p></div>
+    <div class="body">
+      <div class="panel quote">
+        <p>IC Care 平台商業模式專案原規劃四項交付物（Phase 1、Phase 2、Phase 3、Final report），預計 2026/07 完成。截至 2026/10/07，<strong>只有 Phase 1 能確認已產出並對客報告；其餘三項的生命週期階段都無法確認</strong>，而且沒有任何客戶回饋或決策紀錄可以追溯。前任負責人已離職，新接手團隊因此無法向主管或客戶說明專案進度。</p>
+        <p>本次分析的目標：<strong>10/16 前</strong>標出四項交付物各自所在的生命週期階段，並附證據來源，讓 Senior Manager 選定 Proceed、Modify 或 Stop。成功的標準是 4 項交付物的狀態都有證據，客戶後續若有對話，都能以單一 status memo 回應。</p>
+      </div>
+      <p class="note">SMART 檢查：具體（四項交付物）、可衡量（4 項 × 5 個階段）、受影響者（接手團隊、Senior Manager、客戶）、截止日分開（分析截止 10/16；業務成果在決策後另訂）、不含原因。</p>
+    </div>
+  </section>
+
+  <!-- 04 Process maps -->
+  <section id="process">
+    <div class="sec-head"><div class="sec-num">04</div><h2>流程圖（Process Mapping）</h2><p class="lede">三張圖分別回答：原計畫怎麼走、每份交付物要經過哪些關卡、接手工作由誰在什麼時候做。</p></div>
+    <div class="body">
+
+      <div class="map">
+        <div class="cap"><b>圖 1　專案階段：原計畫與目前所見</b><span>綠色有文件，黃色是草稿，紅色找不到</span></div>
+<pre class="mermaid">
+flowchart LR
+  K["Kickoff<br/>2026/04"]:::ok --> I["訪談與現況分析"]:::ok
+  I --> P1["Phase 1<br/>市場研究與現況分析"]:::ok
+  P1 --> P2["Phase 2<br/>商業模式設計<br/>草稿・日期 9 月"]:::part
+  P2 --> P3["Phase 3<br/>差異分析與發展藍圖"]:::miss
+  P3 --> F["Final report<br/>原定 2026/07"]:::miss
+  P2 -. "斷點：前手離職<br/>時程延後" .-> X(("?")):::open
+  classDef ok fill:#d7ecdf,stroke:#2f7a4a,color:#14261b
+  classDef part fill:#f5e6c4,stroke:#a8730c,color:#2e2108
+  classDef miss fill:#f3d3d8,stroke:#9c2b3a,color:#2e0d12
+  classDef open fill:#fde0d2,stroke:#c04b1c,color:#2e1408
+</pre>
+      </div>
+
+      <div class="map">
+        <div class="cap"><b>圖 2　交付物生命週期（本手冊的拆解恆等式）</b><span>每份交付物在任何時間點只會處在一個階段，因此這個拆法天然互斥且完整</span></div>
+<pre class="mermaid">
+flowchart LR
+  A["① 產出 Produced<br/><small>證據：檔案與日期</small>"] --> B["② 內部審閱<br/><small>證據：審閱意見、版本紀錄</small>"]
+  B --> C["③ 對客報告<br/><small>證據：會議邀請、簡報版本</small>"]
+  C --> D["④ 取得回饋<br/><small>證據：email、會議紀錄</small>"]
+  D --> E["⑤ 客戶驗收／定稿<br/><small>證據：驗收信、請款紀錄</small>"]
+  E --> G["⑥ 歸檔 Archived"]
+  D -- "需修改" --> B
+</pre>
+      </div>
+
+      <h3>交付物 × 生命週期矩陣（目前已知）</h3>
+      <div class="tbl">
+        <div class="matrix">
+          <div class="hd">交付物</div>
+          <div class="hd"><i>①</i>產出</div>
+          <div class="hd"><i>②</i>內部審閱</div>
+          <div class="hd"><i>③</i>對客報告</div>
+          <div class="hd"><i>④</i>取得回饋</div>
+          <div class="hd"><i>⑤</i>驗收／定稿</div>
+
+          <div class="rh"><b>Phase 1</b><span>市場研究與現況分析</span></div>
+          <div class="cell s-ok"><span class="chip s-ok">已確認</span><small>成果匯報檔</small></div>
+          <div class="cell s-rel"><span class="chip s-rel">推定</span><small>內容成熟</small></div>
+          <div class="cell s-rel"><span class="chip s-rel">推定</span><small>檔名為「成果匯報」</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small>無回饋紀錄</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small>查請款里程碑</small></div>
+
+          <div class="rh"><b>Phase 2</b><span>商業模式設計</span></div>
+          <div class="cell s-part"><span class="chip s-part">草稿</span><small>日期 9 月</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small>關鍵測試</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small>關鍵測試</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+
+          <div class="rh"><b>Phase 3</b><span>差異分析與藍圖</span></div>
+          <div class="cell s-miss"><span class="chip s-miss">找不到</span><small>僅有方向雛形</small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+
+          <div class="rh"><b>Final report</b><span>整合與發表</span></div>
+          <div class="cell s-miss"><span class="chip s-miss">找不到</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+          <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
+        </div>
+      </div>
+      <p class="note">20 格中只有 1 格已確認、2 格推定。接手的目標就是把每一列推進到「最後一個有證據的階段」。</p>
+
+      <div class="map">
+        <div class="cap"><b>圖 3　接手流程泳道圖（To-Be）</b><span>每條跨泳道的箭頭都是交接點，也是上一次出問題的地方</span></div>
+<pre class="mermaid">
+flowchart TB
+  subgraph N["新接手者"]
+    N1["Day 1：檔案與版本盤點"] --> N2["Day 1：準備狀態訪談題綱"]
+    N5["Day 4–5：彙整證據<br/>填寫生命週期矩陣"] --> N6["Day 6：撰寫 status memo<br/>更新 open issues 與 decision log"]
+  end
+  subgraph M["Senior Manager／Partner"]
+    M1["Day 2：狀態訪談<br/>S1–S4 哪一個？"]
+    M2{"Day 7：決策閘門"}
+  end
+  subgraph F["財務／PMO"]
+    F1["Day 1–3：合約、請款里程碑<br/>剩餘預算查詢"]
+  end
+  subgraph T["IT"]
+    T1["Day 1–4：依政策調閱<br/>前手檔案與信箱"]
+  end
+  subgraph C["客戶 IC Care"]
+    C1["狀態確認會議<br/>重新對齊 Phase 2"]
+    C2["啟動 Phase 3"]
+  end
+  N1 --> T1
+  N1 --> F1
+  N2 --> M1
+  M1 --> N5
+  F1 --> N5
+  T1 --> N5
+  N6 --> M2
+  M2 -- "Modify" --> C1
+  M2 -- "Proceed" --> C2
+  M2 -- "Stop" --> N7["歸檔與結案說明"]
+  C1 --> C2
+</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Issue tree -->
+  <section id="tree">
+    <div class="sec-head"><div class="sec-num">05</div><h2>Issue Tree（重建版）</h2><p class="lede">第一層全部是診斷問題，行動項目移到分析計畫。B 分支以圖 2 的生命週期為恆等式，所以天然互斥。</p></div>
+
+    <div class="tree-scroll">
+      <div class="tree">
+        <div class="root">
+          <div class="kicker">Key Question</div>
+          <p>IC Care 專案應以 Proceed、Modify 或 Stop 的哪一種方式延續？</p>
+          <small>切面（套用到每個分支）：時間（04 月至今）× 來源（文件／口述）</small>
+        </div>
+        <ul class="branches">
+          <li class="branch">
+            <div class="bnode"><span class="k">A</span><b>承諾了什麼</b><i>範圍、變更與合約</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">A1</span><span class="t">原始 SOW 範圍與交付定義</span><span class="chip s-ok">已確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">A2</span><span class="t">時程延後或範圍變更（change request）</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">A3</span><span class="t">AI 影片屬範圍內，還是新案</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">A4</span><span class="t">合約效期、請款里程碑、剩餘預算</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">B</span><b>交付到哪一關</b><i>交付物 × 生命週期階段</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">B1</span><span class="t">Phase 1：停在 ③ 或之後</span><span class="chip s-rel">推定</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">B2</span><span class="t">Phase 2：停在 ①、② 或 ③</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">B3</span><span class="t">Phase 3：是否已到 ①</span><span class="chip s-miss">找不到</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">B4</span><span class="t">Final：是否已到 ①</span><span class="chip s-miss">找不到</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">C</span><b>客戶的立場</b><i>誰決定、認同什麼</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">C1</span><span class="t">Sponsor、決策者與主要窗口</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">C2</span><span class="t">已認同的結論（定位、B2B2C）</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">C3</span><span class="t">有異議或未決的內容</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">C4</span><span class="t">客戶端變化（預算、人事、優先順序）</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">D</span><b>內容站不站得住</b><i>只看內部品質</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">D1</span><span class="t">Phase 1 → Phase 2 邏輯是否一致</span><span class="chip s-rel">推定</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">D2</span><span class="t">公共使命與商業化敘事能否銜接</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">D3</span><span class="t">Phase 3 所需輸入是否齊備</span><span class="chip s-part">部分確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">E</span><b>接不接得起來</b><i>知識、檔案與人力</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">E1</span><span class="t">前手能否聯繫</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">E2</span><span class="t">檔案存放位置與最新版本</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">E3</span><span class="t">接手團隊人力與可投入時程</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">E4</span><span class="t">Partner 對專案的期望</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="tree-note">每個分支都對應一個決策條件：A 與 E 決定「能不能」延續，B 與 C 決定「從哪裡」延續，D 決定「延續時要不要修改內容」。</p>
+
+    <div class="body">
+      <h3>MECE 檢查：22 個具體項目各自落在哪一個分支</h3>
+      <div class="bucket">
+        <div><h4><span>A</span>承諾了什麼</h4><ul><li>SOW 範圍</li><li>交付定義</li><li>時程延到 9 月</li><li>AI 影片需求</li><li>已請款里程碑</li><li>剩餘預算</li></ul></div>
+        <div><h4><span>B</span>交付到哪一關</h4><ul><li>Phase 1 匯報檔</li><li>Phase 2 草稿版本</li><li>Phase 3 檔案</li><li>Final report</li><li>對客會議邀請</li></ul></div>
+        <div><h4><span>C</span>客戶的立場</h4><ul><li>Sponsor 是誰</li><li>回饋內容</li><li>客戶異議</li><li>客戶預算或人事變動</li></ul></div>
+        <div><h4><span>D</span>內容站不站得住</h4><ul><li>P1→P2 邏輯</li><li>使命敘事</li><li>Phase 3 輸入資料</li></ul></div>
+        <div><h4><span>E</span>接不接得起來</h4><ul><li>前手聯繫方式</li><li>檔案存放位置</li><li>接手人力</li><li>Partner 期望</li></ul></div>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>檢查</th><th>結果與灰色地帶規則</th></tr></thead>
+        <tbody>
+          <tr><td class="nowrap">互斥（ME）</td><td><b>大致成立，但有兩個灰色地帶。</b>規則一：「是否收到回饋」歸 B（④ 階段），「回饋說了什麼」歸 C。規則二：AI 影片「是否在範圍內」歸 A3，「影片內容說什麼」歸 D2。</td></tr>
+          <tr><td class="nowrap">完整（CE）</td><td>22 個項目都找得到歸屬。v1 缺少的合約與商務面（A4）、客戶端變化（C4）都已補上。</td></tr>
+          <tr><td class="nowrap">單一維度</td><td>第一層都是「延續所需的條件」。交付物與時間是套用到每個分支的切面，不是獨立分支。</td></tr>
+          <tr><td class="nowrap">同一種類</td><td>全部都是診斷問題。v1 的第 5 分支（行動與風險）已移到第 08、09 節。</td></tr>
+          <tr><td class="nowrap">可行動</td><td>每個分支都有負責人與資料來源（見第 08 節）。</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 06 Localize -->
+  <section id="where">
+    <div class="sec-head"><div class="sec-num">06</div><h2>問題定位（Is / Is not）</h2><p class="lede">先找斷點在哪裡、什麼時候發生，再猜原因。</p></div>
+    <div class="body">
+      <div class="tbl"><table>
+        <thead><tr><th>面向</th><th>問題出現（Is）</th><th>問題沒出現（Is not）</th><th>差異指向</th></tr></thead>
+        <tbody>
+          <tr><td><b>哪些交付物</b></td><td>Phase 2 之後的所有交付物</td><td>Kickoff、訪談、現況分析、Phase 1</td><td>斷點在 Phase 1 與 Phase 2 之間</td></tr>
+          <tr><td><b>哪一種資訊</b></td><td>流程類資訊：對客紀錄、回饋、決策</td><td>內容類資訊：分析與簡報本身都在</td><td>缺的是過程紀錄，不是分析能力</td></tr>
+          <tr><td><b>何時</b></td><td>原定 07 月完成之後；Phase 2 草稿日期為 09 月</td><td>04 月至 Phase 1 期間</td><td>時程變動與前手離職的先後順序需確認</td></tr>
+          <tr><td><b>存放在哪裡</b></td><td>可能在前手個人信箱、Teams 對話或本機</td><td>共用資料夾內的正式文件</td><td>「找不到」可能是存放位置問題，不一定代表沒做</td></tr>
+        </tbody>
+      </table></div>
+      <div class="panel">
+        <div class="kicker">斷點前後發生的事（待排出先後順序）</div>
+        <ul class="plain">
+          <li>Phase 2 時程延後（原計畫 07 月結案，草稿日期為 09 月）</li>
+          <li>前任負責人離職（日期待確認）</li>
+          <li>高層提出 AI 影片想法（時間點待確認）</li>
+        </ul>
+        <p class="note">三件事的先後會改變解讀。若時程先延後、前手才離職，可能是客戶端原因造成暫停；若前手先離職，則時程延後可能只是內部人力斷層。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 Hypotheses -->
+  <section id="hyp">
+    <div class="sec-head"><div class="sec-num">07</div><h2>狀態假設與優先順序</h2><p class="lede">先畫替代樹（Alternatives tree），找出專案到底在哪一種狀態；再畫條件樹（Conditions tree），列出直接 Proceed 必須同時成立的條件。</p></div>
+    <div class="body">
+      <div class="map">
+        <div class="cap"><b>圖 4　替代樹：專案目前處於哪一種狀態？</b><span>四者互斥，只會有一個成立</span></div>
+<pre class="mermaid">
+flowchart LR
+  Q["IC Care 專案<br/>目前真實狀態？"] --> S1["S1 進行中<br/>Phase 2 尚未對客"]
+  Q --> S2["S2 Phase 2 已對客<br/>等待客戶回饋"]
+  Q --> S3["S3 暫停<br/>客戶端或商務原因"]
+  Q --> S4["S4 已結案或改範圍<br/>只是未歸檔"]
+  S1 --> D1["→ Modify"]
+  S2 --> D2["→ Modify 或 Proceed"]
+  S3 --> D3["→ 暫緩，保留重啟方案"]
+  S4 --> D4["→ Stop：歸檔"]
+</pre>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <header><span class="k">S1・敘述型</span><b>專案仍在進行，Phase 2 停在內部審閱，尚未對客</b></header>
+          <dl>
+            <dt>機制</dt><dd>前手離職時草稿尚未定稿，客戶仍在等待</dd>
+            <dt>預期證據</dt><dd>合約有效、尚未請 Phase 2 款項；沒有 Phase 2 的會議邀請</dd>
+            <dt>推翻條件</dt><dd>找到 Phase 2 對客會議邀請或簡報寄送紀錄</dd>
+            <dt>干擾因素</dt><dd>會議邀請可能在前手個人行事曆（以 IT 調閱控制）</dd>
+            <dt>若成立</dt><dd>Modify：整理對客版本，安排重新對齊會議</dd>
+          </dl>
+        </article>
+        <article class="card">
+          <header><span class="k">S2・敘述型</span><b>Phase 2 已對客，專案停在等待客戶回饋</b></header>
+          <dl>
+            <dt>機制</dt><dd>報告後客戶未回覆，前手離職後無人追蹤</dd>
+            <dt>預期證據</dt><dd>有對客會議或寄送紀錄；之後沒有客戶回覆</dd>
+            <dt>推翻條件</dt><dd>沒有任何對客紀錄，或客戶已明確回覆</dd>
+            <dt>干擾因素</dt><dd>客戶可能以口頭方式回饋（以訪談 SM 控制）</dd>
+            <dt>若成立</dt><dd>由 SM 出面追回饋；依回饋決定 Modify 或 Proceed</dd>
+          </dl>
+        </article>
+        <article class="card">
+          <header><span class="k">S3・解釋型</span><b>專案因客戶端或商務原因而暫停</b></header>
+          <dl>
+            <dt>機制</dt><dd>客戶預算、人事或優先順序改變，雙方同意暫停</dd>
+            <dt>預期證據</dt><dd>請款停在某里程碑；有暫停或延期的信件；客戶端人事異動</dd>
+            <dt>推翻條件</dt><dd>合約與請款依原計畫進行，客戶仍在要求交付</dd>
+            <dt>干擾因素</dt><dd>時程延後也可能出於內部人力因素（看事件先後順序）</dd>
+            <dt>若成立</dt><dd>暫緩投入；準備重啟方案，並把 AI 影片作為重啟切入點</dd>
+          </dl>
+        </article>
+        <article class="card">
+          <header><span class="k">S4・敘述型</span><b>專案已結案或已改範圍，只是文件未歸檔</b></header>
+          <dl>
+            <dt>機制</dt><dd>Phase 3 與 Final 已完成或被取消，但存在前手個人空間</dd>
+            <dt>預期證據</dt><dd>最終款項已請、合約已到期；IT 調閱找到 Final</dd>
+            <dt>推翻條件</dt><dd>仍有未請款的里程碑，且合約仍有效</dd>
+            <dt>干擾因素</dt><dd>「改範圍」可能只是口頭協議，沒有正式 change request</dd>
+            <dt>若成立</dt><dd>Stop：補齊歸檔；AI 影片改走新案</dd>
+          </dl>
+        </article>
+      </div>
+
+      <div class="map">
+        <div class="cap"><b>圖 5　條件樹：要直接 Proceed 到 Phase 3，以下四項必須同時成立</b><span>任何一項不成立，就降為 Modify 或 Stop</span></div>
+<pre class="mermaid">
+flowchart LR
+  P["可以直接 Proceed<br/>啟動 Phase 3"] --- C1["客戶已認同<br/>Phase 2 方向（C2）"]
+  P --- C2["合約仍有效<br/>且有剩餘預算（A4）"]
+  P --- C3["接手團隊有足夠人力<br/>與時程（E3）"]
+  P --- C4["Phase 3 所需輸入<br/>已齊備（D3）"]
+</pre>
+      </div>
+
+      <h3>優先順序</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>排序</th><th>測試</th><th>可檢驗</th><th>影響</th><th>速度</th><th>前置條件</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td class="code">1</td><td>SM／Partner 狀態訪談</td><td>S1–S4、E1、E4</td><td>高</td><td>30 分鐘</td><td>—</td><td>一次測試就能排除多數狀態，必須最先做</td></tr>
+          <tr><td class="code">2</td><td>合約與請款查詢</td><td>S3、S4、A2、A4</td><td>高</td><td>1–3 天</td><td>—</td><td>最客觀的證據；Day 1 就送出書面查詢</td></tr>
+          <tr><td class="code">3</td><td>檔案版本盤點</td><td>WA-2、B1–B2</td><td>中</td><td>半天</td><td>—</td><td>資料品質檢查，所有判斷的前提</td></tr>
+          <tr><td class="code">4</td><td>IT 調閱前手檔案與信箱</td><td>S2、S4、B3–B4</td><td>高</td><td>慢（2–4 天）</td><td>SM 同意</td><td>慢但影響大，Day 1 就提出申請，避免路燈效應</td></tr>
+          <tr><td class="code">5</td><td>P1→P2 邏輯一致性快速檢查</td><td>D1</td><td>中</td><td>半天</td><td>測試 3</td><td>低優先也要做敘述性檢查，報告才能說明已排除什麼</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">延後處理（不影響本次決策）：v1 的 H4「策略核心是公共使命延伸的商業化平台」與 H5「AI 影片是商業推進工具」屬於後續內容假設，放進決策後的工作計畫。</p>
+    </div>
+  </section>
+
+  <!-- 08 Analysis plan -->
+  <section id="plan">
+    <div class="sec-head"><div class="sec-num">08</div><h2>分析計畫</h2><p class="lede">通過與未通過的判定規則在看到資料之前就先定好。負責人欄請填入真實姓名。</p></div>
+    <div class="body">
+      <div class="tbl"><table>
+        <thead><tr><th>#</th><th>測試</th><th>預期證據／判定規則</th><th>方法與資料</th><th>來源與負責人</th><th>產出</th><th>時程</th></tr></thead>
+        <tbody>
+          <tr><td class="code">T0</td><td><b>資料品質：檔案版本盤點</b></td><td>每份文件都有最後修改日與作者；同名檔案只留一個最新版</td><td>檔案屬性、版本歷程</td><td>共用資料夾／新接手者（＿＿）</td><td>文件清冊</td><td class="nowrap">Day 1</td></tr>
+          <tr><td class="code">T1</td><td><b>狀態訪談</b></td><td><b>通過：</b>SM 能明確指出 S1–S4 之一，並說出依據<br><b>未通過：</b>SM 也不確定，改以 T2、T3 為主</td><td>半結構訪談，題綱見第 09 節</td><td>SM（＿＿）、Partner（＿＿）</td><td>訪談紀錄、狀態初判</td><td class="nowrap">Day 2</td></tr>
+          <tr><td class="code">T2</td><td><b>合約與請款</b></td><td><b>S3／S4 成立：</b>請款停在某里程碑且有暫停紀錄，或已請完並結案<br><b>S1／S2 成立：</b>合約有效、後續里程碑未請</td><td>合約、SOW、請款紀錄、change request</td><td>財務／PMO（＿＿）</td><td>里程碑對照表</td><td class="nowrap">Day 1–3</td></tr>
+          <tr><td class="code">T3</td><td><b>前手檔案與信箱調閱</b></td><td><b>找到對客紀錄：</b>B2 推進至 ③ 以上<br><b>找到 Phase 3／Final：</b>S4 成立</td><td>依事務所離職資料保存政策申請</td><td>IT（＿＿），經 SM 同意</td><td>證據清單</td><td class="nowrap">Day 1–4</td></tr>
+          <tr><td class="code">T4</td><td><b>P1→P2 邏輯檢查</b></td><td><b>通過：</b>P2 每個主要主張都能追溯到 P1 的發現<br><b>未通過：</b>列出斷裂處，納入 Modify 範圍</td><td>主張對照表</td><td>新接手者（＿＿）</td><td>對照表</td><td class="nowrap">Day 3–4</td></tr>
+        </tbody>
+      </table></div>
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">需要點名的偏誤</div>
+          <ul class="plain">
+            <li><b>沒有證據不等於沒有發生：</b>前手可能用個人信箱或 Teams 溝通。在 T3 完成前，「找不到」一律標示為「未知」，不標示為「沒有」。</li>
+            <li><b>倖存者偏誤：</b>共用資料夾只留下正式文件，過程紀錄天然缺漏。</li>
+            <li><b>單一來源：</b>只有在兩個獨立來源一致時（例如訪談加請款紀錄），才把狀態標示為「已確認」。</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <div class="kicker">何時停止分析</div>
+          <p>只要能確定是 S1–S4 中的哪一個，而且圖 5 的四個條件都有答案，就停止分析並進入決策閘門。再多的資料也不會改變決策。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 Handoff -->
+  <section id="handoff">
+    <div class="sec-head"><div class="sec-num">09</div><h2>交接清單與決策閘門</h2><p class="lede">接手者第一週要拿到什麼、要問什麼、要交出什麼。</p></div>
+    <div class="body">
+      <h3>決策閘門規則</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>判定的狀態</th><th>條件樹（圖 5）</th><th>策略</th><th>第一個對客動作</th></tr></thead>
+        <tbody>
+          <tr><td>S2，且客戶回饋正面</td><td>四項皆成立</td><td><span class="chip s-ok">Proceed</span></td><td>確認 Phase 3 範圍與時程</td></tr>
+          <tr><td>S1，或 S2 但回饋未定</td><td>A4 與 E3 成立</td><td><span class="chip s-part">Modify</span></td><td>以 status memo 開場的重新對齊會議</td></tr>
+          <tr><td>S3</td><td>A4 不明或不成立</td><td><span class="chip s-rel">暫緩</span></td><td>由 Partner 判斷是否提出重啟方案</td></tr>
+          <tr><td>S4</td><td>—</td><td><span class="chip s-miss">Stop</span></td><td>補齊歸檔；AI 影片以新案提出</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">狀態訪談題綱（T1，30 分鐘）</div>
+          <ul class="plain">
+            <li>Phase 2 草稿有沒有對客報告過？哪一天、對誰？</li>
+            <li>客戶最後一次正式回覆是什麼時候？說了什麼？</li>
+            <li>時程從 07 月延後，原因是什麼？發生在前手離職之前還是之後？</li>
+            <li>Phase 3 與 Final 有沒有開始做？</li>
+            <li>客戶端的 sponsor 與最終決策者是誰？</li>
+            <li>AI 影片是客戶提出的，還是我們內部的想法？</li>
+            <li>可以聯繫前任負責人嗎？可以申請調閱他的檔案嗎？</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <div class="kicker">第一週要交出的文件</div>
+          <ul class="plain">
+            <li><b>文件清冊</b>（T0）：所有檔案、版本、日期</li>
+            <li><b>生命週期矩陣</b>（第 04 節）：補上證據後的版本</li>
+            <li><b>Decision log</b>：每個已確認的決定、日期與決定人</li>
+            <li><b>Open issues list</b>：附負責人與截止日（下表）</li>
+            <li><b>Status memo</b>：一頁 SCQA，供 SM 對內或對客使用</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Open Issues（已對應新 Issue Tree）</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>編號</th><th>議題</th><th>樹節點</th><th>測試</th><th>負責人</th><th>截止</th></tr></thead>
+        <tbody>
+          <tr><td class="code">OI-1</td><td>專案目前是 S1–S4 哪一種狀態</td><td class="code">全樹</td><td class="code">T1–T3</td><td>新接手者</td><td class="num">10/14</td></tr>
+          <tr><td class="code">OI-2</td><td>合約效期與剩餘預算</td><td class="code">A4</td><td class="code">T2</td><td>財務／PMO</td><td class="num">10/12</td></tr>
+          <tr><td class="code">OI-3</td><td>時程延後的原因與事件先後</td><td class="code">A2</td><td class="code">T1</td><td>SM</td><td class="num">10/09</td></tr>
+          <tr><td class="code">OI-4</td><td>Phase 2 停在哪一個階段</td><td class="code">B2</td><td class="code">T1・T3</td><td>新接手者</td><td class="num">10/14</td></tr>
+          <tr><td class="code">OI-5</td><td>Phase 3 與 Final 是否存在</td><td class="code">B3・B4</td><td class="code">T3</td><td>IT</td><td class="num">10/14</td></tr>
+          <tr><td class="code">OI-6</td><td>Sponsor 與決策者</td><td class="code">C1</td><td class="code">T1</td><td>SM</td><td class="num">10/09</td></tr>
+          <tr><td class="code">OI-7</td><td>原始使命是否有正式說法</td><td class="code">D2</td><td class="code">T1</td><td>SM</td><td class="num">10/09</td></tr>
+          <tr><td class="code">OI-8</td><td>AI 影片屬範圍內或新案</td><td class="code">A3</td><td class="code">T1・T2</td><td>Partner</td><td class="num">10/16</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">截止日以 10/16 決策閘門往回推算，屬建議值。負責人請以真實姓名取代角色名稱。</p>
+
+      <div class="callout">
+        <b>給商業分析師（BA）的提醒</b>
+        <p>接手案的第一個問題通常不是「答案是什麼」，而是「我們現在在流程的哪一格」。先用生命週期這類恆等式把狀態拆到每一格都能找證據，再談內容。上一任留下的分析再好，只要沒有對客與決策紀錄，就只能當作待驗證的資產。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Review -->
+  <section id="review">
+    <div class="sec-head"><div class="sec-num">R</div><h2>審閱紀錄：v1 診斷報告</h2><p class="lede">以 Consulting Master 評分表（10 項，各 0–2 分）審閱 v1。本手冊即為修正後的版本。</p></div>
+    <div class="body">
+      <div class="total"><span class="big num">8<small> / 20</small></span><span>最重要的修正：以交付生命週期為恆等式重建 Issue Tree，並把行動項目移出樹狀結構。</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>評分項目</th><th>v1 得分</th><th>問題</th><th>v2 修正位置</th></tr></thead>
+        <tbody>
+          <tr><td>決策框定</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>有列出決策，但沒有決策者與截止日；未列利害關係人心中的解釋</td><td>02</td></tr>
+          <tr><td>指標驗證</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>沒有定義什麼叫「已交付」，因此狀態判斷沒有標準</td><td>04 圖 2、矩陣</td></tr>
+          <tr><td>問題陳述</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>把尚未驗證的內容寫成「診斷後問題陳述」；沒有截止日與成功標準</td><td>03</td></tr>
+          <tr><td>MECE 第一刀</td><td class="score">0<span class="bar"><i></i><i></i></span></td><td>沒有恆等式；第 5 分支是行動，與其他診斷分支不同種類</td><td>05</td></tr>
+          <tr><td>MECE 誠實度</td><td class="score">0<span class="bar"><i></i><i></i></span></td><td>宣稱 MECE，但 2.3 與 4.4 重複、3.5／3.6 與 2.x 重疊；缺合約商務分支</td><td>05 檢查表</td></tr>
+          <tr><td>問題定位</td><td class="score">0<span class="bar"><i></i><i></i></span></td><td>沒有 Is／Is not 分析，也沒有找斷點時間與同時發生的事件</td><td>06</td></tr>
+          <tr><td>假設品質</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>有推翻條件，但不是互斥的替代假設；缺機制、替代解釋與干擾因素；H4、H5 與本次決策無關</td><td>07 圖 4、卡片</td></tr>
+          <tr><td>優先排序</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>沒有考慮前置條件；沒有找出「一次測多個假設」的最快測試</td><td>07 排序表</td></tr>
+          <tr><td>分析設計</td><td class="score">1<span class="bar"><i class="on"></i><i></i></span></td><td>沒有負責人、資料品質檢查，也沒有點名「找不到不等於沒有」的偏誤</td><td>08</td></tr>
+          <tr><td>綜合與建議</td><td class="score">2<span class="bar"><i class="on"></i><i class="on"></i></span></td><td>SCQA 答案先行，策略選項有觸發條件。但「Modify 最可能」與 Day 1–5 時程是未標示依據的推測</td><td>00、09 閘門規則</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">v1 保留供對照：ic-care-handover-report.html。v2 已用合約、利害關係人與時程斷點的分析補上 v1 的缺口，但仍未取得任何新證據；所有「未確認」都要等第 08 節的測試完成後才能更新。</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>IC Care 專案交接手冊 v2 · 內部工作稿</span>
+    <span class="num">2026-10-07</span>
+  </footer>
+</div>
