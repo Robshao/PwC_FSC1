@@ -1,28 +1,28 @@
 [Reference roles]
 @Image 1 is the opening frame of Shot 1: an office at dusk, the young man sitting at a desk by the window holding a teal lanyard.
 @Image 2 is the opening frame of Shot 2: a fintech conference hall, the young man (left) shaking hands with a silver-haired senior professional (right).
-@Image 3 is the opening frame of Shot 3: a meeting room at year-end, the young man wearing the teal lanyard, standing beside a screen and sharing with four colleagues seated around the table.
+@Image 3 is the opening frame of Shot 3: an office at night, the young man at a wall of lanyards hanging the teal lanyard on a hook.
 The young man in all three images is the same person: keep the same face, short black hair, navy suit jacket, and white shirt. Use each image only as the setting for its own shot; do not mix settings between images.
 
 [Generation goal]
-Generate a 15-second, three-shot dialogue-driven short. The characters speak their own lines on camera; there is no narrator or voice-over. Story: deciding to go out this year → learning from a senior professional at a fintech conference → sharing the learnings with the team at year-end. The teal lanyard appears in all three shots and ties the story together. Hard cuts between shots.
+Generate a 15-second, three-shot dialogue-driven short. The characters speak their own lines on camera; there is no narrator or voice-over. One teal lanyard ties the story together: deciding to go → meeting a senior professional at a conference → collecting the result. Hard cuts between shots.
 
 [Dialogue setup]
 Young man: Mandarin Chinese with a Taiwanese accent, a young, warm, confident voice.
 Senior professional: natural American English, a deep, friendly voice.
-The colleagues do not speak. Each line is spoken only by the named character, with lip movements matching the line. Keep head and camera movement slow and small while anyone is speaking.
+Each line is spoken only by the named character, with lip movements matching the line. Keep head and camera movement slow and small while anyone is speaking.
 
 [Shot 1 | 0–5 seconds]
-Begin from @Image 1. The man looks at the teal lanyard, lifts his gaze to the window on the left, and at about 1 second says softly to himself, in Taiwanese-accented Mandarin: {今年，我要走出去，把新知帶回來。} Then he slips the lanyard over his neck. End state: lanyard on, looking out the window. The camera holds still and only slowly dollies in after he finishes speaking. Keep the cool blue window light, the warm desk lamp, and the raindrops on the glass.
+Begin from @Image 1. The man looks at the teal lanyard, lifts his gaze to the window on the left, and at about 1 second says softly to himself, in Taiwanese-accented Mandarin: {今年，我要走出辦公室。} Then he slips the lanyard over his neck. End state: lanyard on, looking out the window. The camera holds still and only slowly dollies in after he finishes speaking. Keep the cool blue window light, the warm desk lamp, and the raindrops on the glass.
 
 [Shot 2 | 5–10 seconds]
-At 5 seconds, hard cut to the scene of @Image 2. Still shaking hands, the young man smiles eagerly and says in Taiwanese-accented Mandarin: {您剛剛分享的 AI 案例，可以再跟我多聊聊嗎？} The senior professional nods with a smile and replies in American English: {Sure, happy to share!} They release the handshake and the young man takes out his phone to note key points. End state: they smile at each other. The camera holds a side two-shot with only a very slight push in. Keep the bright overhead lighting and teal screen glow; background screens stay blurred and out of focus.
+At 5 seconds, hard cut to the scene of @Image 2. Still shaking hands, the young man smiles and says in Taiwanese-accented Mandarin: {您好，我是 PwC FSC1 的顧問，可以加您 LinkedIn 嗎？} The senior professional nods with a smile and replies in American English: {Of course, let's connect!} They release the handshake, and the senior professional scans the code on the young man's phone. End state: they smile at each other. The camera holds a side two-shot with only a very slight push in. Keep the bright overhead lighting and teal screen glow; background screens stay blurred and out of focus.
 
 [Shot 3 | 10–15 seconds]
-At 10 seconds, hard cut to the scene of @Image 3. Standing beside the screen and facing his colleagues with an open gesture, the man says with enthusiasm at about 11 seconds, in Taiwanese-accented Mandarin: {這一年在論壇學到的，今天全部分享給大家！} The colleagues listen attentively and nod; one smiles and starts taking notes. End state: the man and his colleagues smile at each other. After he finishes speaking, the camera slowly dollies back to reveal the whole meeting room. Keep the soft daylight from the windows on the left and the warm ceiling lights.
+At 10 seconds, hard cut to the scene of @Image 3. The man hangs the teal lanyard securely on the hook, lets go, steps back half a step, looks over the row with a proud smile, and at about 11 seconds says softly in Taiwanese-accented Mandarin: {讓更多人認識 PwC FSC1。} End state: he stands in profile beside the wall. After he finishes speaking, the camera slowly dollies back to reveal the whole wall and the night city. Keep the amber wall lamp at lower right and the cool blue city glow at left.
 
 [Sound]
-No other speech and no narrator besides the lines above. Shot 1: soft rain and quiet office ambience. Shot 2: low conference murmur. Shot 3: quiet meeting-room ambience and light note-taking sounds. No music.
+No other speech and no narrator besides the lines above. Shot 1: soft rain and quiet office ambience. Shot 2: low conference murmur. Shot 3: quiet night ambience and a soft metallic click of the lanyard clip. No music.
 
 [Continuity and exclusions]
-The young man must be the same person with the same voice in all three shots. Phones, laptops, notebooks, and screens show no readable text or app logos. No subtitles, on-screen text, logos, watermarks, or extra people; no logo on the laptop lid.
+The young man must be the same person with the same voice in all three shots. Do not add or remove lanyards on the wall. Phone screens and background screens show no readable text or app logos. No subtitles, on-screen text, logos, watermarks, or extra people; no logo on the laptop lid.
