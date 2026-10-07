@@ -212,14 +212,15 @@ html { scroll-behavior: smooth; }
     <h1>IC Care 專案交接手冊</h1>
     <p class="sub">依 Consulting Master 審閱結果重建：以「交付生命週期」為恆等式重拆 Issue Tree，加入流程圖（Process Map）、狀態假設樹、分析計畫與交接清單。</p>
     <div class="meta">
-      <div><span>版本</span><b>v2（取代 v1 診斷報告）</b></div>
+      <div><span>版本</span><b>v2.1（10/07 中午更新）</b></div>
       <div><span>日期</span><b class="num">2026-10-07</b></div>
-      <div><span>建議分析截止</span><b class="num">2026-10-16（建議值）</b></div>
+      <div><span>下一個交付</span><b class="num">下週四項成果（確切日期待確認）</b></div>
       <div><span>文件性質</span><b>內部工作稿・未對客</b></div>
     </div>
   </header>
 
   <nav class="toc" aria-label="目錄">
+    <a href="#update"><span>U</span>10/07 最新指派</a>
     <a href="#exec"><span>00</span>執行摘要</a>
     <a href="#assume"><span>01</span>工作假設</a>
     <a href="#frame"><span>02</span>決策與利害關係人</a>
@@ -233,6 +234,103 @@ html { scroll-behavior: smooth; }
     <a href="#review"><span>R</span>審閱紀錄</a>
   </nav>
 
+  <!-- U: 10/07 update -->
+  <section id="update">
+    <div class="sec-head"><div class="sec-num">U</div><h2>10/07 最新指派：下週四項交付</h2><p class="lede">Sam 今天中午的指示改變了接手的重心：從「先調查專案狀態」轉為「下週交出四項成果」。狀態問題併入明天上午的會議一起確認。</p></div>
+    <div class="body">
+      <div class="callout">
+        <b>Sam 的指示 <span class="src oral">Sam 口述・10/07 中午</span></b>
+        <ul class="plain">
+          <li>下週要完成：① 健康生態系藍圖、② 商業模式草案、③ 現況與未來的差異（條列）、④ 五年內及五年後的目標。</li>
+          <li>健康生態系藍圖沿用 Farrah 已完成的部分簡報，再做補充說明。</li>
+          <li>明天（10/08）上午討論如何補充內容；請大家今天有空先看過 Farrah 的簡報。</li>
+        </ul>
+        <p class="note">接手者的判斷（未驗證）：Farrah 的簡報應該還沒有跟客戶報告或討論過，屬於草稿。</p>
+      </div>
+
+      <h3>這個新資訊如何改變診斷</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>項目</th><th>10/07 上午的判斷</th><th>10/07 中午之後</th><th>證據強度</th></tr></thead>
+        <tbody>
+          <tr><td><b>專案狀態（S1–S4）</b></td><td>四種狀態都有可能</td><td>主管指派下週交付，專案顯然仍在進行。<b>S1（進行中）最可能</b>；S3（暫停）與 S4（已結案）的可能性大幅降低</td><td><span class="chip s-part">單一口述來源</span></td></tr>
+          <tr><td><b>策略決策</b></td><td>等 10/16 決策閘門</td><td>實務上已決定延續，做法是「沿用既有草稿再補充」，接近 Modify。閘門的問題從「要不要繼續」變成「交付規格是什麼」</td><td><span class="chip s-rel">主管指示</span></td></tr>
+          <tr><td><b>Phase 3（B3）</b></td><td>找不到</td><td>正在進行中：藍圖已有 Farrah 的部分簡報；差異分析與五年目標推論為尚未產出</td><td><span class="chip s-part">部分確認</span></td></tr>
+          <tr><td><b>工作優先順序</b></td><td>7 個工作天的狀態調查</td><td>內容產出優先。狀態問題併入明天會議；合約查詢（T2）與 IT 調閱（T3）降為背景工作</td><td>—</td></tr>
+          <tr><td><b>人力（E3）</b></td><td>未確認</td><td>新增風險：本 repo 的 AI 短影片專案在 10/12（週一）也有交付，同一週需確認人力分配</td><td><span class="chip s-ok">repo 文件</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>四項交付物：可沿用的素材與需要補充的內容</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>#</th><th>交付物</th><th>要回答的問題</th><th>對應原規劃<br>（推論）</th><th>可沿用的素材</th><th>需要補充</th><th>依賴</th></tr></thead>
+        <tbody>
+          <tr><td class="code">①</td><td><b>健康生態系藍圖</b></td><td>IC Care 未來在健康生態系中站在哪裡？與哪些參與者往來？價值怎麼流動？</td><td>Phase 3 發展藍圖，也可能是 Phase 2 的生態圈定位（OI-15）</td><td>Farrah 的部分簡報（草稿）、Phase 1 生態圈與定位分析</td><td>每頁的說明文字；缺漏的參與者；服務流、資金流、資料流</td><td>—</td></tr>
+          <tr><td class="code">②</td><td><b>商業模式草案</b></td><td>服務誰、提供什麼、靠什麼賺錢、需要哪些合作夥伴與能力？</td><td>Phase 2 商業模式設計</td><td>Phase 2 草稿（跨境醫療協調平台、三層產品）；Phase 1 的 B2B2C 與「合規健康服務編排者」定位</td><td>收益模式；合作方角色；與藍圖用語一致</td><td class="code">①</td></tr>
+          <tr><td class="code">③</td><td><b>現況與未來的差異（條列）</b></td><td>從今天到藍圖與商模描繪的未來，還缺什麼？</td><td>Phase 3 差異分析</td><td>現況分析；Phase 1 的六項能力缺口（資料結構化、Token 漏斗、SLA 化、客服自助化、合作方治理、AI 治理）</td><td>以 ①② 作為「未來」重新逐項對照</td><td class="code">①②</td></tr>
+          <tr><td class="code">④</td><td><b>五年內及五年後的目標</b></td><td>五年內要先建立什麼？五年後要成為什麼？</td><td>Phase 3 發展藍圖（roadmap）</td><td>Phase 2 草稿中的能力演進雛形</td><td>分期目標與可衡量的指標；需要 Sam 或客戶提供方向，不能自行編造數字</td><td class="code">③</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">③ 建議用固定格式條列：構面 × 現況 × 未來 × 差異 × 補齊方式。構面直接沿用 Phase 1 的六項能力缺口，再加上「商業模式」與「生態系合作」兩項，這樣 ③ 和 ④ 才能一一對應。</p>
+
+      <div class="map">
+        <div class="cap"><b>圖 6　四項交付物的依賴關係與建議時程</b><span>未來（①②）先定，差異（③）才有比較基準，目標（④）才能依差異分期。日期為建議值，確切截止日待明天確認</span></div>
+<pre class="mermaid">
+flowchart LR
+  R0["10/07（三）<br/>全員閱讀 Farrah 簡報"] --> M0{"10/08（四）上午<br/>討論補充方式<br/>確認規格與分工"}
+  M0 --> D1["① 健康生態系藍圖<br/>補充說明<br/>10/08–10/09"]
+  M0 --> D2["② 商業模式草案<br/>以 Phase 2 草稿為底<br/>10/08–10/12"]
+  D1 --> D2
+  IN["現況分析<br/>Phase 1 能力缺口"] --> D3
+  D1 --> D3["③ 現況與未來差異<br/>條列<br/>10/12–10/13"]
+  D2 --> D3
+  D3 --> D4["④ 五年內／五年後目標<br/>10/13–10/14"]
+  D4 --> QA["Sam 內部審閱<br/>10/15"]
+  QA --> OUT["定稿交付<br/>10/16（待確認）"]
+</pre>
+      </div>
+
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">今天：閱讀 Farrah 簡報時的檢查清單</div>
+          <ul class="plain">
+            <li>檔案的最後修改日與版本；是否有對客報告或寄送的痕跡（用來驗證「應該只是草稿」的判斷）。</li>
+            <li>IC Care 在藍圖中的角色，是否與 Phase 1 的「合規健康服務編排者」一致。</li>
+            <li>是否涵蓋 Phase 2 的跨境醫療協調方向與三層產品（Travel Care、Global Family Care、International Navigation）。</li>
+            <li>平台原始使命（健保不足由商保補位、海外台人即時醫療協助）有沒有出現。</li>
+            <li>參與者是否完整，例如保險公司、國內外醫療院所、海外台人與旅外族群、健保與主管機關、科技與資料夥伴。這份清單只是檢查用的提示，以簡報與前期分析為準。</li>
+            <li>服務流、資金流、資料流有沒有畫出來。</li>
+            <li>哪些頁面只有圖、沒有說明文字，就是明天要討論的補充重點。</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <div class="kicker">明天（10/08）上午會議議程</div>
+          <ul class="plain">
+            <li><b>交付規格：</b>四項成果交給誰（Sam 內部審閱或直接對客）、格式（簡報或文件）、篇幅、確切截止日。</li>
+            <li><b>Farrah 簡報的狀態：</b>是否已對客、是否為最新版、Farrah 能否協助說明。</li>
+            <li><b>補充方式與分工：</b>每項交付物的負責人與中間檢查點。</li>
+            <li><b>商業模式草案：</b>能否直接以 Phase 2 草稿為底稿。</li>
+            <li><b>五年目標：</b>需要哪些客戶輸入（願景、量化指標）。</li>
+            <li><b>順便確認的狀態問題：</b>Phase 2 是否對客、時程延後的原因、客戶 sponsor 是誰。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>新增待解議題</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>編號</th><th>議題</th><th>樹節點</th><th>向誰確認</th><th>截止</th></tr></thead>
+        <tbody>
+          <tr><td class="code">OI-9</td><td>四項交付物的確切截止日，以及交給內部還是對客</td><td class="code">A2</td><td>Sam</td><td class="num">10/08</td></tr>
+          <tr><td class="code">OI-10</td><td>交付格式與篇幅</td><td class="code">A1</td><td>Sam</td><td class="num">10/08</td></tr>
+          <tr><td class="code">OI-11</td><td>Farrah 簡報是否已對客、是否為最新版</td><td class="code">B3</td><td>Farrah、Sam</td><td class="num">10/08</td></tr>
+          <tr><td class="code">OI-12</td><td>Sam 與 Farrah 的角色（Farrah 是否即前任負責人）</td><td class="code">E1・E4</td><td>Sam</td><td class="num">10/08</td></tr>
+          <tr><td class="code">OI-13</td><td>四項交付物的分工與負責人</td><td class="code">E3</td><td>團隊</td><td class="num">10/08</td></tr>
+          <tr><td class="code">OI-14</td><td>五年目標需要的客戶輸入（願景、量化指標）</td><td class="code">C2・D3</td><td>Sam</td><td class="num">10/09</td></tr>
+          <tr><td class="code">OI-15</td><td>「健康生態系藍圖」對應 Phase 3 發展藍圖，還是 Phase 2 生態圈定位</td><td class="code">A1・B3</td><td>Sam</td><td class="num">10/08</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
   <!-- 00 -->
   <section id="exec">
     <div class="sec-head"><div class="sec-num">00</div><h2>執行摘要</h2><p class="lede">結論先講：先用 7 個工作天確認專案的真實狀態，再走決策閘門。</p></div>
@@ -242,11 +340,11 @@ html { scroll-behavior: smooth; }
         <div class="scqa-row"><div><span>Complication</span><b>難點</b></div><div>前任負責人離職，Phase 1 之後的資訊全部斷線：Phase 2 卡在哪一關、Phase 3 與 Final 是否存在、客戶認同了什麼、合約還剩多少，目前都無紀錄可查。</div></div>
         <div class="scqa-row"><div><span>Question</span><b>關鍵問題</b></div><div>IC Care 專案應以 Proceed、Modify 或 Stop 的哪一種方式延續？要做這個決定，必須先知道專案真實處於哪一種狀態。</div></div>
         <div class="scqa-row answer"><div><span>Answer</span><b>答案</b></div><div>
-          <p class="answer-lead">專案狀態只有四種可能（S1–S4），三項快速測試就能分辨。建議 10/16 前完成測試，再由 Senior Manager 在決策閘門選定策略。</p>
+          <p class="answer-lead">10/07 更新：Sam 已指派下週交付四項成果，專案仍在進行（S1 最可能）。接手重心改為「沿用既有草稿、補齊內容、準時交付」，狀態問題併入明天上午的會議確認。</p>
           <ul class="plain">
-            <li>第一個測試是 30 分鐘的主管與 Partner 狀態訪談，一次可同時檢驗 S1–S4。</li>
-            <li>第二個是合約與請款紀錄。這是最客觀的證據，可直接區分「暫停」與「已結案」。</li>
-            <li>第三個是檔案版本盤點與前手信箱調閱，用來排除「找不到檔案不等於沒做」的偏誤。</li>
+            <li>依賴順序：先定未來（① 藍圖、② 商業模式），再寫差異（③），最後訂目標（④）。</li>
+            <li>今天先讀 Farrah 的簡報；明天上午確認規格、截止日與分工（見 U 節議程）。</li>
+            <li>合約查詢與前手檔案調閱仍要做，但降為背景工作，用來確認 S1，不再擋住交付。</li>
           </ul>
         </div></div>
       </div>
@@ -282,6 +380,8 @@ html { scroll-behavior: smooth; }
       <div class="tbl"><table>
         <thead><tr><th>利害關係人</th><th>是否在場</th><th>在意什麼</th><th>心中的解釋（待驗證）</th><th>權力／關注</th><th>如何接觸</th></tr></thead>
         <tbody>
+          <tr><td><b>Sam</b><br><span class="src">10/07 新增</span></td><td><span class="chip s-ok">在場</span></td><td>下週交出四項成果</td><td>藍圖沿用 Farrah 簡報再補充即可（→ OI-11）</td><td class="nowrap">高／高</td><td>10/08 上午會議；角色待確認（OI-12）</td></tr>
+          <tr><td><b>Farrah</b><br><span class="src">10/07 新增</span></td><td><span class="chip s-part">待確認</span></td><td>—</td><td>已完成藍圖的部分簡報</td><td class="nowrap">待確認</td><td>確認能否協助說明簡報</td></tr>
           <tr><td><b>Senior Manager</b></td><td><span class="chip s-ok">在場</span></td><td>專案能否順利延續、對客信用</td><td>原始使命是商保補位健保；AI 影片可做教育與招商（→ H-C1、A3）</td><td class="nowrap">高／高</td><td>狀態訪談，Day 1</td></tr>
           <tr><td><b>Engagement Partner</b></td><td><span class="chip s-open">未納入</span></td><td>合約、收入、客戶關係</td><td>未知，需訪談</td><td class="nowrap">高／中</td><td>與 SM 同場或分開 15 分鐘</td></tr>
           <tr><td><b>前任負責人（已離職）</b></td><td><span class="chip s-miss">缺席</span></td><td>—</td><td>唯一知道 Phase 2 之後經過的人</td><td class="nowrap">低／低</td><td>經 SM 確認可否禮貌聯繫一次</td></tr>
@@ -365,7 +465,7 @@ flowchart LR
           <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
 
           <div class="rh"><b>Phase 3</b><span>差異分析與藍圖</span></div>
-          <div class="cell s-miss"><span class="chip s-miss">找不到</span><small>僅有方向雛形</small></div>
+          <div class="cell s-part"><span class="chip s-part">部分產出</span><small>10/07：藍圖有 Farrah 部分簡報（草稿）</small></div>
           <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
           <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
           <div class="cell s-open"><span class="chip s-open">未知</span><small></small></div>
@@ -445,7 +545,7 @@ flowchart TB
             <ul class="leaves">
               <li class="leaf"><div class="lnode"><span class="k">B1</span><span class="t">Phase 1：停在 ③ 或之後</span><span class="chip s-rel">推定</span></div></li>
               <li class="leaf"><div class="lnode"><span class="k">B2</span><span class="t">Phase 2：停在 ①、② 或 ③</span><span class="chip s-open">未確認</span></div></li>
-              <li class="leaf"><div class="lnode"><span class="k">B3</span><span class="t">Phase 3：是否已到 ①</span><span class="chip s-miss">找不到</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">B3</span><span class="t">Phase 3：進行中，藍圖有部分草稿（10/07）</span><span class="chip s-part">部分確認</span></div></li>
               <li class="leaf"><div class="lnode"><span class="k">B4</span><span class="t">Final：是否已到 ①</span><span class="chip s-miss">找不到</span></div></li>
             </ul>
           </li>
@@ -545,6 +645,7 @@ flowchart LR
   S4 --> D4["→ Stop：歸檔"]
 </pre>
       </div>
+      <p class="note"><b>10/07 證據更新：</b>Sam 指派下週交付，支持 S1（進行中），並大幅削弱 S3（暫停）與 S4（已結案）。目前只有單一口述來源，等合約查詢（T2）確認後，才把 S1 標示為「已確認」。</p>
 
       <div class="cards">
         <article class="card">
