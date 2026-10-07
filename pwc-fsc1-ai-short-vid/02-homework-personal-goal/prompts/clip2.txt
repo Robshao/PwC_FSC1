@@ -1,23 +1,16 @@
-@Image 1 defines the main character: use only face, hairstyle, and wardrobe; do not use the image background or layout.
+@Image 1 is a headshot of the main character: use only the face, facial proportions, skin tone, and short textured black hair; do not use the white photo background or the head-only framing.
 
 [Generation Goal]
-Generate an energetic networking scene. The central subject is the character from @Image 1, and the primary event is meeting an experienced professional at a large fintech conference and connecting on their phones.
+Generate an energetic networking moment. The central subject is the person from @Image 1, and the primary event is connecting with an experienced professional at a large fintech conference.
 
-[Stage 1]
-Initial state: a bright, busy conference exhibition hall with large abstract blue-and-teal data visualization screens, booths, and blurred attendees in business attire. The character, wearing the teal lanyard, walks forward through the crowd with purpose.
-Primary event: the character notices a senior professional, a man in his late 50s with silver hair and a charcoal suit, standing near a high table, and walks over.
-End state: the two stand face to face at the high table.
-
-[Stage 2]
-Continue from the previous stage; keep both people, the table, and the hall unchanged.
-Primary event: they shake hands firmly and talk warmly; the character speaks with open, explaining hand gestures while the senior professional nods with interest. Then both take out their smartphones, and the senior professional holds his phone toward the character's screen as if scanning a code.
-End state: both lower their phones and smile at each other.
+[Picture and Event]
+A bright, busy fintech conference hall with large abstract blue-and-teal data screens and blurred attendees. The person from @Image 1, in a navy suit jacket, white open-collar shirt, and teal lanyard, shakes hands with a senior professional in his late 50s with silver hair and a charcoal suit. They both raise their smartphones and the senior professional scans the person's screen. End state: both lower their phones and smile at each other.
 
 [Camera and Light]
-Begin with a tracking shot following the character from behind at shoulder height. The camera circles smoothly to a medium two-shot from the side and settles there. Bright overhead event lighting with cool teal screen glow from the background, soft natural skin tones.
+Medium two-shot from the side; the camera arcs slowly around the pair and settles. Bright overhead event lighting with cool teal screen glow behind them.
 
 [Sound]
-Lively conference crowd murmur, distant presentation audio that is unintelligible, footsteps on carpet, a soft handshake. No clear dialogue, no background music.
+Lively conference crowd murmur and a soft handshake. No clear dialogue, no background music.
 
 [Continuity and Exclusions]
-Exactly two main characters in the foreground; keep the character's identity, navy blazer, and teal lanyard consistent. Phone screens show no readable text or app logos. Do not add subtitles, readable signage, brand names, or logos.
+Exactly two main people in the foreground; keep the face consistent with @Image 1. Phone screens show no readable text or app logos. Do not add subtitles, readable signage, brand names, or logos.

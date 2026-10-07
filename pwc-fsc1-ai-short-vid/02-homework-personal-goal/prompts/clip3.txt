@@ -1,23 +1,16 @@
-@Image 1 defines the main character: use only face, hairstyle, and wardrobe; do not use the image background or layout. The output contains exactly one person.
+@Image 1 is a headshot of the main character: use only the face, facial proportions, skin tone, and short textured black hair; do not use the white photo background or the head-only framing. The output contains exactly one person.
 
 [Generation Goal]
-Generate a warm closing shot. The central subject is the character from @Image 1, and the primary event is adding one more conference lanyard to a growing collection, showing the goal being achieved.
+Generate a warm closing shot showing the goal achieved. The central subject is the person from @Image 1, and the primary event is adding one more conference lanyard to a full collection.
 
-[Stage 1]
-Initial state: night in the same office by the tall window, city lights glowing outside. On the wall beside the window hang eight conference lanyards in different colors, with small instant photos of handshakes pinned between them; the photos show no recognizable faces.
-Primary event: the character, still in the navy blazer, takes the teal lanyard off their neck and hangs it on the last empty hook.
-End state: nine lanyards hang neatly in a row.
-
-[Stage 2]
-Continue from the previous stage; keep the wall, lanyards, and wardrobe unchanged.
-Primary event: the character steps back half a step, looks over the collection, and a quiet proud smile spreads; they glance out at the city skyline.
-End state: the character stands still in profile beside the wall of lanyards, city lights behind.
+[Picture and Event]
+Night in the same office by the tall window, city lights outside. On the wall hang nine conference lanyards in different colors with small instant photos of handshakes between them; the photos show no recognizable faces. The person, in a navy suit jacket and white open-collar shirt, hangs the teal lanyard on the last empty hook, steps back, and smiles proudly. End state: ten lanyards in a row, the person standing in profile beside them.
 
 [Camera and Light]
-Begin with a medium close-up on the character's hands and the hook. The camera dollies back slowly and settles on a medium wide shot revealing the whole wall and the window. Warm amber desk-lamp light from the right, cool blue city glow through the window on the left.
+Begins as a close shot on the hands at the hook; the camera dollies back slowly to a medium wide shot revealing the whole wall. Warm amber lamp light from the right, cool blue city glow from the left.
 
 [Sound]
-Quiet night office ambience, the soft clink of the lanyard clip on the hook, faint distant city hum. No dialogue, no background music.
+Quiet night ambience and the soft clink of the lanyard clip. No dialogue, no background music.
 
 [Continuity and Exclusions]
-Keep identity and wardrobe consistent with @Image 1. Do not add subtitles, readable text, logos, or other people.
+Keep the face consistent with @Image 1. Do not add subtitles, readable text, logos, or other people.
