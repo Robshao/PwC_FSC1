@@ -1,0 +1,23 @@
+[Reference roles]
+@Image 1 is the opening frame of Shot 1: an office at dusk, the young man sitting at a desk by the window holding a teal lanyard.
+@Image 2 is the opening frame of Shot 2: a fintech conference hall, the young man (left) shaking hands with a silver-haired senior professional (right).
+@Image 3 is the opening frame of Shot 3: an office at night, the young man at a wall of lanyards hanging the teal lanyard on a hook.
+The young man in all three images is the same person: keep the same face, short black hair, navy suit jacket, and white shirt. Use each image only as the setting for its own shot; do not mix settings between images.
+
+[Generation goal]
+Generate a 15-second, three-shot inspirational short in which one teal lanyard ties the story together: deciding to go → meeting a senior professional at a conference → collecting the result. Hard cuts between shots.
+
+[Shot 1 | 0–5 seconds]
+Begin from @Image 1. The man lifts his gaze to the city outside the window on the left, takes a slow breath, smiles with quiet determination, and slips the teal lanyard over his neck. End state: lanyard on, looking out the window. The camera slowly dollies in from a medium shot to a medium close-up. Keep the cool blue window light, the warm desk lamp, and the raindrops on the glass.
+
+[Shot 2 | 5–10 seconds]
+At 5 seconds, hard cut to the scene of @Image 2. The two men finish the handshake, both take out their smartphones, and the senior professional scans the code on the young man's screen. End state: both lower their phones and smile at each other. The camera slowly arcs about 15 degrees around the pair and settles. Keep the bright overhead lighting and teal screen glow; the background screens stay blurred and out of focus.
+
+[Shot 3 | 10–15 seconds]
+At 10 seconds, hard cut to the scene of @Image 3. The man hangs the teal lanyard securely on the hook, lets go, steps back half a step, and looks over the row with a quiet, proud smile. End state: he stands in profile beside the wall. The camera slowly dollies back to reveal the whole wall and the night city through the window. Keep the amber wall lamp at lower right and the cool blue city glow at left.
+
+[Sound]
+Shot 1: soft rain on the window and quiet office ambience. Shot 2: lively conference murmur and a soft handshake sound. Shot 3: quiet night ambience and a soft metallic click of the lanyard clip on the hook. No dialogue, no music.
+
+[Continuity and exclusions]
+The young man must be the same person in all three shots. Do not add or remove lanyards on the wall. Phone screens and background screens show no readable text or app logos. No subtitles, on-screen text, logos, watermarks, or extra people; no logo on the laptop lid.
