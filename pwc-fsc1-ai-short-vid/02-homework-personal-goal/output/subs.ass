@@ -1,0 +1,21 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Dialogue,WenQuanYi Zen Hei,60,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,1,0,1,3.5,1.5,2,80,80,70,1
+Style: Title,WenQuanYi Zen Hei,80,&H00FFFFFF,&H00FFFFFF,&H50402010,&H50402010,1,0,0,0,100,100,4,0,3,22,0,8,80,80,80,1
+Style: Goal,WenQuanYi Zen Hei,56,&H00FFFFFF,&H00FFFFFF,&H40403010,&H40403010,1,0,0,0,100,100,2,0,3,24,0,8,80,80,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 1,0:00:00.20,0:00:02.40,Title,,0,0,0,,{\fad(300,300)}我的 2026 年度目標
+Dialogue: 0,0:00:01.90,0:00:04.60,Dialogue,,0,0,0,,今年，我要走出辦公室。
+Dialogue: 0,0:00:04.80,0:00:08.30,Dialogue,,0,0,0,,您好，我是金融服務顧問，可以加您 LinkedIn 嗎？
+Dialogue: 0,0:00:08.30,0:00:10.00,Dialogue,,0,0,0,,Of course, let's connect!\N{\fs46}（當然，保持聯絡！）
+Dialogue: 0,0:00:11.90,0:00:14.90,Dialogue,,0,0,0,,一條掛繩，一段新連結。
+Dialogue: 1,0:00:12.60,0:00:15.07,Goal,,0,0,0,,{\fad(400,0)}{\c&H00D9C83A&}年底前的目標{\c&H00FFFFFF&}\N5–10 場金融科技論壇｜認識 10 位資深前輩
