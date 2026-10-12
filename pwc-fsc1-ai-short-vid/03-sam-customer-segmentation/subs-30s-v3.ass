@@ -1,0 +1,42 @@
+[Script Info]
+; 客戶分層影片 30 秒 v3（醫院確診版）：字幕、標籤、名牌、分層卡、結尾字卡
+; 時間為預估值，拿到 Seedance 成品後依實際對白微調
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Dialogue,WenQuanYi Zen Hei,58,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,1,0,1,3.5,1.5,2,120,120,60,1
+Style: Wrong,WenQuanYi Zen Hei,44,&H00FFFFFF,&H00FFFFFF,&H202B39C0,&H202B39C0,1,0,0,0,100,100,1,0,3,14,0,7,50,50,45,1
+Style: Right,WenQuanYi Zen Hei,44,&H00FFFFFF,&H00FFFFFF,&H20608A2E,&H20608A2E,1,0,0,0,100,100,1,0,3,14,0,7,50,50,45,1
+Style: NameCard,WenQuanYi Zen Hei,46,&H00FFFFFF,&H00FFFFFF,&H30402010,&H30402010,1,0,0,0,100,100,1,0,3,18,0,1,60,60,170,1
+Style: Bubble,WenQuanYi Zen Hei,44,&H00302010,&H00302010,&H10FFFFFF,&H10FFFFFF,1,0,0,0,100,100,1,0,3,16,0,9,80,120,200,1
+Style: TimeCard,WenQuanYi Zen Hei,42,&H00FFFFFF,&H00FFFFFF,&H60000000,&H60000000,0,0,0,0,100,100,2,0,3,12,0,8,60,60,50,1
+Style: Consequence,WenQuanYi Zen Hei,56,&H00FFFFFF,&H00FFFFFF,&H202020A0,&H202020A0,1,0,0,0,100,100,2,0,3,22,0,5,60,60,0,1
+Style: Rewind,WenQuanYi Zen Hei,76,&H00FFFFFF,&H00FFFFFF,&H00201008,&H00201008,1,0,0,0,100,100,4,0,3,600,0,5,0,0,0,1
+Style: Segment,WenQuanYi Zen Hei,44,&H00FFFFFF,&H00FFFFFF,&H30402010,&H30402010,0,0,0,0,100,100,1,0,3,22,0,7,60,60,0,1
+Style: End,WenQuanYi Zen Hei,62,&H00FFFFFF,&H00FFFFFF,&H30402010,&H30402010,1,0,0,0,100,100,2,0,3,26,0,8,80,80,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+; ===== A 段：衝擊（0–14 秒，鏡頭 1 剪短 1 秒）=====
+Dialogue: 2,0:00:00.30,0:00:03.60,NameCard,,0,0,0,,{\fad(200,200)}志明｜40 歲｜科技業主管\N房貸 800 萬｜孩子 8 歲
+Dialogue: 0,0:00:01.80,0:00:03.70,Dialogue,,0,0,0,,怎麼會是我⋯
+Dialogue: 0,0:00:04.90,0:00:08.40,Dialogue,,0,0,0,,房貸還有八百萬，小宇才八歲⋯
+Dialogue: 0,0:00:09.30,0:00:11.40,Dialogue,,0,0,0,,報告出來了，是癌症。
+Dialogue: 0,0:00:11.50,0:00:13.70,Dialogue,,0,0,0,,那我們的保單⋯夠嗎？
+; ===== B 段：兩種服務（14–30 秒）=====
+Dialogue: 2,0:00:14.00,0:00:15.50,TimeCard,,0,0,0,,一週後，業務員找上門
+Dialogue: 1,0:00:14.00,0:00:19.00,Wrong,,0,0,0,,✕ 錯誤示範：沒看懂客戶就推銷
+Dialogue: 0,0:00:14.30,0:00:16.60,Dialogue,,0,0,0,,現在更要趕快加買這張高保費的！
+Dialogue: 0,0:00:16.70,0:00:18.40,Dialogue,,0,0,0,,我這樣⋯還保得了嗎？
+Dialogue: 3,0:00:17.80,0:00:19.00,Consequence,,0,0,0,,{\fad(150,0)}沒看懂客戶 → 推錯產品 → 失去信任
+Dialogue: 4,0:00:19.30,0:00:20.00,Rewind,,0,0,0,,{\fad(120,120)}同一位志明，換一種服務方式⋯
+Dialogue: 1,0:00:20.00,0:00:27.00,Right,,0,0,0,,✓ 正確示範：先看懂客戶是誰
+Dialogue: 0,0:00:20.40,0:00:24.40,Dialogue,,0,0,0,,先算清楚現有保單能賠多少，再補家裡的缺口。
+Dialogue: 2,0:00:21.00,0:00:24.80,Segment,,0,0,0,,{\pos(1250,590)\fad(250,200)}{\c&H00D9C83A&\b1}客戶分層卡{\c&H00FFFFFF&\b0}\N客群｜關注家庭・40–49 歲\N現況｜確診重病・房貸 800 萬\N優先｜先理賠，再補家庭缺口 ⚠
+Dialogue: 0,0:00:26.00,0:00:27.80,Dialogue,,0,0,0,,還好，有人幫我們看懂。
+Dialogue: 3,0:00:27.20,0:00:30.00,End,,0,0,0,,{\fad(400,0)}同一位客戶，兩種服務\N{\c&H00D9C83A&}你的客戶，被看懂了嗎？{\c&H00FFFFFF&}\N{\fs44}客戶分層｜策略建立・系統導入
