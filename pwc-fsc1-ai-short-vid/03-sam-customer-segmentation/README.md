@@ -20,3 +20,5 @@
 | `prompts/30s/1-鏡頭1.txt` ～ `6-鏡頭6.txt` | Gemini：六個鏡頭的開場圖片 |
 | `prompts/30s/A段-問題-0到15秒.txt` | Seedance：上傳鏡頭 1–3 圖片，15 秒 |
 | `prompts/30s/B段-解法-15到30秒.txt` | Seedance：上傳鏡頭 4–6 圖片，15 秒 |
+| `storyboard-30s-review.md` | 行銷技能審查（Hook、連貫性、分層可見度） |
+| `subs-30s-v2.ass` | 30 秒 v2 字幕與字卡（名牌、訊息泡泡、標籤、後果字卡、倒帶字卡、分層卡、結尾字卡） |
