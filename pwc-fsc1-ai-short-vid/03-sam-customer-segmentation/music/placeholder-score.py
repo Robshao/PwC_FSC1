@@ -1,5 +1,5 @@
 import numpy as np, wave, sys
-SR=48000; T=47.4
+SR=48000; T=49.2
 out=np.zeros(int(SR*(T+4)))
 def hz(n): return 440*2**((n-69)/12)
 def piano(t0,note,vel=0.25,dur=3.0):
@@ -34,14 +34,15 @@ for tb in np.arange(25.5,27.4,0.55):
     piano(tb,33,0.35,0.5)
 # C: warmth, C major (29.6 - 44.8)
 prog2=[[48,52,55,60,64,67],[43,50,55,59,62,67],[45,52,57,60,64,69],[41,48,53,57,60,65]]
-t=29.0; i=0
-while t<43.5:
-    ch=prog2[i%4]; pad(t,min(t+3.3,45.1),ch[:3],0.05+0.004*i)
+pad(29.5,31.2,[60,64,67],0.03,att=1.2,rel=0.6)
+t=30.8; i=0
+while t<45.3:
+    ch=prog2[i%4]; pad(t,min(t+3.3,46.9),ch[:3],0.05+0.004*i)
     for j,nt in enumerate([ch[3],ch[4],ch[5],ch[4],ch[3],ch[4]]):
-        piano(t+j*0.5,nt+(12 if t>40.4 and j%2==0 else 0),0.11+0.01*i,2.5)
+        piano(t+j*0.5,nt+(12 if t>42.2 and j%2==0 else 0),0.11+0.01*i,2.5)
     t+=3.0; i+=1
-pad(44.8,47.4,[48,52,55,60,64],0.09,att=0.5,rel=2.2)
-piano(44.9,60,0.2,2.5); piano(44.9,72,0.22,2.5); piano(45.0,76,0.18,2.4); piano(45.1,79,0.16,2.3); piano(45.9,84,0.1,1.5)
+pad(46.6,49.2,[48,52,55,60,64],0.09,att=0.5,rel=2.2)
+piano(46.7,60,0.2,2.5); piano(46.7,72,0.22,2.5); piano(46.8,76,0.18,2.4); piano(46.9,79,0.16,2.3); piano(47.7,84,0.1,1.5)
 out=out[:int(SR*T)]
 out=out/np.max(np.abs(out))*0.7
 st=np.stack([out,np.roll(out,int(0.012*SR))*0.92],1)
