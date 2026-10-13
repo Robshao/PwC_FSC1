@@ -34,6 +34,39 @@
 | 跨市場 | PwC 全球網路的各國專案知識庫（Connected Source）可提供他國案例與基準 |
 | 溝通 | AI 短影音製作流程（7 步驟、首支約 2.5 天、第二支起 1–1.5 天）可快速為不同客群產出情境影片 |
 
+## 四、新增主題：AI × 保險（2026-10-13 補充）
+
+### 4-1 「保 AI」：AI 本身成為新的可保風險
+| 事件 | 重點 | 來源 |
+|---|---|---|
+| 富邦產險 × 慕尼黑再保（2026 年 8 月） | 推出企業 AI 專屬保險；報導指出這是慕尼黑再保首度在台灣與保險公司合作此類產品。保障重心延伸到**模型本身的表現風險**：AI 未達預期功能或效能指標造成的財務損失、額外費用、營運中斷及第三人責任 | 工商時報、經濟日報 |
+| Munich Re aiSure | AI 表現保險：投保方與 AI 開發商先約定可衡量的指標（如準確率、錯誤率門檻），核保審查模型資料、訓練與紀錄後設定觸發條件；保障「非惡意」的表現失誤（與資安險區隔）；開發商可用 aiSure 支撐的效能保證來賠償客戶；理賠採類參數式結構 | Munich Re 官網、cover.co.za、Moonstone、The Insurer |
+| 市場意涵 | AI 模型失準、演算法偏誤、決策錯誤與治理不足成為新型風險，可能是產險業新的保費來源 | 經濟日報 |
+
+> 注意：台灣報導未明確寫出「aiSure」品牌名稱，影片文案建議使用公開報導的說法（「與國際再保合作推出 AI 專屬保險」），品牌名稱以雙方官方公告為準。
+
+### 4-2 「用 AI」：保險業自身的 AI 轉型
+- 57% 保險高層把生成式與代理型 AI 列為 2026 首要科技投資；負責任 AI 治理成為迫切議題（PwC《Reinventing insurance》）
+- NAIC 2026 把 AI 模型治理列為重點；ITC Asia 2026 主軸「別再只做試點」
+
+### 4-3 團隊展望（待團隊確認後才可放進影片）
+| 方向 | 可能的服務內容 |
+|---|---|
+| AI 風險商品策略 | 企業 AI 使用者分層（產業 × AI 應用場景 × 風險等級）、市場規模與優先客群、通路設計 |
+| 核保與風險評估框架 | 與再保合作設計效能指標、觸發條件與資料需求 |
+| AI 治理與監理接軌 | 保險公司自身 AI 模型的治理、揭露與監理對應 |
+| 保險業 AI 規模化 | 從試點到量產：分層、分析工具、生態系 |
+
+### 新增來源
+- 工商時報：富邦產險攜手慕尼黑再保推出 AI 專屬保險 — https://www.ctee.com.tw/news/20260803700934-430305
+- 工商時報：富邦產險打造企業 AI 專屬保險 — https://www.ctee.com.tw/news/20260806700340-439901
+- 經濟日報：AI 保險時代來臨 — https://money.udn.com/money/story/5613/9672456
+- 經濟日報：富邦產險攜手慕尼黑再保 — https://money.udn.com/money/story/5613/9667338
+- Munich Re：Insure AI — https://www.munichre.com/en/solutions/for-industry-clients/insure-ai.html
+- cover.co.za：iTOO × Munich Re AI performance insurance — https://www.cover.co.za/news/itoo-special-risks-launches-africas-first-ai-performance-insurance-in-partnership-with-munich-re
+- Moonstone：When AI becomes the risk — https://www.moonstone.co.za/when-ai-becomes-the-risk-who-will-insure-it/
+- The Insurer：Mosaic × aiSure — https://www.theinsurer.com/ti/news/mosaic-partners-with-munich-res-aisure-to-launch-ai-performance-cover-2026-02-27/
+
 ## 來源連結
 
 - PwC US：Reinventing insurance — https://www.pwc.com/us/en/industries/financial-services/library/reinventing-insurance.html
