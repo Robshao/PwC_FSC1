@@ -1,5 +1,5 @@
 import numpy as np, wave, sys
-SR=48000; T=44.8
+SR=48000; T=45.0
 out=np.zeros(int(SR*(T+4)))
 def hz(n): return 440*2**((n-69)/12)
 def piano(t0,note,vel=0.25,dur=3.0):
@@ -16,32 +16,32 @@ def pad(t0,t1,notes,vel=0.05,att=1.2,rel=1.2):
     s=int(t0*SR); out[s:s+n]+=vel*w*env/len(notes)
 # A: sorrow, A minor  (1.5 - 14.8)
 prog=[(57,[45,52,57,60,64]),(53,[41,48,53,57,60]),(48,[36,48,52,55,60]),(55,[43,50,55,59,62])]
-t=1.6; i=0
-while t<14.0:
-    root,ch=prog[i%4]; pad(t,min(t+3.4,14.8),ch[:3],0.045)
+t=1.3; i=0
+while t<13.2:
+    root,ch=prog[i%4]; pad(t,min(t+3.4,14.0),ch[:3],0.045)
     for j,nt in enumerate([ch[2],ch[3],ch[4],ch[3]]):
-        if t+j*0.8<14.2: piano(t+j*0.8,nt,0.16 if j else 0.2)
+        if t+j*0.8<13.4: piano(t+j*0.8,nt,0.16 if j else 0.2)
     t+=3.2; i+=1
 # B: tension (14.8 - 27.9): drone + sparse dissonant bell, building
-n=int((27.9-14.8)*SR); tt=np.arange(n)/SR
+n=int((27.1-14.0)*SR); tt=np.arange(n)/SR
 drone=(np.sin(2*np.pi*hz(33)*tt)+0.6*np.sin(2*np.pi*hz(40)*tt)+0.25*np.sin(2*np.pi*hz(46)*tt))
 drone*=(0.6+0.4*np.sin(2*np.pi*0.5*tt))*np.minimum(tt/1.5,1)*(0.5+0.5*tt/tt[-1])*np.minimum((tt[-1]-tt)/0.05,1)
-out[int(14.8*SR):int(14.8*SR)+n]+=0.06*drone
-for k,tb in enumerate(np.arange(15.4,27.6,1.6)):
+out[int(14.0*SR):int(14.0*SR)+n]+=0.06*drone
+for k,tb in enumerate(np.arange(14.6,26.8,1.6)):
     piano(tb,[76,77,76,82][k%4],0.07+0.006*k,2.0)
 # heartbeat-like low pulse under the consequence card (25.9-27.9)
-for tb in np.arange(25.9,27.8,0.55):
+for tb in np.arange(25.1,27.0,0.55):
     piano(tb,33,0.35,0.5)
 # C: warmth, C major (29.6 - 44.8)
 prog2=[[48,52,55,60,64,67],[43,50,55,59,62,67],[45,52,57,60,64,69],[41,48,53,57,60,65]]
-t=29.7; i=0
-while t<42.0:
-    ch=prog2[i%4]; pad(t,min(t+3.3,44.8),ch[:3],0.05+0.004*i)
+t=28.9; i=0
+while t<41.0:
+    ch=prog2[i%4]; pad(t,min(t+3.3,42.6),ch[:3],0.05+0.004*i)
     for j,nt in enumerate([ch[3],ch[4],ch[5],ch[4],ch[3],ch[4]]):
-        piano(t+j*0.5,nt+(12 if t>39 and j%2==0 else 0),0.11+0.01*i,2.5)
+        piano(t+j*0.5,nt+(12 if t>38 and j%2==0 else 0),0.11+0.01*i,2.5)
     t+=3.0; i+=1
-pad(41.7,44.8,[48,52,55,60],0.08,att=0.8,rel=2.5)
-piano(41.7,72,0.22,3.0); piano(41.7,76,0.18,3.0); piano(41.7,79,0.16,3.0)
+pad(42.3,45.0,[48,52,55,60,64],0.09,att=0.5,rel=2.2)
+piano(42.4,60,0.2,2.6); piano(42.4,72,0.22,2.6); piano(42.5,76,0.18,2.5); piano(42.6,79,0.16,2.4); piano(43.4,84,0.1,1.6)
 out=out[:int(SR*T)]
 out=out/np.max(np.abs(out))*0.7
 st=np.stack([out,np.roll(out,int(0.012*SR))*0.92],1)
