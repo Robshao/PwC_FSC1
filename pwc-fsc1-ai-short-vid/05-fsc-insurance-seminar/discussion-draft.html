@@ -1,7 +1,4 @@
-<title>AI 保險研討會短片企劃</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
-<style>
+<title>AI 保險研討會短片企劃</title><link data-keep rel="preconnect" href="https://fonts.googleapis.com"><link data-keep rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap"><style id="page-style">
 /* Layout: discussion memo — one reading column; decisions to make sit at the top, script in the middle, production at the end */
 :root{
   --bg:#f5f4f1; --paper:#ffffff; --ink:#1c1b1a; --muted:#5e5a55; --rule:#e2ded8;
@@ -49,83 +46,134 @@ ol.decide li{margin:10px 0}
 ol.decide b{display:block}
 .note{font-size:13px;color:var(--muted)}
 footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--rule);font-size:12px;color:var(--muted)}
-</style>
 
-<div class="sheet">
-<div class="eyebrow">討論稿 v1｜與 Sam 討論用</div>
-<h1>如果出錯的是 AI，誰來賠？</h1>
-<p class="sub">FSC1 保險組研討會 AI 短片企劃（約 80 秒）</p>
-<div class="meta"><span>用途：外部研討會，由 Sam 在台上播放</span><span>觀眾：保險公司主管</span><span>形式：劇情型＋觀點型，對話情境、無旁白</span><span>日期：2026-10-13</span></div>
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;max-width:900px;margin:0 auto 10px}
+.bar button{font:inherit;font-size:14px;padding:6px 14px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:4px}
+.bar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar .status{font-size:13px;color:var(--muted);margin-right:auto}
+body.editing [data-e]{outline:1px dashed var(--accent);outline-offset:2px;border-radius:2px;cursor:text}
+body.editing [data-e]:focus{outline:2px solid var(--accent);background:var(--accent-soft)}
+.endcard [data-e]:focus{background:transparent}
+</style><div class="bar" id="bar"><span class="status" id="status"></span><button id="edit" type="button" hidden>編輯文字</button><button id="cancel" type="button" hidden>取消</button><button id="save" class="primary" type="button" hidden>儲存</button></div><main id="app"></main><template id="tpl"><div class="sheet">
+<div class="eyebrow" data-e>討論稿 v1｜與 Sam 討論用</div>
+<h1 data-e>如果出錯的是 AI，誰來賠？</h1>
+<p data-e class="sub">FSC1 保險組研討會 AI 短片企劃（約 80 秒）</p>
+<div class="meta"><span data-e>用途：外部研討會，由 Sam 在台上播放</span><span data-e>觀眾：保險公司主管</span><span data-e>形式：劇情型＋觀點型，對話情境、無旁白</span><span data-e>日期：2026-10-13</span></div>
 
-<p class="lead">AI 正在創造一種新的可保風險。保險業要「保 AI」，也要「用 AI」；FSC1 保險組以現有的 AI 治理與數據應用服務為基礎，陪保險業設計 AI 時代的商品與治理。</p>
+<p data-e class="lead">AI 正在創造一種新的可保風險。保險業要「保 AI」，也要「用 AI」；FSC1 保險組以現有的 AI 治理與數據應用服務為基礎，陪保險業設計 AI 時代的商品與治理。</p>
 
-<h2><span class="n">01</span>請 Sam 先決定的 5 件事</h2>
+<h2 data-e><span class="n">01</span>請 Sam 先決定的 5 件事</h2>
 <ol class="decide">
-<li><b>主題方向可以嗎？</b>以「AI 表現保險」這個新趨勢當切入點，帶出 FSC1 保險組的 AI 治理與數據應用服務。</li>
-<li><b>結尾 CTA：「下一步：從一次 AI 模型風險評估開始」可以嗎？</b>它對應現有服務「AI 治理：模型風險評估與監控」。需要確認團隊能接住會後的詢問。</li>
-<li><b>外部場合能不能列出案例類型？</b>車險理賠案件分級模型、客戶經營模型與 NPS、IFRS 17 系統導入（不放客戶名稱）。不行的話，只列四條服務線。</li>
-<li><b>「團隊展望」的兩項方向，Sam 同意對外說嗎？</b>AI 風險商品策略與企業客群分層、與再保合作的 AI 表現核保框架。</li>
-<li><b>品牌露出與審查</b>：結尾卡是否放 PwC 標誌、是否需要送 Risk &amp; Quality 審查、研討會的播放時間與日期。</li>
+<li data-e><b>主題方向可以嗎？</b>以「AI 表現保險」這個新趨勢當切入點，帶出 FSC1 保險組的 AI 治理與數據應用服務。</li>
+<li data-e><b>結尾 CTA：「下一步：從一次 AI 模型風險評估開始」可以嗎？</b>它對應現有服務「AI 治理：模型風險評估與監控」。需要確認團隊能接住會後的詢問。</li>
+<li data-e><b>外部場合能不能列出案例類型？</b>車險理賠案件分級模型、客戶經營模型與 NPS、IFRS 17 系統導入（不放客戶名稱）。不行的話，只列四條服務線。</li>
+<li data-e><b>「團隊展望」的兩項方向，Sam 同意對外說嗎？</b>AI 風險商品策略與企業客群分層、與再保合作的 AI 表現核保框架。</li>
+<li data-e><b>品牌露出與審查</b>：結尾卡是否放 PwC 標誌、是否需要送 Risk &amp; Quality 審查、研討會的播放時間與日期。</li>
 </ol>
 
-<h2><span class="n">02</span>為什麼選這個題目</h2>
+<h2 data-e><span class="n">02</span>為什麼選這個題目</h2>
 <div class="tbl"><table>
-<tr><th style="width:26%">趨勢</th><th>重點（依公開報導整理）</th></tr>
-<tr><td>AI 成為新的可保風險</td><td>2026 年台灣市場已出現企業 AI 專屬保險，保障 AI 未達約定效能指標造成的財務損失、額外費用、營運中斷與第三人責任。國際上的 AI 表現保險做法是：先約定可衡量的指標，例如準確率，未達標就觸發理賠。</td></tr>
-<tr><td>保險業自身的 AI 轉型</td><td>57% 保險高層把生成式與代理型 AI 列為 2026 首要科技投資，負責任 AI 治理成為迫切議題（PwC《Reinventing insurance》）；美國 NAIC 把 AI 模型治理列為 2026 重點；ITC Asia 2026 的主軸是「別再只做試點」。</td></tr>
-<tr><td>和我們的服務直接相關</td><td>AI 商品要核保，第一步是評估模型風險；保險公司自己的 AI 要上線，也需要治理與數據基礎。這兩點正好對應 FSC1 保險組的「AI 治理」與「數據應用」。</td></tr>
+<tr><th data-e style="width:26%">趨勢</th><th data-e>重點（依公開報導整理）</th></tr>
+<tr><td data-e>AI 成為新的可保風險</td><td data-e>2026 年台灣市場已出現企業 AI 專屬保險，保障 AI 未達約定效能指標造成的財務損失、額外費用、營運中斷與第三人責任。國際上的 AI 表現保險做法是：先約定可衡量的指標，例如準確率，未達標就觸發理賠。</td></tr>
+<tr><td data-e>保險業自身的 AI 轉型</td><td data-e>57% 保險高層把生成式與代理型 AI 列為 2026 首要科技投資，負責任 AI 治理成為迫切議題（PwC《Reinventing insurance》）；美國 NAIC 把 AI 模型治理列為 2026 重點；ITC Asia 2026 的主軸是「別再只做試點」。</td></tr>
+<tr><td data-e>和我們的服務直接相關</td><td data-e>AI 商品要核保，第一步是評估模型風險；保險公司自己的 AI 要上線，也需要治理與數據基礎。這兩點正好對應 FSC1 保險組的「AI 治理」與「數據應用」。</td></tr>
 </table></div>
-<p class="note">片中不點名任何公司，只說「市場上已出現 AI 專屬保險」。</p>
+<p data-e class="note">片中不點名任何公司，只說「市場上已出現 AI 專屬保險」。</p>
 
-<h2><span class="n">03</span>故事線</h2>
-<p><b>鉤子</b>：工廠的 AI 品檢誤判整批貨 → <b>衝突</b>：保單不一定賠 → <b>轉折</b>：AI 表現保險出現 → <b>新考題</b>：保險公司不知道先賣給誰、怎麼核保 → <b>我們的角色</b>：先評估 AI 模型風險、再分層 → <b>可複製</b>：同一套方法從個人保戶延伸到企業 → <b>收尾</b>：有新方案可以談 → <b>CTA</b>。</p>
+<h2 data-e><span class="n">03</span>故事線</h2>
+<p data-e><b>鉤子</b>：工廠的 AI 品檢誤判整批貨 → <b>衝突</b>：保單不一定賠 → <b>轉折</b>：AI 表現保險出現 → <b>新考題</b>：保險公司不知道先賣給誰、怎麼核保 → <b>我們的角色</b>：先評估 AI 模型風險、再分層 → <b>可複製</b>：同一套方法從個人保戶延伸到企業 → <b>收尾</b>：有新方案可以談 → <b>CTA</b>。</p>
 
-<h2><span class="n">04</span>分鏡腳本</h2>
+<h2 data-e><span class="n">04</span>分鏡腳本</h2>
 <div class="tbl"><table>
-<tr><th>#</th><th>時間</th><th style="width:28%">畫面</th><th style="width:34%">台詞</th><th>字卡／音效</th></tr>
-<tr><td>1</td><td class="t">0–6 秒</td><td>電子廠 AOI 品檢線，監視螢幕牆整片轉紅，輸送帶停下</td><td>工程師阿凱：「這批⋯全部被判不良？」</td><td>字卡<span class="q">「如果出錯的是 AI，誰來賠？」</span>；警示嗶聲</td></tr>
-<tr><td>2</td><td class="t">6–13 秒</td><td>工廠辦公室窗邊，財務協理拿著手機、按著額頭</td><td>陳協理：「AI 判錯一整批貨，我們的保單賠嗎？」</td><td>—</td></tr>
-<tr><td>3</td><td class="t">13–20 秒</td><td>經紀公司辦公桌，翻著保單條款</td><td>經紀人佳穎：「傳統的產險跟資安險⋯不一定涵蓋。」</td><td>章節字卡「AI 正在創造一種新的風險」</td></tr>
-<tr><td>4</td><td class="t">22–32 秒</td><td>產險公司會議室，副總指著大螢幕</td><td>黃副總：「AI 沒達到約定的表現，損失就由保險來承擔。」</td><td>螢幕「約定準確率 98%｜實際 95.2% → 觸發理賠」；字卡「市場上已出現 AI 專屬保險」</td></tr>
-<tr><td>5</td><td class="t">32–42 秒</td><td>核保主管放下筆提問，副總沉思</td><td>怡君：「商品有了，但要先賣給誰？又要怎麼核保？」</td><td>問題卡：哪些企業先買？／怎麼定價核保？／自己的 AI 怎麼治理？</td></tr>
-<tr><td>6</td><td class="t">42–54 秒</td><td>FSC1 顧問在白板畫分層矩陣，保險公司團隊點頭</td><td>顧問欣怡：「先評估 AI 模型的風險，再把企業的使用情境分層，商品跟核保才有依據。」</td><td>標籤「FSC1 保險組」；白板「AI 模型風險 × 產業 × 應用情境」</td></tr>
-<tr><td>7</td><td class="t">54–66 秒</td><td>左：個人保戶的分層畫面（沿用前一支樣片）；右：工廠品檢線</td><td>—</td><td>字卡「同一套方法：從個人保戶的客戶經營，延伸到企業的 AI 風險」；接服務卡（見 05）</td></tr>
-<tr><td>8</td><td class="t">66–74 秒</td><td>傍晚，品檢螢幕恢復綠色，協理接起電話微笑</td><td>佳穎（電話）：「陳協理，有新的方案可以談了。」<br>陳協理：「好，我們從這裡開始。」</td><td>—</td></tr>
-<tr><td>結尾</td><td class="t">74–80 秒</td><td>深色結尾卡</td><td>—</td><td>見 06</td></tr>
+<tr><th data-e>#</th><th data-e>時間</th><th data-e style="width:28%">畫面</th><th data-e style="width:34%">台詞</th><th data-e>字卡／音效</th></tr>
+<tr><td data-e>1</td><td data-e class="t">0–6 秒</td><td data-e>電子廠 AOI 品檢線，監視螢幕牆整片轉紅，輸送帶停下</td><td data-e>工程師阿凱：「這批⋯全部被判不良？」</td><td data-e>字卡<span class="q">「如果出錯的是 AI，誰來賠？」</span>；警示嗶聲</td></tr>
+<tr><td data-e>2</td><td data-e class="t">6–13 秒</td><td data-e>工廠辦公室窗邊，財務協理拿著手機、按著額頭</td><td data-e>陳協理：「AI 判錯一整批貨，我們的保單賠嗎？」</td><td data-e>—</td></tr>
+<tr><td data-e>3</td><td data-e class="t">13–20 秒</td><td data-e>經紀公司辦公桌，翻著保單條款</td><td data-e>經紀人佳穎：「傳統的產險跟資安險⋯不一定涵蓋。」</td><td data-e>章節字卡「AI 正在創造一種新的風險」</td></tr>
+<tr><td data-e>4</td><td data-e class="t">22–32 秒</td><td data-e>產險公司會議室，副總指著大螢幕</td><td data-e>黃副總：「AI 沒達到約定的表現，損失就由保險來承擔。」</td><td data-e>螢幕「約定準確率 98%｜實際 95.2% → 觸發理賠」；字卡「市場上已出現 AI 專屬保險」</td></tr>
+<tr><td data-e>5</td><td data-e class="t">32–42 秒</td><td data-e>核保主管放下筆提問，副總沉思</td><td data-e>怡君：「商品有了，但要先賣給誰？又要怎麼核保？」</td><td data-e>問題卡：哪些企業先買？／怎麼定價核保？／自己的 AI 怎麼治理？</td></tr>
+<tr><td data-e>6</td><td data-e class="t">42–54 秒</td><td data-e>FSC1 顧問在白板畫分層矩陣，保險公司團隊點頭</td><td data-e>顧問欣怡：「先評估 AI 模型的風險，再把企業的使用情境分層，商品跟核保才有依據。」</td><td data-e>標籤「FSC1 保險組」；白板「AI 模型風險 × 產業 × 應用情境」</td></tr>
+<tr><td data-e>7</td><td data-e class="t">54–66 秒</td><td data-e>左：個人保戶的分層畫面（沿用前一支樣片）；右：工廠品檢線</td><td data-e>—</td><td data-e>字卡「同一套方法：從個人保戶的客戶經營，延伸到企業的 AI 風險」；接服務卡（見 05）</td></tr>
+<tr><td data-e>8</td><td data-e class="t">66–74 秒</td><td data-e>傍晚，品檢螢幕恢復綠色，協理接起電話微笑</td><td data-e>佳穎（電話）：「陳協理，有新的方案可以談了。」<br>陳協理：「好，我們從這裡開始。」</td><td data-e>—</td></tr>
+<tr><td data-e>結尾</td><td data-e class="t">74–80 秒</td><td data-e>深色結尾卡</td><td data-e>—</td><td data-e>見 06</td></tr>
 </table></div>
-<p class="note">所有角色皆為 AI 原創，不生成任何真實人物；畫面中的文字、數字與儀表板一律後製，避免 AI 亂碼。</p>
+<p data-e class="note">所有角色皆為 AI 原創，不生成任何真實人物；畫面中的文字、數字與儀表板一律後製，避免 AI 亂碼。</p>
 
-<h2><span class="n">05</span>服務卡：現有服務與團隊展望分開呈現</h2>
-<p>依《FSC1 保險組主要服務內容》。左欄是已經在做的服務，右欄是規劃方向，畫面上用不同顏色區分，避免把展望說成現有服務。</p>
+<h2 data-e><span class="n">05</span>服務卡：現有服務與團隊展望分開呈現</h2>
+<p data-e>依《FSC1 保險組主要服務內容》。左欄是已經在做的服務，右欄是規劃方向，畫面上用不同顏色區分，避免把展望說成現有服務。</p>
 <div class="cols">
-<div class="col"><h3><span class="tag now">我們已經在做</span></h3><ul>
-<li><b>AI 治理</b>：AI 倫理規範建立、模型風險評估與監控、合規與政策建議</li>
-<li><b>數據應用</b>：數據治理、分析與報告、BI；案例類型：車險理賠案件分級模型、客戶經營模型與 NPS、IFRS 17 系統導入</li>
-<li><b>核心系統顧問</b>：系統架構規劃、流程數位化、新核心系統導入</li>
-<li><b>專業人力委外</b>：IFRS 17 數據平台與核心系統專案人力</li></ul></div>
-<div class="col"><h3><span class="tag next">團隊展望</span></h3><ul>
-<li>AI 風險商品策略與企業客群分層</li>
-<li>與再保合作的 AI 表現核保與評估框架</li></ul>
-<p class="note" style="margin-top:10px">這兩項都是從現有的 AI 治理（模型風險評估）和數據應用（客戶經營模型）延伸出來的。</p></div>
+<div class="col"><h3 data-e><span class="tag now">我們已經在做</span></h3><ul>
+<li data-e><b>AI 治理</b>：AI 倫理規範建立、模型風險評估與監控、合規與政策建議</li>
+<li data-e><b>數據應用</b>：數據治理、分析與報告、BI；案例類型：車險理賠案件分級模型、客戶經營模型與 NPS、IFRS 17 系統導入</li>
+<li data-e><b>核心系統顧問</b>：系統架構規劃、流程數位化、新核心系統導入</li>
+<li data-e><b>專業人力委外</b>：IFRS 17 數據平台與核心系統專案人力</li></ul></div>
+<div class="col"><h3 data-e><span class="tag next">團隊展望</span></h3><ul>
+<li data-e>AI 風險商品策略與企業客群分層</li>
+<li data-e>與再保合作的 AI 表現核保與評估框架</li></ul>
+<p data-e class="note" style="margin-top:10px">這兩項都是從現有的 AI 治理（模型風險評估）和數據應用（客戶經營模型）延伸出來的。</p></div>
 </div>
 
-<h2><span class="n">06</span>結尾卡與 CTA</h2>
+<h2 data-e><span class="n">06</span>結尾卡與 CTA</h2>
 <div class="endcard">
-<div class="big">AI 時代的保險，我們一起設計。</div>
-<div class="cta">下一步：從一次 AI 模型風險評估開始</div>
-<div>PwC FSC1 保險組｜AI 治理・數據應用・核心系統顧問</div>
-<div class="small" style="margin-top:10px">情境為虛構示意；標示「團隊展望」者為規劃方向</div>
+<div class="big" data-e>AI 時代的保險，我們一起設計。</div>
+<div class="cta" data-e>下一步：從一次 AI 模型風險評估開始</div>
+<div data-e>PwC FSC1 保險組｜AI 治理・數據應用・核心系統顧問</div>
+<div class="small" data-e style="margin-top:10px">情境為虛構示意；標示「團隊展望」者為規劃方向</div>
 </div>
-<p><b>為什麼選這個 CTA</b>：一、它對應現有服務，Sam 講完，團隊接得住會後的詢問；二、它和片中的問題是同一條邏輯，AI 表現保險要核保，第一步就是評估模型風險；三、它比「歡迎與我們聊聊」具體，主管知道會後可以找我們做什麼。</p>
+<p data-e><b>為什麼選這個 CTA</b>：一、它對應現有服務，Sam 講完，團隊接得住會後的詢問；二、它和片中的問題是同一條邏輯，AI 表現保險要核保，第一步就是評估模型風險；三、它比「歡迎與我們聊聊」具體，主管知道會後可以找我們做什麼。</p>
 
-<h2><span class="n">07</span>製作方式與時程</h2>
+<h2 data-e><span class="n">07</span>製作方式與時程</h2>
 <div class="tbl"><table>
-<tr><th style="width:24%">項目</th><th>內容</th></tr>
-<tr><td>工具</td><td>Gemini 產生角色與場景參考圖 → Seedance 生成有聲影片片段 → 後製加上字幕、字卡、螢幕替換、配樂</td></tr>
-<tr><td>素材</td><td>2 張角色設定圖、7 張關鍵畫面、7 段有聲影片；鏡頭 7 沿用前一支客戶分層樣片的畫面</td></tr>
-<tr><td>時程</td><td>Sam 確認本稿後約 1.5–2 個工作天產出初版，再依回饋修改一輪</td></tr>
-<tr><td>交付</td><td>1080p MP4（附字幕，會議室沒有聲音也看得懂），可直接嵌入簡報</td></tr>
+<tr><th data-e style="width:24%">項目</th><th data-e>內容</th></tr>
+<tr><td data-e>工具</td><td data-e>Gemini 產生角色與場景參考圖 → Seedance 生成有聲影片片段 → 後製加上字幕、字卡、螢幕替換、配樂</td></tr>
+<tr><td data-e>素材</td><td data-e>2 張角色設定圖、7 張關鍵畫面、7 段有聲影片；鏡頭 7 沿用前一支客戶分層樣片的畫面</td></tr>
+<tr><td data-e>時程</td><td data-e>Sam 確認本稿後約 1.5–2 個工作天產出初版，再依回饋修改一輪</td></tr>
+<tr><td data-e>交付</td><td data-e>1080p MP4（附字幕，會議室沒有聲音也看得懂），可直接嵌入簡報</td></tr>
 </table></div>
 
-<footer>參考：PwC《Reinventing insurance》、NAIC 2026 strategic priorities、Celent @ ITC Asia 2026，以及 2026 年 8 月國內財經媒體對企業 AI 專屬保險的報導。完整來源見專案資料夾 research-brief.md。</footer>
+<footer data-e>參考：PwC《Reinventing insurance》、NAIC 2026 strategic priorities、Celent @ ITC Asia 2026，以及 2026 年 8 月國內財經媒體對企業 AI 專屬保險的報導。完整來源見專案資料夾 research-brief.md。</footer>
 </div>
+</template><script type="application/json" id="edits">{}</script><script id="app-script">
+(function(){
+var BAR='<div class="bar" id="bar"><span class="status" id="status"></span><button id="edit" type="button" hidden>編輯文字</button><button id="cancel" type="button" hidden>取消</button><button id="save" class="primary" type="button" hidden>儲存</button></div>';
+var state={};try{state=JSON.parse(document.getElementById("edits").textContent||"{}")}catch(e){state={}}
+var app=document.getElementById("app"),tpl=document.getElementById("tpl");
+var ALLOW={B:1,STRONG:1,I:1,EM:1,BR:1,SPAN:1};
+function clean(html){var d=new DOMParser().parseFromString("<div>"+html+"</div>","text/html").body.firstChild;
+ (function walk(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){
+  if(c.nodeType===3)return; if(c.nodeType!==1){c.remove();return}
+  walk(c);
+  if(!ALLOW[c.tagName]){while(c.firstChild)n.insertBefore(c.firstChild,c);c.remove();return}
+  var cls=c.getAttribute("class");Array.prototype.slice.call(c.attributes).forEach(function(a){c.removeAttribute(a.name)});
+  if(c.tagName==="SPAN"&&cls&&/^(q|tag now|tag next|n)$/.test(cls))c.setAttribute("class",cls);
+ })})(d);return d.innerHTML}
+function render(){app.innerHTML="";app.appendChild(tpl.content.cloneNode(true));
+ app.querySelectorAll("[data-e]").forEach(function(el,i){el.dataset.k="e"+i;if(state["e"+i]!=null)el.innerHTML=clean(state["e"+i])})}
+render();
+var bar=document.getElementById("bar"),btnEdit=document.getElementById("edit"),btnSave=document.getElementById("save"),btnCancel=document.getElementById("cancel"),st=document.getElementById("status");
+var art=null,editing=false,before={};
+function setEditing(on){editing=on;document.body.classList.toggle("editing",on);
+ app.querySelectorAll("[data-e]").forEach(function(el){if(on)el.setAttribute("contenteditable","true");else el.removeAttribute("contenteditable")});
+ btnEdit.hidden=on;btnSave.hidden=!on;btnCancel.hidden=!on;st.textContent=on?"編輯中：直接點文字修改，完成後按「儲存」":""}
+btnEdit.addEventListener("click",function(){before=JSON.stringify(state);setEditing(true);var f=app.querySelector("[data-e]");if(f)f.focus()});
+btnCancel.addEventListener("click",function(){state=JSON.parse(before||"{}");setEditing(false);render()});
+app.addEventListener("keydown",function(e){if(editing&&e.key==="Enter"&&!e.shiftKey&&e.target.matches&&e.target.matches("h1,h2,h3,th,.meta span,.eyebrow,.cta,.big,.small")){e.preventDefault()}});
+function buildDoc(){
+ var reset=":root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}";
+ var head='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>';
+ var parts=[document.querySelector("title").outerHTML];
+ document.querySelectorAll("link[data-keep]").forEach(function(l){parts.push(l.outerHTML)});
+ parts.push(document.getElementById("page-style").outerHTML,BAR,'<main id="app"></main>',tpl.outerHTML,
+  '<script type="application/json" id="edits">'+JSON.stringify(state).replace(/</g,"\\u003c")+'<\/script>',document.getElementById("app-script").outerHTML);
+ return head+parts.join("")+"</body></html>"}
+btnSave.addEventListener("click",function(){
+ app.querySelectorAll("[data-e]").forEach(function(el){var k=el.dataset.k,v=clean(el.innerHTML),orig=tpl.content.querySelectorAll("[data-e]")[+k.slice(1)];
+  var o=orig?clean(orig.innerHTML):"";if(v.trim()!==o.trim())state[k]=v;else delete state[k]});
+ if(!art){st.textContent="這個檢視無法儲存（可能沒有編輯權限）";return}
+ btnSave.disabled=true;st.textContent="儲存中…";
+ art.publish(buildDoc()).then(function(){st.textContent="已儲存"}).catch(function(err){btnSave.disabled=false;
+  var c=err&&err.code;st.textContent=c==="conflict"?"有人剛剛也儲存了，頁面會重新載入成最新版本":(c==="not_granted"||c==="not_writer")?"你只有檢視權限，無法儲存":"儲存失敗，請稍後再試"})});
+btnEdit.hidden=true;
+if(window.claude&&window.claude.use){window.claude.use("artifact").then(function(a){art=a;if(a){btnEdit.hidden=false}}).catch(function(){})}
+})();
+</script>
