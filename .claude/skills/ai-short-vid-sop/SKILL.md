@@ -82,6 +82,10 @@ description: PwC FSC1 AI 短影片標準作業流程（SOP）。Use when the use
 1. **鏡頭圖片提示詞**（`keyframeN.zh.txt`）：描述第一格畫面，包含人物、服裝、場景、構圖、光線；有大頭照時要求保持相同的臉。
 2. **圖生影片提示詞**（`i2vN.zh.txt`）：只寫**動作、結束畫面、運鏡、光線、聲音、排除項目**，不重複描述圖片內容。
 
+進階寫法（8 個元素、多鏡頭一次生成、對嘴台詞長度、影片裡的文字、秒數與省點數的生成順序）見 [references/seedance-prompting.md](references/seedance-prompting.md)。超過 15 秒的鏡頭，優先拆成 3–8 秒的子鏡頭（空景、特寫、反應鏡頭、台詞主鏡頭），每個子鏡頭各有一張關鍵畫面。
+
+後製的動態字卡（章節卡、問題卡、服務卡、結尾卡）可以用 `pwc-fsc1-ai-short-vid/tools/remotion-cards/` 產生，用法見該資料夾的 README。
+
 提示詞規則：
 
 - 每段結尾都要排除：字幕、可辨識的文字、商標、多餘人物。

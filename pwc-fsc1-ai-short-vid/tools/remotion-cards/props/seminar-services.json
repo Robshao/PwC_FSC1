@@ -1,0 +1,14 @@
+{
+  "seconds": 9,
+  "title": "落地需求 → 我們的服務",
+  "leftHeader": "保險公司推 AI 保險要補的",
+  "rightHeader": "FSC1 保險組",
+  "rows": [
+    {"need": "新商品接進核心系統與理賠流程", "service": "核心系統顧問", "detail": "架構規劃・流程數位化・系統導入", "tag": "now"},
+    {"need": "監控 AI 指標的數據、報表與 BI", "service": "數據應用", "detail": "數據治理・分析報告・BI", "tag": "now"},
+    {"need": "IFRS 17 計量與 TW-ICS 資本影響", "service": "數據應用＋專業人力委外", "tag": "now"},
+    {"need": "自家 AI 的治理與模型評估", "service": "AI 治理", "detail": "倫理規範・模型風險評估・合規", "tag": "now"},
+    {"need": "哪些企業先買、怎麼分層", "service": "團隊展望", "detail": "企業 AI 客群分層", "tag": "next"}
+  ],
+  "footnote": "標示「團隊展望」者為規劃方向"
+}
