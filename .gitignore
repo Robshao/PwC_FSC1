@@ -10,3 +10,4 @@
 # 後製暫存與輸出
 pwc-fsc1-ai-short-vid/05-fsc-insurance-seminar/output/
 pwc-fsc1-ai-short-vid/05-fsc-insurance-seminar/clips/
+__pycache__/
