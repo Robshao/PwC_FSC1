@@ -4,6 +4,7 @@ import {ChapterCard} from './ChapterCard';
 import {QuestionCards} from './QuestionCards';
 import {ServiceCard} from './ServiceCard';
 import {EndCard} from './EndCard';
+import {BoardInk} from './BoardInk';
 
 // 預設內容只是示意；實際內容用 props/*.json 傳入（見 README）
 const base = {fps: 30, width: 1920, height: 1080};
@@ -22,5 +23,7 @@ export const Root: React.FC = () => (
       defaultProps={{title: '〔服務卡標題〕', leftHeader: '〔左欄〕', rightHeader: '〔右欄〕', rows: [{need: '〔需求〕', service: '〔服務〕', tag: 'now' as const}]}} />
     <Composition id="EndCard" component={EndCard} durationInFrames={180} {...base} calculateMetadata={bySeconds}
       defaultProps={{headline: '〔主標語〕', cta: '〔CTA〕', signature: '〔署名〕'}} />
+    <Composition id="BoardInk" component={BoardInk} durationInFrames={1} {...base}
+      defaultProps={{version: 'B' as const, layer: 'all' as const}} />
   </>
 );
