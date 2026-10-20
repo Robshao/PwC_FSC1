@@ -138,7 +138,7 @@ for i, (h, d) in enumerate(WHY):
     x = 4.6 + i * 2.8
     tb(s, x, 3.65, 2.68, 0.48, h, size=12.5, bold=True, color=OR, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     tb(s, x, 4.18, 2.68, 1.4, d, size=11, fill=LG, margin=0.12)
-tb(s, 4.6, 5.72, 8.3, 0.75, [[('今天請決定：', {'bold': True, 'color': OR}), ('同意第一波兩項服務、各指派 1 位負責人、核定 90 天計畫（第 4／8／12 週檢查）。', {})]],
+tb(s, 4.6, 5.72, 8.3, 0.75, [[('今天請決定：', {'bold': True, 'color': OR}), ('同意第一波兩項服務，並各指派 1 位負責人。', {})]],
    size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
 sources(s, [('Gallagher Re Global InsurTech Report Q1 2026', 'gallagher'), ('Insurance Business 報導（95.2%）', 'gallagher_news'),
             ('PwC 保險高階主管調查（Claims Journal）', 'pwc57'), ('Bain：Reimagining Insurance for the AI Era', 'bain')])
