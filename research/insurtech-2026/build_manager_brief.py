@@ -1,4 +1,4 @@
-# 保險科技服務優先順序：主管三頁精簡版（附可點擊來源連結，以所內簡報範本建立）
+# 保險科技服務優先順序：主管四頁精簡版（附可點擊來源連結，以所內簡報範本建立）
 # 用法：python3 build_manager_brief.py <範本.pptx> <輸出.pptx>
 import sys
 from pptx import Presentation
@@ -32,6 +32,17 @@ URL = {
     'naic': 'https://content.naic.org/cmte_h_bdaiwg.htm',
     'naic_pilot': 'https://www.fenwick.com/insights/publications/naic-expands-ai-systems-evaluation-tool-pilot-program-to-12-states-key-updates-for-insurers-and-ai-vendors-supporting-insurers',
     'mas': 'https://www.mas.gov.sg/regulation/guidelines/guidelines-on-artificial-intelligence-risk-management-for-financial-institutions',
+    # 競爭者（官網或原文頁）
+    'mck_uwos': 'https://www.mckinsey.com/industries/financial-services/our-insights/insurance-blog/the-future-underwriting-operating-system-from-inbox-to-ai-nerve-center',
+    'bcg_ap': 'https://www.bcg.com/assets/2026/white-paper-competitive-advantage-in-the-agentic-ai-era-ap-insurers.pdf',
+    'bcg_pc': 'https://www.bcg.com/assets/2026/executive-perspectives-ai-first-companies-win-the-future-property-casualty-insurance.pdf',
+    'bain_dist': 'https://www.bain.com/it/about-bain/media-center/press-releases/2024/$50-billion-opportunity-emerges-for-insurers-worldwide-from-generative-ais-potential-to-boost-revenues-and-take-out-costs/',
+    'dtt_blueprint': 'https://www.deloitte.com/global/en/what-we-do/capabilities/agentic-ai-blueprint-for-insurance.html',
+    'dtt_ap': 'https://www.deloitte.com/ap/en/perspectives/agentic-ai-scale-for-life-insurers-in-apac.html',
+    'ey_nexus': 'https://www.ey.com/en_us/insurance/nexus',
+    'kpmg_ii': 'https://kpmg.com/au/en/insights/artificial-intelligence-ai/intelligent-insurance.html',
+    'kpmg_trust': 'https://kpmg.com/ca/en/insights/2024/11/you-can-build-trust-with-ai.html',
+    'pwc_agentos': 'https://www.pwc.nl/en/services/artificial-intelligence/agent-os.html',
 }
 
 p = Presentation(TPL)
@@ -171,7 +182,37 @@ for i, row in enumerate(ROWS):
 sources(s, [('金管會 AI 指引', 'fsc_ai'), ('理律：AI 指引解析', 'fsc_ai_news'), ('金管會委外修正', 'fsc_outsource'), ('理律：委外新辦法', 'outsource_rule'),
             ('公會雲端自律規範', 'cloud_selfreg'), ('資誠 IFRS 17 關鍵議題', 'pwc_ifrs17'), ('NAIC 工作小組', 'naic'), ('MAS AI 指引', 'mas')])
 
-# ───────── 第 3 頁 行動與決策 ─────────
+# ───────── 第 3 頁 競爭者 ─────────
+s = content('MBB 與四大都在推代理型 AI 藍圖或平台；我們的空間在在地確信、IFRS 17 資料與駐點人力')
+COMP = [('McKinsey', 'MBB', '核保作業系統 UWOS：45 項能力、6 大領域；代理型 AI 核心現代化（原子化代理能力庫）', '商業與專業險核保、核心重寫', '在台缺在地法規確信與長期駐點人力', [('UWOS', 'mck_uwos'), ('核心現代化', 'mckinsey')]),
+        ('BCG', 'MBB', '「AI-First 產險公司」三階段藍圖；亞太保險代理型 AI 白皮書（資源 70% 放在人與變革）', '策略藍圖、組織變革', '偏策略與變革設計，系統落地多需另找夥伴', [('亞太白皮書', 'bcg_ap'), ('產險藍圖', 'bcg_pc')]),
+        ('Bain', 'MBB', '亞太保險公司以 AI 重塑理賠與客服案例；保險通路 GenAI 年效益逾 500 億美元（2024）', '理賠、客服、通路', '在台交付規模較小，大型核心導入人力有限', [('案例', 'bain'), ('通路研究', 'bain_dist')]),
+        ('Deloitte', '四大', 'Agentic AI Blueprint for Insurance：產險／壽險分類，評估→設計→試點→規模化，預建＋客製代理', '全價值鏈代理型 AI 轉型', '預建代理套到台灣客製化舊核心與繁中條款需調適', [('Blueprint', 'dtt_blueprint'), ('亞太壽險', 'dtt_ap')]),
+        ('EY', '四大', 'EY Nexus for Insurance：雲原生平台，快速推出新商品與品牌，串接 650+ 保險科技', '新商品、嵌入式通路、核心延伸', '偏新業務上線，舊核心遷移與 IFRS 17 整合難只靠平台', [('Nexus', 'ey_nexus')]),
+        ('KPMG', '四大', 'Intelligent Insurance：AI 價值三階段導入；Trusted AI 十大支柱治理框架', 'AI 導入路徑與治理', '公開資料未見保險專屬代理型產品', [('Intelligent Insurance', 'kpmg_ii'), ('Trusted AI', 'kpmg_trust')]),
+        ('PwC（所內）', '四大', 'Agent OS 代理編排平台（跨廠商串接、權限控管、監督儀表板）；IFRS 17／TW-ICS 與 AI 治理服務', '治理＋財務資料＋落地', '可協作：把 Agent OS 與確信能力帶進第一波服務包', [('Agent OS', 'pwc_agentos'), ('IFRS 17', 'pwc_ifrs17')])]
+HEAD = ['機構', '保險 AI 主力產品／方法', '主攻', '可能侷限（推論）', '官網／原文']
+CW = [1.45, 4.6, 2.05, 2.75, 1.6]
+y0, rh = 1.4, 0.66
+x = 0.45
+for j, h in enumerate(HEAD):
+    tb(s, x, y0, CW[j] - 0.04, 0.38, h, size=11, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+    x += CW[j]
+for i, (name, grp, prod, focus, gap, links) in enumerate(COMP):
+    y = y0 + 0.42 + i * rh; x = 0.45
+    ours = name.startswith('PwC')
+    bg = TINT if ours else (LG if i % 2 == 0 else WHITE)
+    cells = [[[(name, {'bold': True, 'size': 11.5, 'color': OR if ours else INK})], [(grp, {'size': 9, 'color': GREY})]],
+             prod, focus, gap,
+             [[(lab, {'link': URL[key], 'size': 9.5})] for lab, key in links]]
+    for j, v in enumerate(cells):
+        tb(s, x, y, CW[j] - 0.04, rh - 0.04, v, size=10, fill=bg, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
+        x += CW[j]
+    if i == 2:
+        hline(s, 0.45, y + rh - 0.02, 12.9, y + rh - 0.02, color=OR, width=1.5)
+tb(s, 0.45, y0 + 0.42 + 7 * rh + 0.04, 12.45, 0.3, '「可能侷限」為依公開資料的推論，僅供內部討論，對外勿點名競爭者。點選右欄可開啟各機構官網或原文。', size=9, color=GREY)
+
+# ───────── 第 4 頁 行動與決策 ─────────
 s = content('90 天內把兩項服務包做成可銷售的提案，今天請決定四件事')
 PH = ['第 1–4 週｜打包', '第 5–8 週｜驗證', '第 9–12 週｜開賣']
 PLAN = [('① IFRS 17', ['服務一頁紙、首案範圍與報價區間', '與所內 IFRS 17 團隊確認分工、選目標客戶', '客戶對談、首案建議書']),
