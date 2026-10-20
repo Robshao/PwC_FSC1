@@ -12,9 +12,10 @@
 - `會議簡報_故事線.md`：問題定義、Issue Tree、假設與每頁論點式標題
 - 方法來自 `.claude/skills/mckinsey-consultant`（MIT，來源見該資料夾 SOURCE.md）
 
-## 主管三頁精簡版
+## 主管精簡版
 
-- `保險科技服務優先順序_主管精簡版.pptx`／`.pdf`：3 頁，重點摘要、為什麼是這兩項、MBB 與四大競爭者；每頁底部來源可點擊
+- `保險科技服務優先順序_主管精簡版.pptx`／`.pdf`：3 頁正文＋附錄 A 文獻清單（重點摘要、五項服務的依據、MBB 與四大競爭者）
+- `文獻清單.md`：22 筆文獻與連結，由 `build_manager_brief.py` 同步產生，編號對應第 2 頁；每頁底部來源可點擊
 - `build_manager_brief.py`：`python3 build_manager_brief.py <範本.pptx> 保險科技服務優先順序_主管精簡版.pptx`
 - `主管精簡版_來源連結.md`：每個連結的出處與查核結果（含日期更正）
 - `check_fit.py`：檢查文字是否超出文字框或頁面

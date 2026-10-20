@@ -1,6 +1,6 @@
 # 保險科技服務優先順序：主管三頁精簡版（附可點擊來源連結，以所內簡報範本建立）
 # 用法：python3 build_manager_brief.py <範本.pptx> <輸出.pptx>
-import sys, copy
+import sys, copy, os
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -163,45 +163,86 @@ tb(s, 4.6, 5.72, 8.3, 0.75, [[('今天請決定：', {'bold': True, 'color': OR}
 sources(s, [('Gallagher Re Global InsurTech Report Q1 2026', 'gallagher'), ('Insurance Business 報導（95.2%）', 'gallagher_news'),
             ('PwC 保險高階主管調查（Claims Journal）', 'pwc57'), ('Bain：Reimagining Insurance for the AI Era', 'bain')])
 
-# ───────── 第 2 頁 為什麼是這兩項 ─────────
-s = content('為什麼是這兩項：台灣監理時程已經確定，而且兩項服務離我們的既有能力最近')
-EV = [('2024-06', '金管會《金融業運用 AI 指引》', 'fsc_ai', True), ('2024-08', '委外注意事項修正：放寬雲端聯合查核', 'fsc_outsource', True),
-      ('2025-12-31', '委外新辦法施行，提升為法規命令', 'outsource_rule', True), ('2026-01-01', 'IFRS 17／TW-ICS 正式接軌', 'pwc_ifrs17', True),
-      ('2026-03～09', 'NAIC 12 州 AI 評估工具試點（美國）', 'naic_pilot', False), ('2026-10', 'MAS AI 風險管理指引定稿（新加坡）', 'mas', False)]
-hline(s, 0.6, 2.1, 12.75, 2.1, color=OR, width=2.5)
-for i, (d, t, key, tw) in enumerate(EV):
-    x = 0.5 + i * 2.07
-    circle(s, x + 0.84, 1.96, 0.28, '', fill=OR if tw else GREY)
-    tb(s, x, 1.38, 1.96, 0.5, d, size=12.5, bold=True, color=OR if tw else GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.BOTTOM)
-    tb(s, x, 2.38, 1.96, 0.95, [t, [('原文', {'link': URL[key], 'size': 9})]], size=10.5, align=PP_ALIGN.CENTER,
-       fill=LG if tw else None, line=None if tw else LINE, margin=0.07)
-tb(s, 0.45, 3.42, 12.4, 0.3, '時間軸：橘色為台灣監理事件，灰色為國際標竿。　評等：● 有利　◐ 中等　○ 不利，為團隊依研究報告判斷，請會議校準。', size=9, color=GREY)
+# ───────── 文獻清單（第 2 頁引用編號、附錄頁與 文獻清單.md 共用） ─────────
+# (類別, 標題, 機構與日期, 網址, 網址已由網路搜尋確認)
+REFS = [
+    ('市場數據', 'Global InsurTech Report Q1 2026', 'Gallagher Re，2026-05', URL['gallagher'], False),
+    ('市場數據', 'AI start-ups capture record 95.2% of insurtech funding', 'Insurance Business，2026-05', URL['gallagher_news'], True),
+    ('市場數據', 'PwC：保險高階主管視代理型 AI 為轉型主力（57%）', 'Claims Journal，2025-11-17', URL['pwc57'], True),
+    ('市場數據', 'Reimagining Insurance for the AI Era', 'Bain（引述 MIT 2025）', URL['bain'], True),
+    ('IFRS 17／TW-ICS', '保險局全球資訊網（IFRS 17／TW-ICS 專區）', '金管會保險局', 'https://www.ib.gov.tw/', False),
+    ('IFRS 17／TW-ICS', '保險業資本新時代：壽險公會談 15 年過渡措施', '優分析，2025-10', 'https://uanalyze.com.tw/articles/4909935653', True),
+    ('IFRS 17／TW-ICS', 'Insurance Banana Skins 2025：台灣焦慮高於全球、準備度低於全球', 'PwC／CSFI（中央社轉載），2025-10-07', 'https://n.yam.com/Article/20251007545281', True),
+    ('IFRS 17／TW-ICS', 'IFRS 17 即將上路：建議臺灣保險業者的關鍵議題', '資誠，2025-11', URL['pwc_ifrs17'], False),
+    ('AI 治理', '《金融業運用 AI 指引》', '金管會，2024-06', URL['fsc_ai'], False),
+    ('AI 治理', '金融業運用 AI 指引解析', '理律法律事務所', URL['fsc_ai_news'], True),
+    ('AI 治理', '《保險業運用人工智慧系統自律規範》', '壽險／產險公會，2025-04-10 備查', 'https://law.lia-roc.org.tw/Law/GetFile/0000394231', True),
+    ('AI 治理', 'NAIC expands AI Systems Evaluation Tool pilot to 12 states', 'Fenwick，2026', URL['naic_pilot'], True),
+    ('AI 治理', 'Guidelines on AI Risk Management for Financial Institutions', 'MAS，2026-10 定稿', URL['mas'], True),
+    ('代理型 AI', 'Shedding Light on Agentic AI in Insurance（22% 計畫 2026 年底前上線）', 'Celent，2025-05', 'https://www.celent.com/en/insights/shedding-light-on-agentic-ai-in-insurance', True),
+    ('代理型 AI', 'Manulife MAUDE 獲 Celent 2026 Model Insurer（核保 AI）', 'Manulife，2026', 'https://www.manulife.com/ph/about-us/news/manulife-earns-celent-model-insurer-recognition-for-ai-leadership-in-underwriting', True),
+    ('代理型 AI', 'The future underwriting operating system（UWOS）', 'McKinsey，2026-06', URL['mck_uwos'], True),
+    ('核心與雲端', 'Can agentic AI (finally) modernize core technologies in insurance?', 'McKinsey，2026-04', URL['mckinsey'], True),
+    ('核心與雲端', '保險業作業委外新辦法（2025-12-31 施行）', '理律法律事務所', URL['outsource_rule'], True),
+    ('核心與雲端', '《保險業作業委外使用雲端服務自律規範》', '壽險／產險公會，2026-06 修正', URL['cloud_selfreg'], True),
+    ('深偽反詐欺', 'SONAR 2025：How deepfakes, disinformation and AI amplify insurance fraud', 'Swiss Re Institute，2025-06', 'https://www.swissre.com/institute/research/sonar/sonar2025/how-deepfakes-disinformation-ai-amplify-insurance-fraud.html', True),
+    ('深偽反詐欺', 'Deepfakes put insurers in deep water', 'CAS Actuarial Review，2026-05／06', 'https://digital.casact.org/issue/may-june-2026/deepfakes-put-insurers-in-deep-water/', True),
+    ('深偽反詐欺', 'Deepfakes: A growing threat to digital media integrity for insurers', 'Verisk', 'https://www.verisk.com/resources/campaigns/deepfakes-a-growing-threat-to-digital-media-integrity-for-insurers/', True),
+]
+
+def cites(nums):
+    segs = []
+    for n in nums:
+        segs.append((f'[{n}]', {'link': REFS[n - 1][3], 'size': 10}))
+    return [segs]
+
+# ───────── 第 2 頁 五項服務的依據 ─────────
+s = content('五項優先服務的依據：第一波兩項同時具備監理時限、既有能力與 4–8 週切入案')
 F, M, N = '●', '◐', '○'
-ROWS = [('IFRS 17／TW-ICS 後財務轉型', F, F, F, '首年結帳瓶頸診斷＋CSM 儀表板', '第一波'),
-        ('AI 清冊、模型驗證與護欄', F, F, F, '4–6 週 AI 清冊盤點與合規健檢', '第一波'),
-        ('代理型 AI 核保與理賠', F, M, M, '6–8 週單一險種工作流藍圖', '第二波'),
-        ('AI 加速核心現代化與雲端', M, M, N, '雲端委外合規評估或 AI 重寫 PoC', '第二波'),
-        ('深偽理賠反詐欺', M, N, M, '車損照片／醫療單據偽造偵測 PoC', '第二波')]
-HEAD = ['服務', '需求迫切度', '離既有服務', '首案週期', '切入案', '建議']
-CW = [3.4, 1.35, 1.35, 1.35, 3.85, 1.1]
-y0 = 3.78; rh = 0.47
+SVC = [('IFRS 17／TW-ICS 後財務轉型',
+        '2026-01-01 與 TW-ICS 同步上路，15 年過渡期逐年趨緊；台灣業者對新制的準備度低於全球（3.06 對 3.27）',
+        '新制以現時價值衡量負債，業者經營指標轉向 CSM 與資產負債管理（ALM）',
+        '首年結帳瓶頸診斷＋CSM 管理儀表板', (F, F, F), '第一波', [5, 6, 7, 8]),
+       ('AI 清冊、模型驗證與護欄',
+        '金管會 AI 指引（2024-06）；公會 AI 自律規範 2025-04-10 備查，保險公司對 AI 結果負最終責任',
+        'NAIC 12 州 AI 評估工具試點（2026-03～09）；MAS AI 風險管理指引 2026-10 定稿',
+        '4–6 週 AI 清冊盤點＋自律規範合規健檢', (F, F, F), '第一波', [9, 10, 11, 12, 13]),
+       ('代理型 AI 核保與理賠',
+        '多數停在單點智能助理；Celent：22% 保險公司計畫 2026 年底前上線代理型 AI',
+        'Manulife MAUDE 自動核准逾 58% 合格壽險案件、約 2 分鐘通知；McKinsey 核保作業系統',
+        '6–8 週單一險種工作流藍圖', (F, M, M), '第二波', [14, 15, 16]),
+       ('AI 加速核心現代化與雲端',
+        '委外新辦法 2025-12-31 施行、雲端自律規範 2026-06 修正；舊核心難以支援 API 與 AI 串接',
+        'McKinsey：代理型 AI 可壓縮舊程式解析、測試與對帳的重工',
+        '雲端委外合規評估，或周邊系統 AI 重寫 PoC', (M, M, N), '第二波', [17, 18, 19]),
+       ('深偽理賠反詐欺',
+        '修圖車損、偽造醫療單據門檻降低，規則引擎難以辨識',
+        'Swiss Re SONAR 2025 將「深偽助長保險詐欺」列為高影響新興風險',
+        '車損照片／醫療單據偽造偵測 PoC', (M, N, M), '第二波', [20, 21, 22])]
+HEAD = ['服務', '為什麼是現在（監理與痛點）', '國際標竿與證據', '首案切入', '評等', '建議', '文獻']
+CW = [1.85, 3.25, 2.6, 1.95, 1.15, 0.7, 0.95]
+y0, rh = 1.4, 0.94
 x = 0.45
 for j, h in enumerate(HEAD):
-    tb(s, x, y0, CW[j] - 0.04, 0.4, h, size=11, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.LEFT if j in (0, 4) else PP_ALIGN.CENTER, margin=0.08)
+    tb(s, x, y0, CW[j] - 0.04, 0.4, h, size=10.5, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE,
+       align=PP_ALIGN.CENTER if j >= 4 else PP_ALIGN.LEFT, margin=0.06)
     x += CW[j]
-for i, row in enumerate(ROWS):
+for i, (name, why, bench, land, rate, wave, refs) in enumerate(SVC):
     y = y0 + 0.44 + i * rh; x = 0.45
-    first = row[-1] == '第一波'
-    for j, v in enumerate(row):
-        glyph = j in (1, 2, 3)
-        fill = (OR if first else TINT) if j == 5 else (LG if i % 2 == 0 else WHITE)
-        tb(s, x, y, CW[j] - 0.04, rh - 0.04, v, size=16 if glyph else 11, bold=j in (0, 5),
-           color=WHITE if (j == 5 and first) else (OR if glyph or j == 5 else INK), fill=fill, anchor=MSO_ANCHOR.MIDDLE,
-           align=PP_ALIGN.LEFT if j in (0, 4) else PP_ALIGN.CENTER, margin=0.08)
+    first = wave == '第一波'
+    bg = LG if i % 2 == 0 else WHITE
+    cells = [(name, dict(size=11, bold=True, color=OR if first else INK)),
+             (why, dict(size=10)), (bench, dict(size=10)),
+             (land, dict(size=10, bold=first)),
+             ('  '.join(rate), dict(size=15, color=OR, align=PP_ALIGN.CENTER)),
+             (wave, dict(size=10.5, bold=True, color=WHITE if first else OR, align=PP_ALIGN.CENTER, fill=OR if first else TINT)),
+             (cites(refs), dict(size=10, align=PP_ALIGN.CENTER))]
+    for j, (v, st) in enumerate(cells):
+        tb(s, x, y, CW[j] - 0.04, rh - 0.04, v, size=st['size'], bold=st.get('bold', False), color=st.get('color', INK),
+           align=st.get('align', PP_ALIGN.LEFT), fill=st.get('fill', bg), anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
         x += CW[j]
-sources(s, [('金管會 AI 指引', 'fsc_ai'), ('理律：AI 指引解析', 'fsc_ai_news'), ('金管會委外修正', 'fsc_outsource'), ('理律：委外新辦法', 'outsource_rule'),
-            ('公會雲端自律規範', 'cloud_selfreg'), ('資誠 IFRS 17 關鍵議題', 'pwc_ifrs17'), ('NAIC 工作小組', 'naic'), ('MAS AI 指引', 'mas')])
-
+tb(s, 0.45, y0 + 0.44 + 5 * rh + 0.02, 12.45, 0.3,
+   '評等依序為需求迫切度、與既有服務距離、首案週期：● 有利　◐ 中等　○ 不利（團隊判斷，請會議校準）。文獻編號可點擊，完整清單見附錄 A。', size=9, color=GREY)
 # ───────── 第 3 頁 競爭者 ─────────
 s = content('MBB 與四大都在推代理型 AI 藍圖；我們以在地確信、IFRS 17 資料與駐點人力區隔')
 COMP = [('McKinsey', 'MBB', '核保作業系統 UWOS：45 項能力、6 大領域；代理型 AI 核心現代化（原子化代理能力庫）', '商業與專業險核保、核心重寫', '在台缺在地法規確信與長期駐點人力', [('UWOS', 'mck_uwos'), ('核心現代化', 'mckinsey')]),
@@ -231,6 +272,23 @@ for i, (name, grp, prod, focus, gap, links) in enumerate(COMP):
     if i == 2:
         hline(s, 0.45, y + rh - 0.02, 12.9, y + rh - 0.02, color=OR, width=1.5)
 tb(s, 0.45, y0 + 0.42 + 7 * rh + 0.04, 12.45, 0.3, '「可能侷限」為依公開資料的推論，僅供內部討論，對外勿點名競爭者。點選右欄可開啟各機構官網或原文。', size=9, color=GREY)
+
+# ───────── 附錄 A 文獻清單 ─────────
+s = content('附錄 A｜文獻清單')
+half = (len(REFS) + 1) // 2
+for i, (cat, title, org, url, ok) in enumerate(REFS):
+    col, row = divmod(i, half)
+    x = 0.45 + col * 6.3; y = 1.35 + row * 0.47
+    tb(s, x, y, 0.45, 0.42, f'[{i + 1}]', size=10, bold=True, color=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.02)
+    tb(s, x + 0.45, y, 5.75, 0.42, [[(title + ('　※' if not ok else ''), {'link': url, 'size': 10})],
+                                   [(f'{cat}｜{org}', {'size': 8.5, 'color': GREY})]], size=10, anchor=MSO_ANCHOR.MIDDLE, margin=0.02)
+tb(s, 0.45, 6.62, 12.45, 0.35, '※ 取自原研究連結庫，網路搜尋未能確認確切網址，引用前請點開確認。競爭者官網連結見第 3 頁。', size=9, color=GREY, margin=0.03)
+
+# 同步輸出文獻清單 Markdown
+md = ['# 保險科技服務優先順序：文獻清單', '', '主管精簡版第 2 頁文獻編號對應本清單。※ 為網路搜尋未能確認確切網址者。', '',
+      '| # | 類別 | 文獻 | 機構與日期 |', '|---|---|---|---|']
+md += [f'| {i + 1} | {c} | [{t}]({u}){" ※" if not ok else ""} | {o} |' for i, (c, t, o, u, ok) in enumerate(REFS)]
+open(os.path.join(os.path.dirname(os.path.abspath(OUT)), '文獻清單.md'), 'w').write('\n'.join(md) + '\n')
 
 p.save(OUT)
 print(OUT, len(p.slides), 'slides')
