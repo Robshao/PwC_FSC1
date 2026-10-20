@@ -19,6 +19,10 @@ lst = p.slides._sldIdLst
 for sid in list(lst):
     p.part.drop_rel(sid.rId); lst.remove(sid)
 L = {l.name: l for l in p.slide_masters[2].slide_layouts}
+# 移除範本遺留的投影片章節（PowerPoint 左側的章節名稱）
+for ext in list(p.part._element.iter('{http://schemas.openxmlformats.org/presentationml/2006/main}ext')):
+    if ext.find('{http://schemas.microsoft.com/office/powerpoint/2010/main}sectionLst') is not None:
+        ext.getparent().remove(ext)
 
 def set_ph(s, idx, text, size=None):
     for ph in s.placeholders:
@@ -89,7 +93,7 @@ def content(title):
 
 def section(num, title, desc):
     s = p.slides.add_slide(L['章節標題'])
-    set_ph(s, 0, title, 30); set_ph(s, 1, num); footer(s)
+    set_ph(s, 0, title, 30); set_ph(s, 1, num, 180); footer(s)
     tb(s, 0.45, 6.68, 8.5, 0.35, desc, size=10.5, color=GREY)
     return s
 
@@ -106,7 +110,7 @@ items = [('01', '五大轉折', '過去 18 個月保險科技發生了什麼'), 
 for i, (n, t, d) in enumerate(items):
     y = 1.55 + i * 1.0
     circle(s, 1.0, y, 0.62, n, size=14)
-    tb(s, 1.9, y + 0.02, 5.0, 0.4, t, size=18, bold=True)
+    tb(s, 1.9, y - 0.04, 5.0, 0.48, t, size=18, bold=True, margin=0.03)
     tb(s, 1.9, y + 0.42, 8.0, 0.35, d, size=12, color=GREY)
     ln = s.shapes.add_connector(1, Inches(1.9), Inches(y + 0.86), Inches(12.3), Inches(y + 0.86)); ln.line.color.rgb = LINE
 
@@ -121,7 +125,7 @@ for i, (h, t) in enumerate(msgs):
     tb(s, 0.45, y, 0.12, 1.0, '', fill=OR)
     tb(s, 0.7, y, 1.6, 1.0, h, size=14, bold=True, color=OR, anchor=MSO_ANCHOR.MIDDLE)
     tb(s, 2.3, y, 5.4, 1.0, t, size=12, anchor=MSO_ANCHOR.MIDDLE)
-tb(s, 8.1, 1.45, 4.8, 0.45, '建議優先推動的五項服務', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+tb(s, 8.1, 1.45, 4.8, 0.45, '建議優先推動的五項服務', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
 pri = ['IFRS 17／TW-ICS 開帳後財務轉型、CSM 與動態 ALM', 'AI 系統清冊、模型驗證與執行期護欄', '代理型 AI 核保與理賠流程重塑',
        'AI 加速核心系統現代化與雲端聯合查核', '深偽理賠詐欺偵測與調查工作流']
 for i, t in enumerate(pri):
@@ -273,7 +277,7 @@ for i, (h, d) in enumerate(diffs):
 # 下一步
 section('05', '下一步與待驗證事項', '請團隊決定的事，以及這份研究的資料可信度')
 s = content('下一步：請團隊討論與決定')
-tb(s, 0.45, 1.4, 6.1, 0.45, '要決定的事', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+tb(s, 0.45, 1.4, 6.1, 0.45, '要決定的事', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
 dec = ['選 2 項服務先做成服務包（建議 #1 IFRS 17 後財務轉型、#2 AI 治理健檢）',
        '每項指派負責人，4 週內產出：服務一頁紙、首案範圍與報價區間、案例素材',
        '選 1 項做成拜訪客戶或研討會用的 AI 短片',
@@ -282,7 +286,7 @@ for i, t in enumerate(dec):
     y = 2.0 + i * 0.95
     circle(s, 0.55, y + 0.15, 0.45, str(i + 1), size=12)
     tb(s, 1.15, y, 5.4, 0.8, t, size=13, anchor=MSO_ANCHOR.MIDDLE)
-tb(s, 6.85, 1.4, 6.05, 0.45, '使用這份研究前要注意', size=13, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+tb(s, 6.85, 1.4, 6.05, 0.45, '使用這份研究前要注意', size=13, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
 cav = [[('資料來源', {'bold': True}), '：由 Gemini Deep Research 彙整公開資料，所有數字與日期放進提案前都要回原文核對'],
        [('單一來源待驗證', {'bold': True}), '：Celent 22% 計畫部署代理型 AI、亞太深偽網路險理賠 +233%、嵌入式保險市場規模、AI 精算定價 +30% 效率'],
        [('點名台灣同業', {'bold': True}), '：報告引用的國內保險公司資訊來自公開新聞，僅供內部討論，對外不點名'],

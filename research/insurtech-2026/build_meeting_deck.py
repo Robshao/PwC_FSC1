@@ -20,6 +20,10 @@ lst = p.slides._sldIdLst
 for sid in list(lst):
     p.part.drop_rel(sid.rId); lst.remove(sid)
 L = {l.name: l for l in p.slide_masters[2].slide_layouts}
+# 移除範本遺留的投影片章節（PowerPoint 左側的章節名稱）
+for ext in list(p.part._element.iter('{http://schemas.openxmlformats.org/presentationml/2006/main}ext')):
+    if ext.find('{http://schemas.microsoft.com/office/powerpoint/2010/main}sectionLst') is not None:
+        ext.getparent().remove(ext)
 
 def set_ph(s, idx, text, size=None):
     for ph in s.placeholders:
@@ -100,7 +104,7 @@ def content(title):
 
 def section(num, title, desc):
     s = p.slides.add_slide(L['章節標題'])
-    set_ph(s, 0, title, 30); set_ph(s, 1, num); footer(s)
+    set_ph(s, 0, title, 30); set_ph(s, 1, num, 180); footer(s)
     tb(s, 0.45, 6.68, 8.5, 0.35, desc, size=10.5, color=GREY)
     return s
 
@@ -109,7 +113,7 @@ def source(s, text):
 
 def takeaway(s, x, y, w, h, text, size=12):
     tb(s, x, y, 0.1, h, '', fill=OR)
-    tb(s, x + 0.1, y, w - 0.1, h, [[('所以呢：', {'bold': True, 'color': OR}), (text, {})]], size=size, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+    tb(s, x + 0.1, y, w - 0.1, h, [[('所以呢：', {'bold': True, 'color': OR}), (text, {})]], size=size, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.09)
 
 # ───────── 1 封面 ─────────
 s = p.slides.add_slide(L['標題投影片'])
@@ -147,7 +151,7 @@ scq = [('情境', '保險業 AI 已從試點走向規模化：2026 Q1 全球保�
        ('問題', 'FSC1 該先把哪些機會做成服務，才能在 2026 年的窗口內拿下首案？')]
 for i, (h, t) in enumerate(scq):
     y = 1.4 + i * 1.72
-    tb(s, 0.45, y, 3.7, 0.4, h, size=12, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    tb(s, 0.45, y, 3.7, 0.4, h, size=12, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.04)
     tb(s, 0.45, y + 0.4, 3.7, 1.22, t, size=11.5, fill=LG, margin=0.12)
 arrow(s, 4.25, 3.4, 0.35, 0.5)
 tb(s, 4.7, 1.4, 8.2, 1.05, [[('建議　', {'bold': True, 'size': 12}), ('第一波先推 2 項服務包：① IFRS 17／TW-ICS 後財務轉型　② AI 清冊、模型驗證與護欄。另 3 項列為第二波。', {})]],
@@ -271,7 +275,7 @@ for qx, qy, t, c in [(0, 0, '找夥伴或觀察', GREY), (1, 0, '優先推動', 
     tb(s, X0 + qx * W / 2 + 0.1, Y0 + qy * H / 2 + 0.08, 2.5, 0.35, t, size=12, bold=True, color=c)
 hline(s, X0, Y0 + H, X0 + W, Y0 + H, color=INK, width=1.25); hline(s, X0, Y0, X0, Y0 + H, color=INK, width=1.25)
 tb(s, X0, Y0 + H + 0.05, W, 0.32, '與既有服務的距離　遠 → 近', size=11, color=GREY, align=PP_ALIGN.RIGHT)
-v = tb(s, 0.3, Y0 + H / 2 - 0.2, 0.85, 0.4, '需求\n迫切度', size=10.5, color=GREY, align=PP_ALIGN.CENTER)
+tb(s, 0.3, Y0 + H / 2 - 0.3, 0.85, 0.62, '需求\n迫切度', size=10.5, color=GREY, align=PP_ALIGN.CENTER)
 tb(s, 0.3, Y0 - 0.02, 0.85, 0.3, '高', size=10.5, color=GREY, align=PP_ALIGN.CENTER)
 tb(s, 0.3, Y0 + H - 0.3, 0.85, 0.3, '低', size=10.5, color=GREY, align=PP_ALIGN.CENTER)
 POS = [('4', 0.92, 0.92, OR), ('3', 0.84, 0.80, OR), ('1', 0.72, 0.74, OR2), ('2', 0.66, 0.60, OR2), ('5', 0.56, 0.62, OR2),
@@ -367,7 +371,7 @@ rows = [['機構', '主打', '可能的交付侷限'],
         ['McKinsey', '核保作業系統 UWOS；選擇性重寫', '缺少在地法規確信團隊與長期駐點人力'],
         ['Bain', '12 週 Future-back；三層代理架構', '在台交付規模較小，大型核心導入人力有限']]
 table(s, 0.45, 1.4, 7.3, [1.3, 2.6, 3.4], rows, size=10.5, head_size=11.5, row_h=0.9)
-tb(s, 8.0, 1.4, 4.9, 0.45, '我們的四個差異化', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+tb(s, 8.0, 1.4, 4.9, 0.45, '我們的四個差異化', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
 diffs = [('Assurance-by-Design', '設計 AI 工作流時同步內建稽核軌跡與護欄'),
          ('顧問藍圖＋人力委外', '小案切入，接上 1–3 年經常性人力'),
          ('以 IFRS 17 資料庫為樞紐', '把合規資料延伸到 ALM、定價與通路 KPI'),
