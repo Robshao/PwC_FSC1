@@ -1,4 +1,4 @@
-# 保險科技服務優先順序：主管四頁精簡版（附可點擊來源連結，以所內簡報範本建立）
+# 保險科技服務優先順序：主管三頁精簡版（附可點擊來源連結，以所內簡報範本建立）
 # 用法：python3 build_manager_brief.py <範本.pptx> <輸出.pptx>
 import sys
 from pptx import Presentation
@@ -211,40 +211,6 @@ for i, (name, grp, prod, focus, gap, links) in enumerate(COMP):
     if i == 2:
         hline(s, 0.45, y + rh - 0.02, 12.9, y + rh - 0.02, color=OR, width=1.5)
 tb(s, 0.45, y0 + 0.42 + 7 * rh + 0.04, 12.45, 0.3, '「可能侷限」為依公開資料的推論，僅供內部討論，對外勿點名競爭者。點選右欄可開啟各機構官網或原文。', size=9, color=GREY)
-
-# ───────── 第 4 頁 行動與決策 ─────────
-s = content('90 天內把兩項服務包做成可銷售的提案，今天請決定四件事')
-PH = ['第 1–4 週｜打包', '第 5–8 週｜驗證', '第 9–12 週｜開賣']
-PLAN = [('① IFRS 17', ['服務一頁紙、首案範圍與報價區間', '與所內 IFRS 17 團隊確認分工、選目標客戶', '客戶對談、首案建議書']),
-        ('② AI 治理', ['健檢方法與 AI 清冊範本', 'R&Q 獨立性確認、內部試做', '客戶對談、首案建議書'])]
-GX, GW = 1.75, 11.15
-for k, h in enumerate(PH):
-    tb(s, GX + k * GW / 3, 1.4, GW / 3 - 0.06, 0.42, h, size=12, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-for i, (n, cells) in enumerate(PLAN):
-    y = 1.9 + i * 0.68
-    tb(s, 0.45, y, 1.24, 0.6, n, size=12, bold=True, color=OR, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
-    for k, t in enumerate(cells):
-        tb(s, GX + k * GW / 3, y, GW / 3 - 0.06, 0.6, t, size=11, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
-DEC = [('1', '第一波推哪兩項服務', 'IFRS 17／TW-ICS 後財務轉型、AI 清冊與模型驗證健檢', '今天'),
-       ('2', '每項服務包的負責人', '各 1 位負責人＋1 位支援；第 1 週找 R&Q 確認獨立性', '今天'),
-       ('3', '90 天計畫與檢查點', '第 4、8、12 週各一次，每次 30 分鐘', '第 1 週'),
-       ('4', '研討會 AI 短片主題', '以第一波服務為主題', '第 2 週')]
-tb(s, 0.45, 3.4, 8.2, 0.42, '今天請決定', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
-for i, (n, a, b, d) in enumerate(DEC):
-    y = 3.9 + i * 0.66
-    circle(s, 0.5, y + 0.1, 0.42, n, size=12)
-    tb(s, 1.05, y, 2.35, 0.58, a, size=11.5, bold=True, anchor=MSO_ANCHOR.MIDDLE, fill=LG, margin=0.08)
-    tb(s, 3.45, y, 4.25, 0.58, b, size=11, anchor=MSO_ANCHOR.MIDDLE, fill=TINT, margin=0.08)
-    tb(s, 7.75, y, 0.9, 0.58, d, size=11, bold=True, color=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, fill=LG, margin=0.04)
-tb(s, 8.9, 3.4, 4.0, 0.42, '使用前注意', size=13, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
-CAV = [[('數字核對　', {'bold': True}), ('對外引用前回原文確認；95% 為跨產業數字', {})],
-       [('獨立性　', {'bold': True}), ('AI 治理健檢與 IFRS 17 顧問碰到審計客戶時，先與 R&Q 確認', {})],
-       [('對外不點名　', {'bold': True}), ('研究中的同業與競爭者僅供內部討論', {})],
-       [('完整版　', {'bold': True}), ('24 頁會議簡報含問題樹、矩陣與風險', {})]]
-for i, t in enumerate(CAV):
-    tb(s, 8.9, 3.9 + i * 0.66, 4.0, 0.58, [t], size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
-sources(s, [('McKinsey：代理型 AI 核心現代化', 'mckinsey'), ('Deloitte：亞太壽險規模化代理型 AI', 'deloitte'),
-            ('資誠 IFRS 17 關鍵議題', 'pwc_ifrs17'), ('MAS AI 風險管理指引', 'mas')])
 
 p.save(OUT)
 print(OUT, len(p.slides), 'slides')
