@@ -1,18 +1,30 @@
 # 保險科技服務優先順序：會議決策簡報（顧問式故事線，以所內簡報範本建立）
 # 方法：mckinsey-consultant 技能（問題定義 → Issue Tree → 假設 → 論點式標題 → 決策頁）
 # 用法：python3 build_meeting_deck.py <範本.pptx> <輸出.pptx>
-import sys
+import sys, copy
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.oxml.ns import qn
 
 TPL, OUT = sys.argv[1], sys.argv[2]
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
-INK = RGBColor(0x1E, 0x1E, 0x1E); GREY = RGBColor(0x6B, 0x6B, 0x6B); LG = RGBColor(0xF3, 0xF3, 0xF3); LINE = RGBColor(0xD9, 0xD9, 0xD9)
+# 範本佈景主題色：tx1 黑、lt2 淺灰、accent6 線條灰
+INK = RGBColor(0x00, 0x00, 0x00); GREY = RGBColor(0x59, 0x59, 0x59); LG = RGBColor(0xEB, 0xEB, 0xEB); LINE = RGBColor(0xCB, 0xD1, 0xD6)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-FONT = 'Microsoft JhengHei'
+# 範本字型：標題 Georgia、內文 Arial、中文一律微軟正黑體（與所內範本範例頁一致）
+FONT = 'Arial'; HEAD_FONT = 'Georgia'; EA_FONT = '微軟正黑體'
+
+SYMBOLS = set('●◐○✓✗→①②③④⑤⚠↑')
+
+def style_font(r, head=False):
+    # Arial 沒有 ●◐○ 等符號，這類文字改用中文字型顯示
+    r.font.name = EA_FONT if SYMBOLS & set(r.text) else (HEAD_FONT if head else FONT)
+    rPr = r._r.get_or_add_rPr()
+    for e in rPr.findall(qn('a:ea')): rPr.remove(e)
+    rPr.find(qn('a:latin')).addnext(rPr.makeelement(qn('a:ea'), {'typeface': EA_FONT}))
 FOOT = '內部討論稿｜僅供 FSC1 保險組內部使用｜資料來源為公開研究，數字待回原文核對'
 
 p = Presentation(TPL)
@@ -25,17 +37,23 @@ for ext in list(p.part._element.iter('{http://schemas.openxmlformats.org/present
     if ext.find('{http://schemas.microsoft.com/office/powerpoint/2010/main}sectionLst') is not None:
         ext.getparent().remove(ext)
 
-def set_ph(s, idx, text, size=None):
+def set_ph(s, idx, text, size=None, bold=None):
     for ph in s.placeholders:
         if ph.placeholder_format.idx == idx:
             ph.text = text
             for para in ph.text_frame.paragraphs:
                 for r in para.runs:
-                    r.font.name = FONT
+                    style_font(r, head=idx == 0)
                     if size: r.font.size = Pt(size)
+                    if bold is not None: r.font.bold = bold
             return ph
 
 def footer(s):
+    # python-pptx 新增投影片不會帶入頁尾與頁碼，從版面複製（頁碼為自動欄位）
+    have = {ph.placeholder_format.idx for ph in s.placeholders}
+    for ph in s.slide_layout.placeholders:
+        if ph.placeholder_format.idx in (3, 4) and ph.placeholder_format.idx not in have:
+            s.shapes._spTree.append(copy.deepcopy(ph._element))
     set_ph(s, 3, FOOT)
 
 def tb(s, x, y, w, h, text, size=11, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, fill=None, line=None, margin=0.06):
@@ -55,7 +73,7 @@ def tb(s, x, y, w, h, text, size=11, bold=False, color=INK, align=PP_ALIGN.LEFT,
         for seg in segs:
             t, st = (seg, {}) if isinstance(seg, str) else seg
             r = para.add_run(); r.text = t
-            f = r.font; f.name = FONT; f.size = Pt(st.get('size', size)); f.bold = st.get('bold', bold)
+            style_font(r); f = r.font; f.size = Pt(st.get('size', size)); f.bold = st.get('bold', bold)
             f.color.rgb = st.get('color', color)
         para.space_after = Pt(3)
     return sh
@@ -66,7 +84,7 @@ def circle(s, x, y, d, text, fill=OR, size=12):
     tf = c.text_frame; tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     para = tf.paragraphs[0]; para.alignment = PP_ALIGN.CENTER
-    r = para.add_run(); r.text = text; r.font.size = Pt(size); r.font.bold = True; r.font.color.rgb = WHITE; r.font.name = FONT
+    r = para.add_run(); r.text = text; r.font.size = Pt(size); r.font.bold = True; r.font.color.rgb = WHITE; style_font(r)
 
 def hline(s, x1, y1, x2, y2, color=LINE, width=1.0):
     ln = s.shapes.add_connector(1, Inches(x1), Inches(y1), Inches(x2), Inches(y2))
@@ -91,15 +109,15 @@ def table(s, x, y, w, col_w, rows, size=9.5, head_size=10, row_h=0.3, first_col_
             parts = val if isinstance(val, list) else [val]
             for k, part in enumerate(parts):
                 para = tf.paragraphs[0] if k == 0 else tf.add_paragraph()
-                r = para.add_run(); r.text = part; r.font.name = FONT
+                r = para.add_run(); r.text = part; style_font(r)
                 r.font.size = Pt(head_size if i == 0 else size)
                 r.font.bold = i == 0 or (j == 0 and first_col_bold)
                 r.font.color.rgb = WHITE if i == 0 else (INK if not (j == 0 and first_col_bold) else OR)
     return gt
 
 def content(title):
-    s = p.slides.add_slide(L['3__Pattern header'])
-    set_ph(s, 0, title, 20); footer(s)
+    s = p.slides.add_slide(L['只有標題'])
+    set_ph(s, 0, title, 20, bold=True); footer(s)
     return s
 
 def section(num, title, desc):
@@ -210,7 +228,7 @@ for i, (n, d, src) in enumerate(stats):
     x = 0.45 + (i % 3) * 4.2; y = 1.4 + (i // 3) * 2.2
     hot = i == 3
     tb(s, x, y, 3.95, 2.05, '', fill=OR if hot else LG)
-    tb(s, x + 0.2, y + 0.1, 3.6, 0.8, n, size=36, bold=True, color=WHITE if hot else OR)
+    tb(s, x + 0.2, y + 0.1, 3.6, 0.8, n, size=36, color=WHITE if hot else OR)
     tb(s, x + 0.2, y + 0.92, 3.6, 0.75, d, size=12, color=WHITE if hot else INK)
     tb(s, x + 0.2, y + 1.68, 3.6, 0.3, '來源：' + src, size=9, color=WHITE if hot else GREY)
 takeaway(s, 0.45, 5.88, 12.45, 0.7, '客戶缺的不是 AI 工具，而是讓 AI 進入流程、通過查核、產生回報的落地能力；這正是四條服務線的交集。')

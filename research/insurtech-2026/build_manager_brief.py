@@ -1,17 +1,29 @@
 # 保險科技服務優先順序：主管三頁精簡版（附可點擊來源連結，以所內簡報範本建立）
 # 用法：python3 build_manager_brief.py <範本.pptx> <輸出.pptx>
-import sys
+import sys, copy
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.oxml.ns import qn
 
 TPL, OUT = sys.argv[1], sys.argv[2]
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
-INK = RGBColor(0x1E, 0x1E, 0x1E); GREY = RGBColor(0x6B, 0x6B, 0x6B); LG = RGBColor(0xF3, 0xF3, 0xF3); LINE = RGBColor(0xD9, 0xD9, 0xD9)
-WHITE = RGBColor(0xFF, 0xFF, 0xFF); LINK = RGBColor(0x1F, 0x5F, 0xBF)
-FONT = 'Microsoft JhengHei'
+# 範本佈景主題色：tx1 黑、lt2 淺灰、accent6 線條灰
+INK = RGBColor(0x00, 0x00, 0x00); GREY = RGBColor(0x59, 0x59, 0x59); LG = RGBColor(0xEB, 0xEB, 0xEB); LINE = RGBColor(0xCB, 0xD1, 0xD6)
+WHITE = RGBColor(0xFF, 0xFF, 0xFF)
+# 範本字型：標題 Georgia、內文 Arial、中文一律微軟正黑體（與所內範本範例頁一致）
+FONT = 'Arial'; HEAD_FONT = 'Georgia'; EA_FONT = '微軟正黑體'
+
+SYMBOLS = set('●◐○✓✗→①②③④⑤⚠↑')
+
+def style_font(r, head=False):
+    # Arial 沒有 ●◐○ 等符號，這類文字改用中文字型顯示
+    r.font.name = EA_FONT if SYMBOLS & set(r.text) else (HEAD_FONT if head else FONT)
+    rPr = r._r.get_or_add_rPr()
+    for e in rPr.findall(qn('a:ea')): rPr.remove(e)
+    rPr.find(qn('a:latin')).addnext(rPr.makeelement(qn('a:ea'), {'typeface': EA_FONT}))
 FOOT = '內部討論稿｜僅供 FSC1 保險組內部使用｜資料來源為公開研究，點選來源可開啟原文'
 
 # 來源連結：清單（insurtech_research_links_directory.md）有具體頁面者用清單連結；
@@ -55,14 +67,15 @@ for ext in list(p.part._element.iter('{http://schemas.openxmlformats.org/present
     if ext.find('{http://schemas.microsoft.com/office/powerpoint/2010/main}sectionLst') is not None:
         ext.getparent().remove(ext)
 
-def set_ph(s, idx, text, size=None):
+def set_ph(s, idx, text, size=None, bold=None):
     for ph in s.placeholders:
         if ph.placeholder_format.idx == idx:
             ph.text = text
             for para in ph.text_frame.paragraphs:
                 for r in para.runs:
-                    r.font.name = FONT
+                    style_font(r, head=idx == 0)
                     if size: r.font.size = Pt(size)
+                    if bold is not None: r.font.bold = bold
             return ph
 
 def tb(s, x, y, w, h, text, size=11, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, fill=None, line=None, margin=0.06):
@@ -82,11 +95,10 @@ def tb(s, x, y, w, h, text, size=11, bold=False, color=INK, align=PP_ALIGN.LEFT,
         for seg in segs:
             t, st = (seg, {}) if isinstance(seg, str) else seg
             r = para.add_run(); r.text = t
-            f = r.font; f.name = FONT; f.size = Pt(st.get('size', size)); f.bold = st.get('bold', bold)
+            style_font(r); f = r.font; f.size = Pt(st.get('size', size)); f.bold = st.get('bold', bold)
             f.color.rgb = st.get('color', color)
             if 'link' in st:
                 r.hyperlink.address = st['link']; f.underline = True
-                if 'color' not in st: f.color.rgb = LINK
         para.space_after = Pt(2)
     return sh
 
@@ -96,15 +108,23 @@ def circle(s, x, y, d, text, fill=OR, size=12):
     tf = c.text_frame; tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     para = tf.paragraphs[0]; para.alignment = PP_ALIGN.CENTER
-    r = para.add_run(); r.text = text; r.font.size = Pt(size); r.font.bold = True; r.font.color.rgb = WHITE; r.font.name = FONT
+    r = para.add_run(); r.text = text; r.font.size = Pt(size); r.font.bold = True; r.font.color.rgb = WHITE; style_font(r)
 
 def hline(s, x1, y1, x2, y2, color=LINE, width=1.0):
     ln = s.shapes.add_connector(1, Inches(x1), Inches(y1), Inches(x2), Inches(y2))
     ln.line.color.rgb = color; ln.line.width = Pt(width)
 
+def footer(s):
+    # python-pptx 新增投影片不會帶入頁尾與頁碼，從版面複製（頁碼為自動欄位）
+    have = {ph.placeholder_format.idx for ph in s.placeholders}
+    for ph in s.slide_layout.placeholders:
+        if ph.placeholder_format.idx in (3, 4) and ph.placeholder_format.idx not in have:
+            s.shapes._spTree.append(copy.deepcopy(ph._element))
+    set_ph(s, 3, FOOT)
+
 def content(title):
-    s = p.slides.add_slide(L['3__Pattern header'])
-    set_ph(s, 0, title, 20); set_ph(s, 3, FOOT)
+    s = p.slides.add_slide(L['只有標題'])
+    set_ph(s, 0, title, 20, bold=True); footer(s)
     return s
 
 def sources(s, items):
@@ -123,9 +143,9 @@ for i, (n, d, src, key) in enumerate(STATS):
     y = 1.4 + i * 1.72
     hot = i == 2
     tb(s, 0.45, y, 3.9, 1.58, '', fill=OR if hot else LG)
-    tb(s, 0.6, y + 0.06, 3.6, 0.65, n, size=30, bold=True, color=WHITE if hot else OR)
+    tb(s, 0.6, y + 0.06, 3.6, 0.65, n, size=32, color=WHITE if hot else OR)
     tb(s, 0.6, y + 0.72, 3.6, 0.5, d, size=11, color=WHITE if hot else INK, margin=0.03)
-    tb(s, 0.6, y + 1.24, 3.6, 0.3, [[(src, {'link': URL[key], 'color': WHITE if hot else LINK})]], size=9, margin=0.03)
+    tb(s, 0.6, y + 1.24, 3.6, 0.3, [[(src, {'link': URL[key], 'color': WHITE if hot else INK})]], size=9, margin=0.03)
 tb(s, 4.6, 1.4, 8.3, 1.1, [[('情境　', {'bold': True, 'color': OR}), ('資金與預算全面轉向 AI，保險業已從試點走向規模化。', {})],
                            [('衝突　', {'bold': True, 'color': OR}), ('多數投資還看不到回報；台灣同時面對 IFRS 17／TW-ICS 首年出表與 AI 治理要求。', {})]],
    size=12, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
@@ -183,7 +203,7 @@ sources(s, [('金管會 AI 指引', 'fsc_ai'), ('理律：AI 指引解析', 'fsc
             ('公會雲端自律規範', 'cloud_selfreg'), ('資誠 IFRS 17 關鍵議題', 'pwc_ifrs17'), ('NAIC 工作小組', 'naic'), ('MAS AI 指引', 'mas')])
 
 # ───────── 第 3 頁 競爭者 ─────────
-s = content('MBB 與四大都在推代理型 AI 藍圖或平台；我們的空間在在地確信、IFRS 17 資料與駐點人力')
+s = content('MBB 與四大都在推代理型 AI 藍圖；我們以在地確信、IFRS 17 資料與駐點人力區隔')
 COMP = [('McKinsey', 'MBB', '核保作業系統 UWOS：45 項能力、6 大領域；代理型 AI 核心現代化（原子化代理能力庫）', '商業與專業險核保、核心重寫', '在台缺在地法規確信與長期駐點人力', [('UWOS', 'mck_uwos'), ('核心現代化', 'mckinsey')]),
         ('BCG', 'MBB', '「AI-First 產險公司」三階段藍圖；亞太保險代理型 AI 白皮書（資源 70% 放在人與變革）', '策略藍圖、組織變革', '偏策略與變革設計，系統落地多需另找夥伴', [('亞太白皮書', 'bcg_ap'), ('產險藍圖', 'bcg_pc')]),
         ('Bain', 'MBB', '亞太保險公司以 AI 重塑理賠與客服案例；保險通路 GenAI 年效益逾 500 億美元（2024）', '理賠、客服、通路', '在台交付規模較小，大型核心導入人力有限', [('案例', 'bain'), ('通路研究', 'bain_dist')]),

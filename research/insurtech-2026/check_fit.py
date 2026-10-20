@@ -3,6 +3,7 @@
 import sys, math, unicodedata
 from pptx import Presentation
 from pptx.util import Emu
+from pptx.enum.shapes import PP_PLACEHOLDER
 
 EMU = 914400
 SAFE_BOTTOM = 7.05  # 頁尾上緣
@@ -39,6 +40,8 @@ def check(path):
             w, h = (shp.width or 0) / EMU, (shp.height or 0) / EMU
             if x < -0.01 or y < -0.01 or x + w > sw + 0.01 or y + h > sh + 0.01:
                 print(f'p{n}: {shp.name} 超出頁面 ({x:.2f},{y:.2f},{w:.2f},{h:.2f})'); issues += 1
+            if shp.is_placeholder and shp.placeholder_format.type in (PP_PLACEHOLDER.FOOTER, PP_PLACEHOLDER.SLIDE_NUMBER):
+                continue  # 頁尾與頁碼沿用範本字級
             if shp.has_text_frame and shp.text_frame.text.strip():
                 tf = shp.text_frame
                 ml, mr, mt, mb = margins(tf)
