@@ -181,7 +181,7 @@ for i, (q, a) in enumerate(QA):
     y = 1.9 + i * 1.0
     tb(s, 7.05, y, 5.85, 0.92, [[(q, {'bold': True, 'size': 12, 'color': OR})], a], size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
 say(s, 0.45, 5.98, 12.45, 0.68, '「我們建議先挑一個小範圍的需求，用你們現有的版本紀錄和 CI 數據，量出導入前後的差別；數字站得住，再擴大到更多團隊。」', size=11.5)
-note(s, '推案前：客戶若同時是所內審計客戶，先與 Risk & Quality 確認獨立性。完整說明、法規、服務模組與術語對照見 25 頁完整版。', y=6.7)
+note(s, '推案前：客戶若同時是所內審計客戶，先與 Risk & Quality 確認獨立性。完整說明、法規、服務模組與術語對照見 32 頁完整版。', y=6.7)
 
 p.save(OUT)
 print(OUT, len(p.slides), 'slides')
