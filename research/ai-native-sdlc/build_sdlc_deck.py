@@ -8,6 +8,7 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
 from pptx.oxml.ns import qn
 from PIL import Image, ImageChops
 
@@ -461,16 +462,19 @@ tb(s, 0.45, 5.92, 12.45, 0.65, [[('教學原則：', {'bold': True, 'color': OR}
 note(s, '各角色內容對應手冊各階段的「Getting started」與「How to execute it」。')
 
 # ───────── 19 為什麼是我們 ─────────
-s = content('為什麼是 PwC FSC1：我們自己就用這套方法工作，並且熟悉保險業務與治理要求')
-tb(s, 0.45, 1.4, 6.3, 0.42, '我們已經在做，而且有紀錄可查', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
-PROOF = [('這份簡報就是例子', '從讀手冊、拆內容、寫產生簡報的程式、自動檢查每頁文字是否超框，到裁切手冊原圖，全部在 Claude Code 中完成。'),
-         ('每一步都有版本紀錄', '我們的工作專案自 2026-10-07 起累積 85 筆版本紀錄，誰在什麼時候改了什麼都查得到，正是手冊說的稽核軌跡。'),
-         ('工作方法寫成技能', '專案中已安裝 54 個技能，包括顧問簡報方法、白話改寫、AI 短片製作流程，並記錄每個技能的來源與授權。'),
-         ('讓 AI 自己驗證', '每次產出簡報都先跑自動版面檢查，問題數為 0 才交件，就是手冊說的回饋迴圈。')]
-for i, (h, t_) in enumerate(PROOF):
+s = content('為什麼是 PwC FSC1：我們已經實際做出成果，並且熟悉保險業務與治理要求')
+tb(s, 0.45, 1.4, 6.3, 0.42, '我們已經做出來的成果（請 IT 團隊填寫）', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
+# 待填欄位：IT 團隊把實際做出來的系統放進來，橘色虛線框代表尚未填寫
+SLOTS = [('已經做出來的系統或工具', '名稱、給誰用、解決了什麼問題'),
+         ('用了手冊的哪些做法', '例如計畫模式、團隊說明檔、技能、鉤子、AI 審查、CI/CD'),
+         ('量到的成效', '導入前 → 導入後，例如需求定稿時間、審查等待時間、上線失敗率'),
+         ('可以現場示範的內容', '示範哪一段流程、需要多久、需要什麼環境')]
+for i, (h, hint) in enumerate(SLOTS):
     y = 1.9 + i * 0.92
     circle(s, 0.45, y + 0.18, 0.46, str(i + 1), size=12)
-    tb(s, 1.0, y, 5.75, 0.84, [[(h, {'bold': True, 'size': 11.5})], t_], size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    box = tb(s, 1.0, y, 5.75, 0.84, [[(h, {'bold': True, 'size': 11.5})], [('【IT 團隊填寫】' + hint, {'color': GREY})]],
+             size=10.5, fill=WHITE, line=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    box.line.dash_style = MSO_LINE_DASH_STYLE.DASH; box.line.width = Pt(1.25)
 tb(s, 7.05, 1.4, 5.85, 0.42, '我們帶給客戶的專業', size=13, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
 EDGE = [('懂保險流程', '手冊的主要範例是理賠；FSC1 熟悉理賠、核保、核心系統與 IFRS 17，能直接用客戶的業務情境設計試點。'),
         ('懂治理與控制', '能把客戶的控制目標寫成技能與鉤子，並設計稽核看得懂的紀錄。'),
@@ -481,10 +485,10 @@ for i, (h, t_) in enumerate(EDGE):
     tb(s, 7.05, y, 5.85, 0.84, [[(h, {'bold': True, 'size': 11.5, 'color': OR})], t_], size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
 tb(s, 0.45, 5.68, 12.45, 0.9, [[('下一步：', {'bold': True, 'color': OR}),
                                 ('① 30 分鐘現場示範：用客戶提供的一個需求，示範從需求說明到實作計畫。② 現況診斷。③ 選定試點、開始陪跑。', {})],
-                               [('對外前要補的證據：', {'bold': True, 'color': GREY}),
-                                ('一個可展示的內部示範專案、團隊成員背景，以及可公開的案例；目前專案還沒有團隊說明檔（CLAUDE.md），示範前補上。', {'color': GREY})]],
+                               [('填寫提醒：', {'bold': True, 'color': GREY}),
+                                ('左欄只放實際做出來、可以現場展示的成果；數字用實際量到的；不放客戶名稱與機密資料。填寫表見 IT團隊實績填寫表.md。', {'color': GREY})]],
    size=11, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
-note(s, '客戶若同時是所內審計客戶，推案前先與 Risk & Quality 確認獨立性。版本紀錄與技能數量為 2026-10-22 的專案現況。')
+note(s, '客戶若同時是所內審計客戶，推案前先與 Risk & Quality 確認獨立性。左欄填好之前，這一頁不對外使用。')
 
 # ───────── 13–14 翻譯小抄 ─────────
 GLOSS = [('SDLC', '軟體從想法到上線、再到維護的整套流程'),
