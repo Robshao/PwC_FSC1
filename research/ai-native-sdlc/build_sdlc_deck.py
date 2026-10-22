@@ -1,15 +1,17 @@
 # AI 原生軟體開發流程（AI-native SDLC）白話說明簡報：給管理層與客戶的說明版（以所內簡報範本建立）
 # 內容整理自 Anthropic《The AI-Native SDLC Playbook》，把工程用語翻成管理層聽得懂的說法
-# 用法：python3 build_sdlc_deck.py <範本.pptx> <輸出.pptx>
-import sys, copy, math
+# 用法：python3 build_sdlc_deck.py <範本.pptx> <輸出.pptx> <手冊.pdf>
+#   手冊的圖在建置時從 PDF 裁切，不放進版本控制
+import sys, copy, glob, subprocess, tempfile
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.oxml.ns import qn
+from PIL import Image, ImageChops
 
-TPL, OUT = sys.argv[1], sys.argv[2]
+TPL, OUT, PDF = sys.argv[1], sys.argv[2], sys.argv[3]
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
 # 範本佈景主題色：tx1 黑、lt2 淺灰、accent6 線條灰、accent4 中灰
 INK = RGBColor(0x00, 0x00, 0x00); GREY = RGBColor(0x59, 0x59, 0x59); LG = RGBColor(0xEB, 0xEB, 0xEB); LINE = RGBColor(0xCB, 0xD1, 0xD6)
@@ -119,6 +121,38 @@ def grid(s, x, y, cw, head, rows, rh, size=10.5, first_bold=True, head_h=0.4, ho
                fill=bg, anchor=MSO_ANCHOR.MIDDLE, margin=0.07)
             xx += cw[j]
 
+
+# ───────── 從手冊 PDF 裁切圖片 ─────────
+# (頁碼, 左, 上, 右, 下)，以頁面寬高比例表示；圖 3 是 PDF 內嵌圖片，直接抽出
+CROPS = {'fig1': (4, 0.09, 0.385, 0.91, 0.62), 'fig2': (5, 0.09, 0.335, 0.91, 0.775),
+         'intent': (13, 0.09, 0.125, 0.91, 0.50), 'plan': (20, 0.09, 0.345, 0.91, 0.675),
+         'fig4': (52, 0.09, 0.625, 0.91, 0.975)}
+TMP = tempfile.mkdtemp()
+
+def trim(im):
+    box = ImageChops.difference(im, Image.new('RGB', im.size, (255, 255, 255))).convert('L').point(lambda v: 255 if v > 12 else 0).getbbox()
+    return im.crop((max(box[0] - 6, 0), max(box[1] - 6, 0), min(box[2] + 6, im.size[0]), min(box[3] + 6, im.size[1])))
+
+FIG = {}
+for key, (n, x0, y0, x1, y1) in CROPS.items():
+    subprocess.run(['pdftoppm', '-r', '220', '-f', str(n), '-l', str(n), '-png', '-singlefile', PDF, f'{TMP}/p{n}'], check=True)
+    im = Image.open(f'{TMP}/p{n}.png').convert('RGB'); w, h = im.size
+    FIG[key] = f'{TMP}/{key}.png'
+    trim(im.crop((int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h)))).save(FIG[key])
+subprocess.run(['pdfimages', '-f', '9', '-l', '9', '-png', PDF, f'{TMP}/emb'], check=True)
+FIG['fig3'] = sorted(glob.glob(f'{TMP}/emb-*.png'))[0]
+
+def pic(s, key, x, y, w=None, h=None):
+    # 依原圖比例放入圖片，只給寬或高其中一個
+    iw, ih = Image.open(FIG[key]).size
+    if w is None: w = h * iw / ih
+    if h is None: h = w * ih / iw
+    s.shapes.add_picture(FIG[key], Inches(x), Inches(y), Inches(w), Inches(h))
+    return w, h
+
+def caption(s, x, y, w, text):
+    tb(s, x, y, w, 0.3, text, size=9, color=GREY, margin=0.02)
+
 # ───────── 1 封面 ─────────
 s = p.slides.add_slide(L['標題投影片'])
 set_ph(s, 0, 'AI 原生軟體開發流程：\n實際怎麼運作', 28)
@@ -149,61 +183,41 @@ tb(s, 0.55, 5.6, 12.35, 0.9, [[('給客戶的一句話：', {'bold': True, 'colo
    size=14, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.18)
 note(s, f'來源：{SRC}，第 3–7 頁。')
 
-# ───────── 3 為什麼要改 ─────────
+# ───────── 3 為什麼要改（手冊圖 1） ─────────
 s = content('為什麼要改：AI 把「寫程式」縮短到幾小時，等待時間移到了前後的人工步驟')
-STG = ['規劃', '設計', '開發', '測試', '上線', '維運']
-BEFORE = [1.3, 1.5, 3.9, 1.6, 1.3, 1.3]
-AFTER = [1.3, 1.5, 0.7, 1.6, 1.3, 1.3]
-for k, (lab, seq) in enumerate([('過去：每個階段都是人工速度', BEFORE), ('現在：開發縮短，其他階段沒變', AFTER)]):
-    y = 1.5 + k * 1.15
-    tb(s, 0.45, y, 12.4, 0.32, lab, size=11.5, bold=True, color=GREY)
-    x = 0.45
-    for j, w in enumerate(seq):
-        dev = j == 2
-        tb(s, x, y + 0.36, w - 0.05, 0.52, STG[j], size=11, bold=True, color=WHITE if dev else INK,
-           fill=OR if dev else LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        x += w
-    if k == 1:
-        tb(s, x, y + 0.36, 0.45 + sum(BEFORE) - x, 0.52, '省下的時間', size=11, color=OR, line=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-tb(s, 0.45, 3.85, 12.4, 0.36, '開發縮短之後，會出現三個問題', size=13, bold=True, color=OR)
+pic(s, 'fig1', 0.45, 1.45, w=7.3)
+caption(s, 0.45, 4.3, 7.3, f'圖：{SRC} 圖 1「The bottleneck moved」')
+tb(s, 8.0, 1.45, 4.9, 0.4, '這張圖怎麼看', size=13, bold=True, color=OR)
+tb(s, 8.0, 1.88, 4.9, 2.4, [[('上排「Before agents」：', {'bold': True})], '過去每個階段都靠人工，其中開發（橘色 Build）最花時間。',
+                            [('下排「After agents」：', {'bold': True})], 'AI 讓開發縮成一小段，但規劃、設計、測試、上線、維運的長度都沒變。右邊虛線框是「可以拿回來的時間」，要靠流程一起改才拿得到。'],
+   size=11, fill=LG, margin=0.14)
+tb(s, 8.0, 4.3, 4.9, 0.4, '圖中英文：Plan 規劃｜Design 設計｜Build 開發｜Test 測試｜Deploy 上線｜Maintain 維運', size=8.5, color=GREY, margin=0.02)
 CON = [('瓶頸移位', '需求、審查、上線還是人工速度，整體時間被這些步驟卡住。'),
        ('控制跟不上', '逐行人工審查，在人寫程式的年代合理；AI 寫出大部分程式後就追不上。'),
        ('治理成本上升', '例外事項還是要等每週或每月的會議，AI 做得越快，排隊越長。')]
-for i, (h, t) in enumerate(CON):
+for i, (h, t_) in enumerate(CON):
     x = 0.45 + i * 4.18
-    circle(s, x, 4.32, 0.48, str(i + 1), size=13)
-    tb(s, x + 0.6, 4.3, 3.4, 0.5, h, size=13, bold=True, anchor=MSO_ANCHOR.MIDDLE)
-    tb(s, x, 4.88, 4.0, 0.95, t, size=11.5, fill=LG, margin=0.12)
-tb(s, 0.45, 5.95, 12.45, 0.62, [[('資安審查的例子：', {'bold': True, 'color': OR}),
+    tb(s, x, 4.72, 4.0, 1.05, [[(f'{i + 1}　{h}', {'bold': True, 'size': 12.5, 'color': OR})], t_], size=11, fill=LG, margin=0.12)
+tb(s, 0.45, 5.88, 12.45, 0.7, [[('資安審查的例子：', {'bold': True, 'color': OR}),
                                 ('資安人力是依人寫程式的產量配置。程式量倍增後，不是審查排隊變長，就是沒審完就上線。受監理的機構兩者都不能接受，所以檢查也必須跟上 AI 的速度。', {})]],
    size=11, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
-note(s, f'長條長度為示意，非實測比例。來源：{SRC}，第 3–4 頁。')
+note(s, f'來源：{SRC}，第 3–4 頁。')
 
-# ───────── 4 直線變循環 ─────────
+# ───────── 4 直線變循環（手冊圖 2） ─────────
 s = content('從「一條直線」變成「一個循環」：每一步自動交棒，人在循環上方發起、指揮與把關')
-tb(s, 0.45, 1.4, 4.6, 0.42, '傳統：一條直線', size=13, bold=True, color=WHITE, fill=INK, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
-for j, st in enumerate(STG):
-    y = 1.95 + j * 0.62
-    tb(s, 0.95, y, 1.7, 0.46, st, size=12, bold=True, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-    if j < 5: arrow(s, 1.68, y + 0.47, 0.22, 0.14, MSO_SHAPE.DOWN_ARROW, fill=MID)
-tb(s, 2.8, 1.95, 2.25, 3.55, ['每個階段由不同角色負責：產品經理寫需求、架構師做設計、工程師開發、QA 測試、發布團隊上線、維運團隊監看。',
-                              '階段之間靠文件、工單、簽核交接。', '退回一次，就是一個新的版本週期。'], size=11, color=GREY, margin=0.06)
-tb(s, 5.45, 1.4, 7.45, 0.42, 'AI 原生：一個循環', size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
-CX, CY, R = 8.0, 3.95, 1.55
-c = s.shapes.add_shape(MSO_SHAPE.OVAL, Inches(CX - R), Inches(CY - R), Inches(2 * R), Inches(2 * R))
-c.fill.background(); c.line.color.rgb = OR2; c.line.width = Pt(2); c.shadow.inherit = False
-for j, st in enumerate(STG):
-    ang = -math.pi / 2 + j * 2 * math.pi / 6
-    x, y = CX + R * math.cos(ang), CY + R * math.sin(ang)
-    tb(s, x - 0.55, y - 0.24, 1.1, 0.48, st, size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, shape=MSO_SHAPE.ROUNDED_RECTANGLE)
-tb(s, CX - 0.75, CY - 0.38, 1.5, 0.76, ['AI', '每一步都參與'], size=11, bold=True, color=OR, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-tb(s, 10.0, 1.95, 2.9, 3.55, [[('交棒自動化', {'bold': True, 'color': OR})], '上一步核准的檔案，直接觸發下一步。',
-                              [('以小時計', {'bold': True, 'color': OR})], '手冊的說法是「數小時，不是數週」。',
-                              [('人在上方', {'bold': True, 'color': OR})], '人負責發起、指揮與治理，專心看 AI 標出來的重點，不必每一步從頭做起。'],
-   size=11, margin=0.06)
-tb(s, 0.45, 5.8, 12.45, 0.7, [[('白話：', {'bold': True, 'color': OR}),
-                              ('以前是「做完一段、交給下一組人、等簽核」；現在每一段做完就把檔案交出去，下一段立刻接手，人只在關卡上做決定。', {})]],
-   size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
+pw, ph = pic(s, 'fig2', 0.45, 1.45, h=4.1)
+caption(s, 0.45, 5.58, pw, f'圖：{SRC} 圖 2「The line and the loop」')
+x0 = 0.45 + pw + 0.35; ww = 12.9 - x0
+tb(s, x0, 1.45, ww, 0.4, '這張圖怎麼看', size=13, bold=True, color=OR)
+tb(s, x0, 1.88, ww, 3.65, [[('左邊「Traditional — the line」傳統的直線：', {'bold': True})],
+                           '六個階段由不同角色依序負責，靠文件、工單、簽核交接。只要退回一次，就等於重新開始一個版本週期。',
+                           [('右邊「AI-native — the loop」AI 原生的循環：', {'bold': True})],
+                           'AI（圖中的 Claude）在中間參與每一個階段。上一步核准的檔案直接觸發下一步，手冊的說法是「以小時計，不是以週計」。',
+                           [('人在循環上方：', {'bold': True})], '人負責發起、指揮與治理，專心看 AI 標出來的重點，不必每一步從頭做起。'],
+   size=11.5, fill=LG, margin=0.14)
+tb(s, 0.45, 5.92, 12.45, 0.65, [[('白話：', {'bold': True, 'color': OR}),
+                                 ('以前是「做完一段、交給下一組人、等簽核」；現在每一段做完就把檔案交出去，下一段立刻接手，人只在關卡上做決定。', {})]],
+   size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
 note(s, f'來源：{SRC}，第 5、8–9 頁。')
 
 # ───────── 5 六階段對照 ─────────
@@ -238,6 +252,28 @@ tb(s, 0.45, 5.15, 12.45, 0.95, [[('BA 的觀察：', {'bold': True, 'color': OR}
                                 ('整個過程中，人做了三件事：說清楚問題（第 1 步）、決定要不要做（第 2 步）、決定能不能上線（第 6 步）。其餘起草、計畫、寫程式、測試、初審都由 AI 先做，再交給人看。', {})]],
    size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
 note(s, f'深橘為人做決定的步驟。數字（三分之一通話時間、每秒 50 次）為手冊示例，非實際客戶資料。來源：{SRC}，第 12–20、48–52 頁。')
+
+# ───────── 6b 手冊範例原文 ─────────
+s = content('手冊範例原文：需求說明與實作計畫長什麼樣子（附中文翻譯）')
+EXS = [('intent', '需求說明（intent.md）：理賠部門同仁和 AI 討論後產出', 0.45,
+        ['標題：理賠進度自助查詢｜提出者：理賠作業 J. Ortiz｜狀態：草稿',
+         '問題：客戶打電話問理賠進度，處理人員約三分之一通話時間只在回答進度。',
+         '期望結果：客戶在網站上看到理賠狀態、下一步與預計日期。',
+         '影響對象：理賠人員、網站團隊、理賠核心系統 API。',
+         '限制：網站不新增個資，只用現有登入方式。',
+         '待釐清：外部理賠公估人是否也需要使用？']),
+       ('plan', '實作計畫（plan.md）：工程師核准後才開始寫程式', 6.85,
+        ['標題：理賠進度自助查詢（依 2026-06-02 的需求說明）',
+         '要改的檔案：網站理賠狀態面板（新增）、理賠 API 路由與測試。',
+         '工作順序：① 在現有驗證下新增狀態 API　② 面板串接 API　③ 放進網站選單。',
+         '風險：理賠核心 API 每秒最多 50 次請求，面板必須做快取。',
+         '完成證明：測試涵蓋四種理賠狀態；畫面截圖與核准的設計稿一致。'])]
+for key, head, x, lines in EXS:
+    tb(s, x, 1.42, 6.05, 0.4, head, size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
+    iw, ih = Image.open(FIG[key]).size
+    pic(s, key, x + (6.05 - 2.95 * iw / ih) / 2, 1.88, h=2.95)
+    tb(s, x, 4.92, 6.05, 1.68, [[('中文翻譯', {'bold': True, 'color': OR, 'size': 10})]] + lines, size=9.5, fill=TINT, margin=0.1)
+note(s, f'圖：{SRC} 第 13、20 頁。兩份檔案都是一般文字，產品負責人和 AI 都能直接閱讀與修改；內容為手冊示例，非客戶資料。')
 
 # ───────── 7 稽核軌跡 ─────────
 s = content('每一步都留下紀錄：串起來就是一條完整的稽核軌跡，回答「誰要了什麼、誰核准」')
@@ -280,6 +316,24 @@ tb(s, 0.55, 5.75, 12.35, 0.78, [[('原則：', {'bold': True, 'color': OR}),
    size=13, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.18)
 note(s, f'來源：{SRC}，第 13、17、20、39、46 頁。')
 
+# ───────── 8b 事件頻道（手冊圖 4） ─────────
+s = content('上線後出事怎麼辦：AI 在事件頻道當第一線回應，但「要不要回復」由人說了算')
+pw, ph = pic(s, 'fig4', 0.45, 1.45, w=6.6)
+caption(s, 0.45, 1.5 + ph, 6.6, f'圖：{SRC} 圖 4「A first responder in the incident channel」')
+CHAT = [('22:04', 'R. Mehta（工程師）', '結帳頁的 5xx 錯誤率從 21:40 上版後一直上升，@claude 幫忙看一下？', False),
+        ('22:07', 'Claude', '處理中，正在比對錯誤特徵與這次上版的差異。原因看起來是新的快取鍵漏掉了租戶 ID。今天早上已在測試環境演練過回復，要執行嗎？', False),
+        ('22:08', 'R. Mehta（工程師）', '執行。', True),
+        ('22:12', 'Claude', '已回復。5xx 錯誤率回到正常範圍，事後檢討已寫入 lessons/2026-06-checkout-cache.md。', False)]
+tb(s, 7.35, 1.45, 5.55, 0.4, '對話中文翻譯', size=13, bold=True, color=OR)
+for i, (tm, who, msg, key) in enumerate(CHAT):
+    y = 1.9 + i * 0.86
+    tb(s, 7.35, y, 5.55, 0.8, [[(f'{tm}　{who}', {'bold': True, 'size': 10.5, 'color': OR if key else INK})], msg],
+       size=10.5, fill=TINT if key else LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+tb(s, 0.45, 5.45, 12.45, 1.1, [[('重點：', {'bold': True, 'color': OR}),
+                                ('AI 先診斷原因並提出建議，但只有工程師回覆「執行」之後才回復上一版。請求、診斷、人的授權、處理結果都留在同一個頻道，頻道本身就是稽核軌跡；事後檢討寫成檔案，下次遇到類似事件可以直接參考。', {})]],
+   size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
+note(s, f'Claude Tag 在手冊撰寫時為 Slack 上的公開測試版，對客戶說明前先確認現況。來源：{SRC}，第 52 頁。')
+
 # ───────── 9 控制機制 ─────────
 s = content('控制機制白話版：規範手冊讓 AI 照著做，自動閘門讓違規做不到')
 CTRL = [('技能（Skill）', 'AI 會讀的公司規範手冊', '資安、API、品牌規範寫成檔案，AI 寫程式時自動套用。規範改了，大家下一次使用就是新版。', '建議性：讓違規變少'),
@@ -318,6 +372,25 @@ tb(s, 0.45, 5.92, 12.45, 0.55, [[('建議：', {'bold': True, 'color': OR}), ('�
    size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
 note(s, f'整體交付績效可再搭配業界常用的 DORA 指標（部署頻率、交付時間、變更失敗率、復原時間）。來源：{SRC}，各階段「How to measure it」。', y=6.62)
 
+# ───────── 11b 導入順序圖（手冊圖 3） ─────────
+s = content('導入順序圖：橘色項目不需要任何前置條件，可以先做；箭頭代表誰要先於誰')
+pw, ph = pic(s, 'fig3', 0.45, 1.45, w=8.2)
+caption(s, 0.45, 1.5 + ph, 8.2, f'圖：{SRC} 圖 3「The play dependency graph」')
+tb(s, 8.95, 1.45, 3.95, 0.4, '圖中方塊中文對照', size=13, bold=True, color=OR)
+DEPS = [('Capture intent', '記錄需求（需求說明）', True), ('Requirements & design', '需求與設計規格', False), ('Skills', '技能（規範手冊）', False),
+        ('CLAUDE.md', '團隊說明檔', True), ('Subagents', '子代理', False), ('Plan mode', '計畫模式', True), ('Evals', '持續評測', False),
+        ('Feedback loop', 'AI 自我驗證', True), ('PR review', 'PR 審查', False), ('CI/CD', '自動化流水線', False), ('Hooks', '鉤子（自動閘門）', True),
+        ('Closing the loop', '閉環維運', False)]
+for i, (en, zh, entry) in enumerate(DEPS):
+    y = 1.9 + i * 0.37
+    tb(s, 8.95, y, 1.95, 0.33, en, size=9.5, bold=True, color=WHITE if entry else INK, fill=OR if entry else LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.06)
+    tb(s, 10.95, y, 1.95, 0.33, zh, size=10, anchor=MSO_ANCHOR.MIDDLE, margin=0.04)
+tb(s, 0.45, 5.0, 8.2, 1.55, [[('怎麼讀：', {'bold': True, 'color': OR})],
+                             '圖由左到右分成規劃、設計、開發、測試、上線、維運六欄。橘色方塊是入口，不需要先做任何事就能開始；實線箭頭表示「A 要先於 B」；虛線表示「有幫助但不是必要」。',
+                             '例如：PR 審查要等團隊說明檔與技能到位，閉環維運則要等審查、鉤子與 CI/CD 都準備好，所以放在最後。'],
+   size=11, fill=TINT, margin=0.14)
+note(s, f'來源：{SRC}，第 8–9 頁。')
+
 # ───────── 12 怎麼開始 ─────────
 s = content('怎麼開始：先做不需要前置條件的項目，再一步一步把循環接起來')
 PH = [('第一步｜先做', '不需要任何前置條件', ['需求說明範本（intent.md）', '團隊說明檔（CLAUDE.md）', '把一條常被漏掉的規範寫成技能', '讓 AI 自己跑測試再交件', '用鉤子守住現有的核准關卡']),
@@ -332,7 +405,7 @@ tb(s, 0.45, 5.2, 12.45, 1.3, [[('第一個試點怎麼挑：', {'bold': True, 'c
                               '依手冊建議，挑「規格清楚、影響範圍小、已經有測試覆蓋」的日常工作。先用人工逐步帶著 AI 做，關卡穩定後，再讓核准過的檔案自動觸發下一步。',
                               [('提醒：', {'bold': True, 'color': OR}), ('自動化要在核准關卡都到位之後才做，否則只是讓沒把關的東西更快上線。', {})]],
    size=12, fill=TINT, margin=0.16)
-note(s, f'來源：{SRC}，第 8–9 頁（相依關係圖）、第 21、44 頁。', y=6.62)
+note(s, f'各項目的先後順序見上一頁導入順序圖。來源：{SRC}，第 8–9、21、44 頁。', y=6.62)
 
 # ───────── 13–14 翻譯小抄 ─────────
 GLOSS = [('SDLC', '軟體從想法到上線、再到維護的整套流程'),
