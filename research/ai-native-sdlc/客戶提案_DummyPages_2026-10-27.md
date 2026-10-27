@@ -1,5 +1,7 @@
 # AI 原生軟體開發：客戶提案簡報｜頁面設計稿（Dummy Pages）
 
+> 第一版（26 頁）設計稿。依 Sam 審閱意見，客戶版已改為正文 14 頁＋附錄 2 頁，修改紀錄見內部小組會議版第 4 頁。
+
 - 建立日期：2026-10-27｜總頁數：26｜主軸：四個面向（面向誰 Face who、解決什麼問題 Solve what problem、帶來什麼價值 Bring what value、可擴充與可複製 Extendable, duplicable）
 - 核心價值主張：讓保險公司用 AI 加快系統交付，同時守住法規、留下每一步紀錄，並把做法變成團隊可以重複使用的能力。
 - 產生方式：`python3 build_proposal_deck.py <範本.pptx> AI原生開發_客戶提案簡報.pptx <手冊.pdf>`

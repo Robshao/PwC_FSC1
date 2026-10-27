@@ -99,9 +99,14 @@
 | 8 | 下一步與分工 |
 | 9 | 附錄：來源 |
 
-## 客戶提案簡報（26 頁）
+## 客戶提案簡報（正文 14 頁＋附錄 2 頁）
 
-- `AI原生開發_客戶提案簡報.pptx`／`.pdf`：以四個面向（面向誰、解決什麼問題、帶來什麼價值、可擴充與可複製）為主軸，把 AI 原生開發框架包成可銷售的方案。每頁右上方標示「事實」「建議」「示意」「待確認」。
-- `build_proposal_deck.py`：`python3 build_proposal_deck.py <範本.pptx> AI原生開發_客戶提案簡報.pptx <手冊.pdf>`
-- `客戶提案_DummyPages_2026-10-27.md`：頁面設計稿、Issue Tree 與待補事項。
-- 對外前：第 11 頁 IT 實績待填；附錄 B 點名同業，確認是否保留；期程為示意、價格不列。
+- `AI原生開發_客戶提案簡報.pptx`／`.pdf`：以四個面向（面向誰 Who we serve、解決什麼問題 Problems we solve、帶來什麼價值 Value we deliver、可擴充與可複製 Scalable and repeatable）為主軸。依 Sam 審閱意見修改：不標內部標籤、不點名同業、循環圖自繪且不綁特定 AI 工具、對外只推「準備度診斷 → 陪你做試點」、價值以「試點成功標準」回答、新增保險業 AI 開發法規檢查清單。
+- `build_proposal_deck.py`：`python3 build_proposal_deck.py <範本.pptx> AI原生開發_客戶提案簡報.pptx`
+- 對外前：第 8 頁 IT 實作成果待填（未填前不對外）；第 9 頁法規檢查清單待法遵確認；期程為建議，價格依範圍報價。
+
+## 提案內部小組會議版（11 頁）
+
+- `AI原生開發提案_內部小組會議版.pptx`／`.pdf`：客戶版定稿前的內部對齊：故事線、Sam 審閱的 11 項修改與狀態、法規檢查清單與試點成功標準、四種方案的對外策略、我們自己的產品化邏輯（含點名同業）、要拍板的七件事與時程。
+- `build_proposal_internal.py`：`python3 build_proposal_internal.py <範本.pptx> AI原生開發提案_內部小組會議版.pptx`
+- `客戶提案_DummyPages_2026-10-27.md`：第一版（26 頁）的頁面設計稿與 Issue Tree，保留作為紀錄。
