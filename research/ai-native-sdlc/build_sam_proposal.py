@@ -307,9 +307,9 @@ tb(s, 0.45, 5.4, 12.45, 0.85, [[('優先客群的條件：', {'bold': True, 'col
 section('02', '解決什麼問題\nProblems we solve', '解決什麼問題')
 
 s = content('AI 已普及，但交付沒有跟著變好：AI 放大原有的流程與治理',
-            '開發者與技術團隊的 AI 使用率已達八至九成；但 DORA 2025 指出，交付速度提升，穩定度仍下降。')
+            'AI 使用率已達八至九成，但交付穩定度下降；DORA 2026 指出，只買授權不保證回報。')
 mark('tools')
-# 上排：AI 已普及的五個數字；下排：交付表現、開發者信任與研究結論
+# 上排：AI 已普及的五個數字；下排：交付表現、既有系統的效益、DORA 2026 結論
 STATS = [('開發者', '84%', '正在使用或計畫使用 AI 工具'), ('技術團隊', '約 90%', '在工作中使用 AI'),
          ('JPMorgan', '10–20%', '工程師生產力提升（公司自述）'), ('Citi', '3 萬名', '開發者導入 AI 寫程式助手'),
          ('保險業', '57%', '高階主管把生成式 AI 列為 2026 年首要科技投資')]
@@ -319,8 +319,8 @@ for i, (h, big, t) in enumerate(STATS):
     tb(s, x, 1.45, w, 0.4, h, size=12, bold=True, color=WHITE, fill=OR if i < 4 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
     tb(s, x, 1.9, w, 1.15, [[(big, {'bold': True, 'size': 24, 'color': OR})], [(t, {'size': 10.5})]], fill=LG if i < 4 else TINT, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
 COLS = [('交付表現（DORA 2025）', [('↑', '交付速度：轉為正相關'), ('↓', '交付穩定度：仍為負相關')]),
-        ('開發者的信任', [('46%', '不信任 AI 產出的準確度'), ('約 30%', '很少或不信任 AI 寫的程式')]),
-        ('研究結論', [('放大器', 'AI 放大組織原有的優點與缺點；架構鬆耦合、回饋快的團隊才受益')])]
+        ('既有系統的效益較小', [('35–40%', '新開發的簡單任務'), ('≤ 10%', '複雜的既有系統（常見）')]),
+        ('研究結論（DORA 2026）', [('放大器', '回報來自內部平台、清楚的流程與團隊協作，不是工具本身')])]
 for i, (h, nums) in enumerate(COLS):
     x = 0.45 + i * 4.18
     tb(s, x, 3.25, 4.05, 0.42, h, size=12.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
@@ -328,8 +328,8 @@ for i, (h, nums) in enumerate(COLS):
         hh = 1.5 / len(nums)
         tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 11.5})]], fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
 callout(s, 5.42, '所以：', '效益取決於流程與治理，不取決於買了哪個工具。導入 AI 時，需求、審查、上線與控制方式要一起改，這正是我們協助的部分。', h=0.7, size=12)
-note(s, '來源：Stack Overflow 2025；Google DORA 2024、2025；JPMorgan（公司自述）；Deloitte Insights 2025；PwC 保險高階主管調查。完整連結見附錄 ⟦app:src⟧。', y=6.22)
-note(s, 'DORA 2024 模型估計：AI 採用率每增加 25%，穩定度 −7.2%、速度 −1.5%。保險業公開具名案例仍少，保險公司仍有先行機會；顧問業者已推出相關方案（附錄 ⟦app:peers⟧）。', y=6.52)
+note(s, '來源：Stack Overflow 2025；Google DORA 2024、2025、2026；JPMorgan（公司自述）；Deloitte Insights 2025；PwC 保險高階主管調查。完整連結見附錄 ⟦app:src⟧。', y=6.22)
+note(s, '既有系統的生產力數字為 DORA 2026 引述的 Stanford 研究。DORA 2024 模型估計：AI 採用率每增加 25%，穩定度 −7.2%、速度 −1.5%。顧問業者已推出相關方案（附錄 ⟦app:peers⟧）。', y=6.52)
 
 s = content('我們的解法：把開發流程串成循環，用三個機制守住',
             'AI 參與每一步；接受需求、核准合併、授權上線等五個關鍵決定，由貴公司指定的人做。')
@@ -340,7 +340,7 @@ ROWS = [['交接靠檔案', '需求說明 → 規格 → 實作計畫 → 測試
         ['關卡有人簽', '接受需求、確認規格、核准計畫、核准合併、授權上線，五個決定由指定的人做', '怕失控、稽核查不到']]
 grid(s, 5.2, 1.45, [1.75, 3.9, 2.05], ['機制', '怎麼運作', '解決的問題'], ROWS, 1.12, size=11.5)
 callout(s, 5.7, '原則：', 'AI 可以一路做到正式環境的門口，但不能自己開門。本方法不綁特定 AI 工具，依貴公司政策與合約選定。', h=0.75)
-note(s, f'流程整合自 {V3}，並參考業界公開的 AI 原生 SDLC 框架（附錄 ⟦app:src⟧）。', y=6.5)
+note(s, f'流程整合自 {V3}。DORA 2026 建議以不可略過的檢查點、提交前自動檢查、小批次與版本控制承接 AI 帶來的審查負擔，與三個機制一致（附錄 ⟦app:src⟧）。', y=6.45)
 
 s = content('AI 分工：重複、判斷少的先交給 AI；關鍵決定永遠由人做',
             '依任務「多常發生 × 需要判斷」分四類；第一個試點用例，優先挑左上角工作多的需求。')
@@ -392,8 +392,9 @@ ROWS = [['需求來回多輪', '業務和 AI 一起寫需求說明', '新功能�
         ['上線出錯', 'AI 每次改動自行測試', '上線事故減少', '變更失敗率、復原時間（DORA，擴大階段）'],
         ['法規與稽核壓力', '規範規則＋自動關卡＋紀錄', '金檢與內稽時拿得出佐證', '內稽調閱佐證所需時間'],
         ['交付慢且難預期', '每階段交出檔案，下一步直接接手', '交付時間可預期', '交付時間、部署頻率（DORA，擴大階段）']]
-grid(s, 0.45, 1.45, [2.4, 3.2, 3.2, 3.65], ['痛點', '→ 解決方式', '→ 商業價值', '→ 衡量指標'], ROWS, 0.92, size=11.5)
-note(s, 'DORA 四項指標（部署頻率、交付時間、變更失敗率、復原時間）為業界通用的交付績效指標。效益不預先承諾數字，以實測為準。', y=6.45)
+grid(s, 0.45, 1.45, [2.4, 3.2, 3.2, 3.65], ['痛點', '→ 解決方式', '→ 商業價值', '→ 衡量指標'], ROWS, 0.84, size=11.5)
+note(s, 'DORA 四項指標（部署頻率、交付時間、變更失敗率、復原時間）為業界通用的交付績效指標。效益不預先承諾數字，以實測為準。', y=6.25)
+note(s, 'DORA 2026：回收期 6–9 個月是敏捷團隊的優異目標；需要大量治理的大型企業導入，12–18 個月屬可接受。', y=6.55)
 
 s = content('你買到什麼：先診斷，再做一個用例的試點',
             '成功標準在試點前雙方講好，達標才擴大；固定範圍、固定價格，金額另行報價。', tags=('建議', '示意'))
@@ -439,7 +440,8 @@ tb(s, 9.95, 1.45, 2.95, 4.57, [[('為什麼這樣做', {'bold': True, 'color': O
                                [('風險小：', {'bold': True}), ('第一步只動一個用例。', {})],
                                [('成本可控：', {'bold': True}), ('每一步只承諾下一步。', {})],
                                [('有數據才擴大：', {'bold': True}), ('每一步都對照同一套指標。', {})],
-                               [('越做越快：', {'bold': True}), ('範本與規則沿用，下一個用例不必從頭來。', {})]], size=11.5, fill=LG, margin=0.16)
+                               [('越做越快：', {'bold': True}), ('範本與規則沿用，下一個用例不必從頭來。', {})],
+                               [('先講好 J 曲線：', {'bold': True}), ('DORA 2026 指出導入初期會有短暫下滑，常見的失敗是在低谷時撤資；成功標準與期間事先講好。', {})]], size=11, fill=LG, margin=0.16)
 note(s, '各用例可沿用與需客製的內容、延伸到其他系統與產業的方式，見附錄 ⟦app:ext⟧。', y=6.2)
 
 s = content('如何開始：先看現場示範，再挑一個用例',
@@ -520,9 +522,10 @@ if INTERNAL:
     grid(s, 0.45, 1.45, [1.6, 3.3, 3.2, 4.35], ['主題', '研究一：FSC1 開發流程 v3', '研究二：AI 原生 SDLC 說明', '本提案的取捨與原因'], ROWS, 0.78, size=10.5)
 
 s = content(f'附錄 {appendix("src")}｜資料來源', '本提案引用的外部研究、法規與內部研究。')
-SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%、46%）', 'https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/'),
+SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%）', 'https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/'),
         ('Google Cloud，Announcing the 2024 DORA report（−1.5%、−7.2%）', 'https://cloud.google.com/blog/products/devops-sre/announcing-the-2024-dora-report'),
-        ('Google Cloud，Announcing the 2025 DORA report（約 90%、約 30%、速度與穩定度、放大器）', 'https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report'),
+        ('Google Cloud，Announcing the 2025 DORA report（約 90%、速度與穩定度）', 'https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report'),
+        ('DORA，The ROI of AI-assisted Software Development，v.2026.1（放大器、J 曲線、既有系統效益、回收期）', 'https://services.google.com/fh/files/misc/dora-roi-of-ai-assisted-software-development-2026.pdf'),
         ('InfoQ，DORA 2025 State of AI-assisted Software Development 整理', 'https://www.infoq.com/news/2025/09/dora-state-of-ai-in-dev-2025'),
         ('Yahoo Finance，JPMorgan 工程師使用寫程式助手效率提升至多 20%，2025-03', 'https://finance.yahoo.com/news/jpmorgan-engineers-efficiency-jumps-much-190410471.html'),
         ('Deloitte Insights，AI and bank software development，2025（Citi 3 萬名開發者）', 'https://www.deloitte.com/global/en/insights/industry/financial-services/financial-services-industry-predictions/2025/ai-and-bank-software-development.html'),
@@ -535,7 +538,7 @@ SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%、46%）', 'htt
         (f'研究一：{V3}；研究二：AI 原生 SDLC 說明，整理自 {PB}', None)]
 for i, (lab, url) in enumerate(SRCS):
     seg = (lab, {'link': url}) if url else (lab, {})
-    tb(s, 0.45, 1.45 + i * 0.38, 12.45, 0.35, [[(f'{i + 1}. ', {'bold': True, 'color': OR}), seg]], size=10, fill=LG if i % 2 == 0 else WHITE, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+    tb(s, 0.45, 1.45 + i * 0.355, 12.45, 0.33, [[(f'{i + 1}. ', {'bold': True, 'color': OR}), seg]], size=10, fill=LG if i % 2 == 0 else WHITE, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
 note(s, '「−1.5%」「−7.2%」為 AI 採用率每增加 25% 的模型估計；JPMorgan 數字為公司自述。', y=6.5)
 
 # ───────── 代換頁碼、附錄代號與議程頁碼範圍 ─────────
