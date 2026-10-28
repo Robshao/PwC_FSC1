@@ -2,9 +2,10 @@
 # 章節沿用四個面向（面向誰、解決什麼問題、帶來什麼價值、可擴充與可複製）；外部證據經查核後引用原始出處；
 # IT 現場示範為主要實證，示範畫面待 IT 團隊提供；不含任何個人姓名，同業公司名稱只在附錄
 # 版面：內容頁用範本「3__Pattern header」（灰底頁首＋左側橘條），標題下一句結論；字型 Georgia＋微軟正黑體
-# 用法：python3 build_sam_proposal.py <範本.pptx> <輸出.pptx> [--client]
+# 用法：python3 build_sam_proposal.py <範本.pptx> <輸出.pptx> [--client] [--demo <示範素材資料夾>]
+#   示範素材由 build_it_demo_assets.py 產生；沒有帶 --demo 時，現場示範頁保留待填框
 #   預設為合夥人審閱版（含「請 Sam 決定」內部頁與研究整合附錄）；--client 產生客戶版，不含內部頁
-import sys, copy, math, re
+import sys, os, copy, math, re
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -14,6 +15,7 @@ from pptx.oxml.ns import qn
 
 TPL, OUT = sys.argv[1], sys.argv[2]
 INTERNAL = '--client' not in sys.argv[3:]
+DEMO = sys.argv[sys.argv.index('--demo') + 1] if '--demo' in sys.argv else None
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
 # 範本佈景主題色：tx1 黑、lt2 淺灰、accent6 線條灰、accent4 中灰；範本不用純黑色塊，深色塊用深灰
 INK = RGBColor(0x00, 0x00, 0x00); GREY = RGBColor(0x59, 0x59, 0x59); LG = RGBColor(0xEB, 0xEB, 0xEB); LINE = RGBColor(0xCB, 0xD1, 0xD6)
@@ -208,6 +210,14 @@ CHECK = [['是否屬作業委外、是否需依規定辦理', '保險業作業�
 # 試點驗收指標：都量得到、也可能不達標；核准紀錄完整是流程內建的必要條件，不當成效指標
 KPI = ['需求定稿時間', '第一次審查等待時間', '返工次數']
 
+def pic(s, path, x, y, w, h):
+    # 圖片等比縮放後置中放進方框（方框以內容頁座標表示）
+    from PIL import Image
+    iw, ih = Image.open(path).size
+    bx, by, bw, bh = x, Y(y), w, H(h)
+    k = min(bw / iw, bh / ih); pw, ph = iw * k, ih * k
+    return s.shapes.add_picture(path, Inches(bx + (bw - pw) / 2), Inches(by + (bh - ph) / 2), Inches(pw), Inches(ph))
+
 def cards(s, items, y=1.45, h_big=0.95, h_txt=1.6):
     # 大數字卡：(標題, 大數字, 說明, 來源)
     n = len(items); w = (12.45 - 0.13 * (n - 1)) / n
@@ -232,7 +242,7 @@ if INTERNAL:
                 '建議：同意以「診斷＋一個用例試點」接觸 1–2 家保險公司；第 ⟦p:demo⟧ 頁示範完成後再對外。', tags=('內部',))
     COLS = [('請您決定', ['① 是否同意以本提案接觸首批客戶（候選名單：' + TODO + '）',
                          '② 附錄 ⟦app:peers⟧ 對客戶是否保留同業公司名稱',
-                         '③ 指派 IT 同仁完成第 ⟦p:demo⟧ 頁示範畫面（目標日期：' + TODO + '）',
+                         '③ 請 IT 確認第 ⟦p:demo⟧ 頁示範素材可對外使用，並補一張合併核准紀錄截圖' if DEMO else '③ 指派 IT 同仁完成第 ⟦p:demo⟧ 頁示範畫面（目標日期：' + TODO + '）',
                          '④ 試點帶隊人：' + TODO]),
             ('推案前要先確認', ['・獨立性：候選客戶若為審計客戶，先經 R&Q 確認（尚未檢查）',
                               '・客戶關係：先取得負責該客戶的合夥人同意',
@@ -292,7 +302,7 @@ AG = [('1', '面向誰', '保險公司為什麼現在要做、優先服務誰', 
       ('2', '解決什麼問題', '全球趨勢與只買工具為什麼不夠、我們的解法、AI 分工、現場示範', '02'),
       ('3', '帶來什麼價值', '價值與衡量、給法遵與風控、你買到什麼、為什麼選我們', '03'),
       ('4', '可擴充、可複製', '從一個用例逐步擴大、如何開始', '04'),
-      ('5', '附錄', '示範情境、延伸方式、同業參考、法規清單、試點風險、' + ('研究整合、' if INTERNAL else '') + '資料來源', 'A')]
+      ('5', '附錄', '示範情境、延伸方式、同業參考、法規清單、' + ('示範追溯、' if DEMO else '') + '試點風險、' + ('研究整合、' if INTERNAL else '') + '資料來源', 'A')]
 for i, (n, h, d, key) in enumerate(AG):
     y = 1.5 + i * 0.95
     circle(s, 0.6, y + 0.13, 0.55, n, fill=WHITE, color=OR, line=OR, size=14)
@@ -385,21 +395,43 @@ tb(s, 8.75, 1.5, 4.15, 4.4, [[('對貴公司的意義', {'bold': True, 'color': 
                              [('依實際專案調整：', {'bold': True}), ('分類在準備度診斷時，依貴公司的專案與規範確認（第 ⟦p:offer⟧ 頁）。', {})]], size=12, fill=LG, margin=0.18)
 note(s, f'整理自 FSC1 開發流程實務；方法參考 {SMR}。分類為初步判斷。', y=6.45)
 
-s = content('現場示範：用一個用例走完從需求到上線的每一步',
-            'FSC1 已在使用這套做法；現場可用貴公司提供的一個需求，走完以下五個步驟。', tags=('待確認',))
-mark('demo')
-FR = [('需求說明', '業務需求 → AI 追問 → 定稿'), ('規格與規範', 'AI 起草，自動套用規範'), ('實作計畫', '核准前 AI 不能改程式'), ('程式與測試', 'AI 自己跑測試'), ('核准與紀錄', '誰核准、何時，查得到')]
-W = 2.41
-for i, (h, t) in enumerate(FR):
-    x = 0.45 + i * (W + 0.1)
-    tb(s, x, 1.45, W, 0.45, f'{i + 1}　{h}', size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
-    tb(s, x, 1.95, W, 1.9, '【IT 示範畫面】', size=11, bold=True, color=MID, fill=WHITE, line=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-    tb(s, x, 3.9, W, 0.55, t, size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
-PROVE = [('不是概念', '我們自己已經在用，畫面是實際操作'), ('每一步可稽核', '每個關卡都有人核准、留下紀錄'), ('一個用例就能開始', '不需要先改造整個 IT 部門')]
-for i, (h, t) in enumerate(PROVE):
-    x = 0.45 + i * 4.18
-    tb(s, x, 4.65, 4.05, 1.05, [[(f'證明 {i + 1}：{h}', {'bold': True, 'color': OR, 'size': 12.5})], t], size=11.5, fill=TINT, margin=0.14)
-note(s, '示範畫面由 FSC1 IT 團隊提供，使用假資料，不含任何客戶資料。現場示範可用貴公司提供的一個需求進行。', y=5.9)
+if DEMO:
+    # IT 團隊交付的示範：再保險系統主檔模組（TASK-000013 任務包與錄影），文件為原文節錄
+    s = content('現場示範：再保險系統主檔模組，從業務規則到上線畫面',
+                '以 FSC1 IT 團隊的實作為例：業務規則、規格、任務與測試一路相連，每一步都留下文件與紀錄。', tags=('待確認',))
+    mark('demo')
+    FR = [('需求說明', '7 條業務規則，含制裁主管覆核'), ('規格與規範', '6 份規格，各有審閱週期'), ('實作計畫', '列明驗收場景，最多改 5 個檔案'),
+          ('程式與測試', '10 個測試案例，覆蓋率 > 90%'), ('核准與紀錄', '任務回溯規則代碼，寫入審計')]
+    W = 2.41
+    for i, (h, t) in enumerate(FR):
+        x = 0.45 + i * (W + 0.1)
+        tb(s, x, 1.45, W, 0.42, f'{i + 1}　{h}', size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+        tb(s, x, 1.9, W, 1.85, '', fill=WHITE, line=LINE)
+        pic(s, os.path.join(DEMO, f'step{i + 1}.png'), x + 0.03, 1.93, W - 0.06, 1.79)
+        tb(s, x, 3.8, W, 0.55, t, size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
+    SCR = [('currencies', '結算幣別選單：清單'), ('countries', '國家選單：新增'), ('regions', '區域選單：新增與提醒')]
+    for i, (k, cap) in enumerate(SCR):
+        x = 0.45 + i * 4.18
+        tb(s, x, 4.5, 4.05, 1.62, '', fill=WHITE, line=LINE)
+        pic(s, os.path.join(DEMO, f'screen_{k}.png'), x + 0.03, 4.53, 3.99, 1.56)
+        tb(s, x, 6.14, 4.05, 0.3, cap, size=10, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.02)
+    note(s, '文件為 TASK-000013「金融機構主檔」任務包原文節錄；畫面取自同一系統的示範錄影，使用測試資料。追溯表見附錄 ⟦app:trace⟧。', y=6.55)
+else:
+    s = content('現場示範：用一個用例走完從需求到上線的每一步',
+                'FSC1 已在使用這套做法；現場可用貴公司提供的一個需求，走完以下五個步驟。', tags=('待確認',))
+    mark('demo')
+    FR = [('需求說明', '業務需求 → AI 追問 → 定稿'), ('規格與規範', 'AI 起草，自動套用規範'), ('實作計畫', '核准前 AI 不能改程式'), ('程式與測試', 'AI 自己跑測試'), ('核准與紀錄', '誰核准、何時，查得到')]
+    W = 2.41
+    for i, (h, t) in enumerate(FR):
+        x = 0.45 + i * (W + 0.1)
+        tb(s, x, 1.45, W, 0.45, f'{i + 1}　{h}', size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+        tb(s, x, 1.95, W, 1.9, '【IT 示範畫面】', size=11, bold=True, color=MID, fill=WHITE, line=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        tb(s, x, 3.9, W, 0.55, t, size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
+    PROVE = [('不是概念', '我們自己已經在用，畫面是實際操作'), ('每一步可稽核', '每個關卡都有人核准、留下紀錄'), ('一個用例就能開始', '不需要先改造整個 IT 部門')]
+    for i, (h, t) in enumerate(PROVE):
+        x = 0.45 + i * 4.18
+        tb(s, x, 4.65, 4.05, 1.05, [[(f'證明 {i + 1}：{h}', {'bold': True, 'color': OR, 'size': 12.5})], t], size=11.5, fill=TINT, margin=0.14)
+    note(s, '示範畫面由 FSC1 IT 團隊提供，使用假資料，不含任何客戶資料。現場示範可用貴公司提供的一個需求進行。', y=5.9)
 
 # ───────── 03 帶來什麼價值 ─────────
 section('03', '帶來什麼價值\nValue we deliver', '帶來什麼價值')
@@ -416,7 +448,7 @@ note(s, 'DORA 四項指標（部署頻率、交付時間、變更失敗率、復
 note(s, 'DORA 2026：回收期 6–9 個月是敏捷團隊的優異目標；需要大量治理的大型企業導入，12–18 個月屬可接受。', y=6.55)
 
 s = content('給法遵與風控：每一個 AI 產出，都查得到誰要求、誰核准',
-            '金檢與內稽會問的五個問題，在流程中都有對應的做法與紀錄；條文對照見附錄 ⟦app:rules⟧。')
+            '金檢與內稽會問的五個問題，在流程中都有對應的做法與紀錄；條文對照見附錄 ⟦app:rules⟧' + ('，實例見附錄 ⟦app:trace⟧。' if DEMO else '。'))
 mark('compliance')
 ROWS = [['AI 工具有沒有納入委外管理與 AI 清冊？', '診斷時判斷是否屬委外並登錄 AI 清冊；高風險用途加審', '委外判斷紀錄、AI 清冊'],
         ['客戶個資有沒有進到 AI？', '資料分級；集中設定禁止讀取機密檔與金鑰；試點用假資料', '設定檔與存取紀錄'],
@@ -541,6 +573,20 @@ s = content(f'附錄 {appendix("rules")}｜保險業 AI 開發法規檢查清單
 grid(s, 0.45, 1.45, [3.2, 3.85, 3.85, 1.55], ['檢查項目', '依據', '開發流程中怎麼落實', '在哪一步檢查'], CHECK, 0.66, size=10.5)
 note(s, '導入規劃工具，非法律意見；條文以主管機關公告為準；草稿待法遵確認。', y=6.55)
 
+if DEMO:
+    s = content(f'附錄 {appendix("trace")}｜示範案例：每條業務規則都追溯到測試與任務',
+                '以再保險系統「金融機構主檔」為例；稽核時從任一條規則，都找得到對應的使用案例、測試與程式範圍。')
+    ROWS = [['BR-FI-01　代碼唯一性', 'UC-FI-02', 'TC-FI-03', 'TASK-000013-001 場景 3'],
+            ['BR-FI-02　引用後鎖定唯讀', 'UC-FI-04', '—', 'TASK-000013-005 場景 2'],
+            ['BR-FI-03　引用防刪與軟作廢', 'UC-FI-04、UC-FI-06', 'TC-FI-07、TC-FI-08', 'TASK-000013-005 場景 2'],
+            ['BR-FI-04　SWIFT/BIC 格式檢核', 'UC-FI-02', 'TC-FI-04', 'TASK-000013-001 場景 4'],
+            ['BR-FI-05　作廢資料隔離與追溯', 'UC-FI-06', '—', '任務包未附'],
+            ['BR-FI-06　制裁連動與主管覆核', 'UC-FI-03', 'TC-FI-05、TC-FI-06', '任務包未附'],
+            ['BR-FI-07　順序自動計算', 'UC-FI-02', 'TC-FI-02', 'TASK-000013-001 場景 2']]
+    grid(s, 0.45, 1.45, [4.0, 2.6, 2.6, 3.25], ['業務規則', '使用案例', '測試案例', '開發任務'], ROWS, 0.56, size=11, hot=(5,))
+    callout(s, 5.85, '追溯表的用處：', '缺口一眼看得出來：BR-FI-02、BR-FI-05 目前沒有對應的測試案例；任務包只附 001 與 005 兩個任務。', h=0.62)
+    note(s, '整理自 TASK-000013 任務包（SA、使用案例、QA 規格與任務文件）；任務與規則的對應依任務內容判讀，待 IT 團隊確認。', y=6.6)
+
 s = content(f'附錄 {appendix("risk")}｜試點風險與因應',
             '試點前就講好可能出問題的地方、怎麼提早發現，以及誰負責處理。', tags=('建議',))
 ROWS = [['用例效益偏低', '用例落在複雜的既有系統，重複性工作少', '診斷時優先挑「常發生、判斷少」工作多的需求', '調整範圍或換用例，不硬撐到底', 'PwC（BA、IT）＋貴公司 IT 主管'],
@@ -551,6 +597,17 @@ ROWS = [['用例效益偏低', '用例落在複雜的既有系統，重複性工
 grid(s, 0.45, 1.45, [2.3, 2.6, 2.85, 2.65, 2.05], ['風險', '提早發現的訊號', '事前降低', '發生時的應變', '負責'], ROWS, 0.85, size=10.5)
 note(s, '依 DORA 2026（J 曲線、既有系統效益）與試點規劃整理；正式清單於診斷時與貴公司共同確認。', y=6.35)
 
+if INTERNAL and DEMO:
+    s = content(f'附錄 {appendix("video")}｜示範錄影：再保險系統主檔模組',
+                '內部參考：IT 團隊的三段示範錄影（各約 5 秒），點擊畫面播放；對外以現場示範為主。', tags=('內部',))
+    for i, (k, cap) in enumerate([('countries', '國家選單'), ('regions', '區域選單'), ('currencies', '結算幣別選單')]):
+        x = 0.45 + i * 4.18
+        w, h = 4.05, 4.05 * 450 / 800
+        s.shapes.add_movie(os.path.join(DEMO, f'video_{k}.mp4'), Inches(x), Inches(Y(1.6)), Inches(w), Inches(h),
+                           poster_frame_image=os.path.join(DEMO, f'screen_{k}.png'), mime_type='video/mp4')
+        tb(s, x, 1.6 + h / K + 0.08, w, 0.35, cap, size=12, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.02)
+    note(s, '錄影使用測試資料；對外使用前請 IT 確認不含客戶資料或客戶專屬設計。', y=6.3)
+
 if INTERNAL:
     s = content(f'附錄 {appendix("research")}｜研究整合：兩份研究互補，衝突處的取捨',
                 '內部參考：兩份研究的差異，以及本提案採用哪一邊、為什麼。提交客戶前移除本頁。', tags=('內部',))
@@ -558,7 +615,7 @@ if INTERNAL:
             ['控制方式', 'Prompt 撰寫原則＋IT 人工 Review', '技能、鉤子、集中管理設定', '分層：Prompt 為第一層，往規則與自動關卡加強；受監理行業需要可強制的控制'],
             ['關卡', '每階段文件確認後進下一階段', '五個關鍵決定由指定的人核准', '保留研究一的檢查點，補上指定核准人與紀錄'],
             ['效益說法', '未提數字', '手冊預期「數週到數小時」', '不承諾數字，以試點實測；外部證據改用 DORA 等獨立研究'],
-            ['實作證據', '各階段案例頁待補', '實績頁待 IT 團隊填寫', '以 IT 現場示範補上（第 ⟦p:demo⟧ 頁）'],
+            ['實作證據', '各階段案例頁待補', '實績頁待 IT 團隊填寫', ('以 IT 示範補上：再保險系統主檔模組（第 ⟦p:demo⟧ 頁）' if DEMO else '以 IT 現場示範補上（第 ⟦p:demo⟧ 頁）')],
             ['服務內容', '未涵蓋', '四個服務模組', '對外收斂為「診斷＋一個用例試點」，其餘依需求討論']]
     grid(s, 0.45, 1.45, [1.6, 3.3, 3.2, 4.35], ['主題', '研究一：FSC1 開發流程 v3', '研究二：AI 原生 SDLC 說明', '本提案的取捨與原因'], ROWS, 0.78, size=10.5)
 
