@@ -270,10 +270,10 @@ tb(s, 6.8, 4.75, 6.1, 1.45, [[('如果先不做', {'bold': True, 'color': GREY, 
 CUR[0] = '議程'
 s = content('議程', '從為什麼現在要做、怎麼做，到帶來什麼價值與如何擴大，說明從一個用例開始的導入方式。', layout='Agenda')
 AG = [('1', '面向誰', '保險公司為什麼現在要做、優先服務誰', '01'),
-      ('2', '解決什麼問題', '全球趨勢、只買工具為什麼不夠、我們的解法、現場示範', '02'),
+      ('2', '解決什麼問題', '全球趨勢與只買工具為什麼不夠、我們的解法、AI 分工、現場示範', '02'),
       ('3', '帶來什麼價值', '價值與衡量、你買到什麼、為什麼選我們', '03'),
       ('4', '可擴充、可複製', '從一個用例逐步擴大、如何開始', '04'),
-      ('5', '附錄', '示範情境、延伸方式、同業參考、法規清單、' + ('研究整合、' if INTERNAL else '') + 'AI 任務分類、資料來源', 'A')]
+      ('5', '附錄', '示範情境、延伸方式、同業參考、法規清單、' + ('研究整合、' if INTERNAL else '') + '資料來源', 'A')]
 for i, (n, h, d, key) in enumerate(AG):
     y = 1.5 + i * 0.95
     circle(s, 0.6, y + 0.13, 0.55, n, fill=WHITE, color=OR, line=OR, size=14)
@@ -306,30 +306,30 @@ tb(s, 0.45, 5.4, 12.45, 0.85, [[('優先客群的條件：', {'bold': True, 'col
 # ───────── 02 解決什麼問題 ─────────
 section('02', '解決什麼問題\nProblems we solve', '解決什麼問題')
 
-s = content('全球已普遍用 AI 開發軟體，大型金融機構也在大規模導入',
-            '開發者與技術團隊的 AI 使用率已達八至九成；銀行業已有數萬名工程師規模的導入。')
-cards(s, [('開發者', '84%', '正在使用或計畫使用 AI 工具（2024 年為 76%）。', 'Stack Overflow 2025 開發者調查，4.9 萬多人、177 國'),
-          ('技術團隊', '約 90%', '技術人員在工作中使用 AI。', 'Google DORA 2025 報告，約 5,000 人'),
-          ('JPMorgan', '10–20%', '數萬名工程師使用銀行自建的寫程式助手後，生產力提升（公司自述）。', '該行全球資訊長，2025-03'),
-          ('Citi', '3 萬名', '開發者在系統現代化中導入生成式 AI 寫程式助手。', 'Deloitte Insights，2025')], h_txt=1.45)
-tb(s, 0.45, 5.6, 12.45, 0.6, [[('保險業：', {'bold': True, 'color': OR}), ('57% 的保險高階主管把生成式與代理型 AI 列為 2026 年首要科技投資（PwC 調查）；McKinsey 2026 科技趨勢把「代理式軟體開發」列為新趨勢。', {})]], size=11.5, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
-note(s, '保險業公開具名案例仍少，保險公司仍有先行機會；顧問業者已推出相關方案（附錄 ⟦app:peers⟧）。完整來源見附錄 ⟦app:src⟧。', y=6.35)
-
-s = content('但個人變快，不等於交付變好：AI 會放大原有的流程與治理',
-            'DORA 2025：AI 讓交付速度提升，但交付穩定度仍下降；效益取決於流程與治理，而不是買了哪個工具。')
+s = content('AI 已普及，但交付沒有跟著變好：AI 放大原有的流程與治理',
+            '開發者與技術團隊的 AI 使用率已達八至九成；但 DORA 2025 指出，交付速度提升，穩定度仍下降。')
 mark('tools')
-COLS = [('交付表現', [('↑', '交付速度：2025 年轉為正相關'), ('↓', '交付穩定度：仍為負相關')], '2024 年模型估計：AI 採用率每增加 25%，穩定度 −7.2%、速度 −1.5%；2025 年速度轉正，穩定度仍是隱憂。'),
-        ('開發者的信任', [('46%', '不信任 AI 產出的準確度'), ('約 30%', '很少或不信任 AI 寫的程式')], '前者來自 Stack Overflow 2025（2024 年為 31%）；後者來自 DORA 2025。'),
-        ('研究結論', [('放大器', 'AI 放大組織原有的優點與缺點')], 'DORA 2025：架構鬆耦合、回饋快的團隊才受益；報告並提出 AI 能力模型（七項能力）。')]
-for i, (h, nums, t) in enumerate(COLS):
+# 上排：AI 已普及的五個數字；下排：交付表現、開發者信任與研究結論
+STATS = [('開發者', '84%', '正在使用或計畫使用 AI 工具'), ('技術團隊', '約 90%', '在工作中使用 AI'),
+         ('JPMorgan', '10–20%', '工程師生產力提升（公司自述）'), ('Citi', '3 萬名', '開發者導入 AI 寫程式助手'),
+         ('保險業', '57%', '高階主管把生成式 AI 列為 2026 年首要科技投資')]
+w = (12.45 - 0.1 * 4) / 5
+for i, (h, big, t) in enumerate(STATS):
+    x = 0.45 + i * (w + 0.1)
+    tb(s, x, 1.45, w, 0.4, h, size=12, bold=True, color=WHITE, fill=OR if i < 4 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    tb(s, x, 1.9, w, 1.15, [[(big, {'bold': True, 'size': 24, 'color': OR})], [(t, {'size': 10.5})]], fill=LG if i < 4 else TINT, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+COLS = [('交付表現（DORA 2025）', [('↑', '交付速度：轉為正相關'), ('↓', '交付穩定度：仍為負相關')]),
+        ('開發者的信任', [('46%', '不信任 AI 產出的準確度'), ('約 30%', '很少或不信任 AI 寫的程式')]),
+        ('研究結論', [('放大器', 'AI 放大組織原有的優點與缺點；架構鬆耦合、回饋快的團隊才受益')])]
+for i, (h, nums) in enumerate(COLS):
     x = 0.45 + i * 4.18
-    tb(s, x, 1.45, 4.05, 0.5, h, size=13.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    tb(s, x, 3.25, 4.05, 0.42, h, size=12.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
     for j, (big, lab) in enumerate(nums):
-        hh = 1.6 / len(nums)
-        tb(s, x, 2.0 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 24 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 11.5})]], fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
-    tb(s, x, 3.65, 4.05, 1.5, t, size=11, fill=LG, margin=0.14)
-callout(s, 5.4, '所以：', '導入 AI 時，需求、審查、上線與控制方式要一起改，這正是我們協助的部分。', h=0.8, size=12)
-note(s, '來源：Google DORA 2024、2025 報告；Stack Overflow 2025 開發者調查。完整連結見附錄 ⟦app:src⟧。', y=6.35)
+        hh = 1.5 / len(nums)
+        tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 11.5})]], fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+callout(s, 5.42, '所以：', '效益取決於流程與治理，不取決於買了哪個工具。導入 AI 時，需求、審查、上線與控制方式要一起改，這正是我們協助的部分。', h=0.7, size=12)
+note(s, '來源：Stack Overflow 2025；Google DORA 2024、2025；JPMorgan（公司自述）；Deloitte Insights 2025；PwC 保險高階主管調查。完整連結見附錄 ⟦app:src⟧。', y=6.22)
+note(s, 'DORA 2024 模型估計：AI 採用率每增加 25%，穩定度 −7.2%、速度 −1.5%。保險業公開具名案例仍少，保險公司仍有先行機會；顧問業者已推出相關方案（附錄 ⟦app:peers⟧）。', y=6.52)
 
 s = content('我們的解法：把開發流程串成循環，用三個機制守住',
             'AI 參與每一步；接受需求、核准合併、授權上線等五個關鍵決定，由貴公司指定的人做。')
@@ -341,6 +341,30 @@ ROWS = [['交接靠檔案', '需求說明 → 規格 → 實作計畫 → 測試
 grid(s, 5.2, 1.45, [1.75, 3.9, 2.05], ['機制', '怎麼運作', '解決的問題'], ROWS, 1.12, size=11.5)
 callout(s, 5.7, '原則：', 'AI 可以一路做到正式環境的門口，但不能自己開門。本方法不綁特定 AI 工具，依貴公司政策與合約選定。', h=0.75)
 note(s, f'流程整合自 {V3}，並參考業界公開的 AI 原生 SDLC 框架（附錄 ⟦app:src⟧）。', y=6.5)
+
+s = content('AI 分工：重複、判斷少的先交給 AI；關鍵決定永遠由人做',
+            '依任務「多常發生 × 需要判斷」分四類；第一個試點用例，優先挑左上角工作多的需求。')
+mark('tasks')
+MX, MY, QW, QH = 1.15, 1.5, 3.6, 2.15
+Q = [(0, 0, '常發生 × 判斷少', 'AI 先做，人確認', ['欄位清單、Test Case、Test Data、', 'Unit Test、註解與文件、Release Note'], TINT),
+     (1, 0, '常發生 × 判斷多', 'AI 起草，人逐項審查', ['程式碼、API 規格、ERD、', 'Code Review 風險檢查、測試失敗原因分析'], LG),
+     (0, 1, '少發生 × 判斷少', '做成範本，重複使用', ['Deploy Guide、User Guide、', 'Migration Script、部署腳本'], LG),
+     (1, 1, '少發生 × 判斷多', '人決定，AI 只提供資料', ['接受需求、架構選型、核准合併、', '授權上線、事件處置'], WHITE)]
+for c_, r, h, rule, items, bg in Q:
+    x, y = MX + c_ * (QW + 0.06), MY + r * (QH + 0.06)
+    tb(s, x, y, QW, QH, '', fill=bg, line=LINE)
+    tb(s, x + 0.12, y + 0.08, QW - 0.24, 0.62, [[(h, {'bold': True, 'size': 11, 'color': GREY})], [(rule, {'bold': True, 'size': 13, 'color': OR})]], margin=0.02)
+    tb(s, x + 0.12, y + 0.76, QW - 0.24, QH - 0.84, items, size=11.5, margin=0.02)
+tb(s, 0.45, MY, 0.65, QH, '常發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
+tb(s, 0.45, MY + QH + 0.06, 0.65, QH, '少發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
+tb(s, MX, MY + 2 * QH + 0.1, 2 * QW + 0.06, 0.3, '需要判斷：少 ─────────────→ 多', size=10.5, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.0)
+tb(s, 8.75, 1.5, 4.15, 4.4, [[('對貴公司的意義', {'bold': True, 'color': OR, 'size': 13})],
+                             [('先挑左上角：', {'bold': True}), ('第一個試點用例，優先挑這類工作多的需求，最快看到效果。', {})],
+                             [('', {'size': 5})],
+                             [('右下角就是五個關卡：', {'bold': True}), ('這些決定由貴公司指定的人做，AI 只提供資料（第 ⟦p:solution⟧ 頁）。', {})],
+                             [('', {'size': 5})],
+                             [('依實際專案調整：', {'bold': True}), ('分類在準備度診斷時，依貴公司的專案與規範確認（第 ⟦p:offer⟧ 頁）。', {})]], size=12, fill=LG, margin=0.18)
+note(s, f'整理自 FSC1 開發流程實務；方法參考 {SMR}。分類為初步判斷。', y=6.45)
 
 s = content('現場示範：用一個用例走完從需求到上線的每一步',
             'FSC1 已在使用這套做法；現場可用貴公司提供的一個需求，走完以下五個步驟。', tags=('待確認',))
@@ -494,26 +518,6 @@ if INTERNAL:
             ['實作證據', '各階段案例頁待補', '實績頁待 IT 團隊填寫', '以 IT 現場示範補上（第 ⟦p:demo⟧ 頁）'],
             ['服務內容', '未涵蓋', '四個服務模組', '對外收斂為「診斷＋一個用例試點」，其餘依需求討論']]
     grid(s, 0.45, 1.45, [1.6, 3.3, 3.2, 4.35], ['主題', '研究一：FSC1 開發流程 v3', '研究二：AI 原生 SDLC 說明', '本提案的取捨與原因'], ROWS, 0.78, size=10.5)
-
-s = content(f'附錄 {appendix("tasks")}｜AI 任務分類：哪些工作先交給 AI、先標準化',
-            '依任務「多常發生 × 需要判斷」分四類：先交給 AI、先做成範本，或永遠由人決定。')
-MX, MY, QW, QH = 1.15, 1.5, 3.6, 2.15
-Q = [(0, 0, '常發生 × 判斷少', 'AI 先做，人確認', '欄位清單、Test Case、Test Data、Unit Test、註解與文件、Release Note', TINT),
-     (1, 0, '常發生 × 判斷多', 'AI 起草，人逐項審查', '程式碼、API 規格、ERD、Code Review 風險檢查、測試失敗原因分析', LG),
-     (0, 1, '少發生 × 判斷少', '做成範本，重複使用', 'Deploy Guide、User Guide、Migration Script、部署腳本', LG),
-     (1, 1, '少發生 × 判斷多', '人決定，AI 只提供資料', '接受需求、架構選型、核准合併、授權上線、事件處置', WHITE)]
-for c, r, h, rule, items, bg in Q:
-    x, y = MX + c * (QW + 0.06), MY + r * (QH + 0.06)
-    tb(s, x, y, QW, QH, '', fill=bg, line=LINE)
-    tb(s, x + 0.12, y + 0.08, QW - 0.24, 0.62, [[(h, {'bold': True, 'size': 11, 'color': GREY})], [(rule, {'bold': True, 'size': 13, 'color': OR})]], margin=0.02)
-    tb(s, x + 0.12, y + 0.76, QW - 0.24, QH - 0.84, items, size=11.5, margin=0.02)
-tb(s, 0.45, MY, 0.65, QH, '常發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
-tb(s, 0.45, MY + QH + 0.06, 0.65, QH, '少發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
-tb(s, MX, MY + 2 * QH + 0.1, 2 * QW + 0.06, 0.3, '需要判斷：少 ─────────────→ 多', size=10.5, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.0)
-tb(s, 8.75, 1.5, 4.15, 4.4, [[('怎麼用', {'bold': True, 'color': OR, 'size': 13})],
-                             '・左上角最先交給 AI，也最先做成標準範本與規則。', '・右上角由 AI 起草，人逐項審查。', '・右下角永遠由人決定，對應五個人工關卡。',
-                             [('', {'size': 6})], [('依據：', {'bold': True, 'color': OR}), (f'任務取自研究一各階段「AI 可以做什麼」；方法參考 {SMR}。', {})]], size=11.5, fill=LG, margin=0.16)
-note(s, '分類為初步判斷，診斷時依貴公司實際專案調整。', y=6.45)
 
 s = content(f'附錄 {appendix("src")}｜資料來源', '本提案引用的外部研究、法規與內部研究。')
 SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%、46%）', 'https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/'),
