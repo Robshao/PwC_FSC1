@@ -130,7 +130,10 @@ def footer(s):
     have = {ph.placeholder_format.idx for ph in s.placeholders}
     for ph in s.slide_layout.placeholders:
         if ph.placeholder_format.idx in (3, 4, 12) and ph.placeholder_format.idx not in have:
-            s.shapes._spTree.append(copy.deepcopy(ph._element))
+            el = copy.deepcopy(ph._element)
+            # 版面上的圖形 ID 可能和投影片上的重複，複製後改用新的 ID
+            el.find('.//' + qn('p:cNvPr')).set('id', str(max(x.shape_id for x in s.shapes) + 1))
+            s.shapes._spTree.append(el)
     set_ph(s, 3, f'{PROJECT} | {CUR[0]}' if CUR[0] else PROJECT)
 
 def width(t):
@@ -1055,6 +1058,8 @@ def animate(sl, items):
     for sh, kind, arg in items:
         if kind == 'wipe':
             effs.append((0.2, effect(ids, sh.shape_id, 'entr', 0.2, '', 'wipe(up)' if arg == 'up' else 'wipe(right)', '4' if arg == 'up' else '8', 1200)))
+            # 圖表是 graphicFrame，建置清單要用 bldGraphic（一般圖形才用 bldP）
+            builds.append(f'<p:bldGraphic spid="{sh.shape_id}" grpId="0"><p:bldAsOne/></p:bldGraphic>')
             continue
         frames = count_frames(sl, sh)
         t = 0.3 + arg
@@ -1074,7 +1079,7 @@ def animate(sl, items):
            '</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn>'
            '<p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>'
            '<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>'
-           f'</p:childTnLst></p:cTn></p:par></p:tnLst><p:bldLst>{"".join(builds)}</p:bldLst></p:timing>')
+           '</p:childTnLst></p:cTn></p:par></p:tnLst>' + (f'<p:bldLst>{"".join(builds)}</p:bldLst>' if builds else '') + '</p:timing>')
     from lxml import etree
     old = sl._element.find(qn('p:timing'))
     if old is not None: sl._element.remove(old)
