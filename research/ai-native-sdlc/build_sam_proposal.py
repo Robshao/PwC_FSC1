@@ -6,6 +6,7 @@
 #   示範素材由 build_it_demo_assets.py 產生；沒有帶 --demo 時，現場示範頁保留待填框
 #   --memo：合夥人審閱版加上「請 Sam 決定」與「團隊分工」兩頁內部頁
 #   --brief：第一次會議版，客戶版中的 12 頁，不含議程、章節頁與附錄；備註為每頁 3 個重點加 1 個追問
+#   --static：不加動畫（轉 PDF 用；動畫版的逐格數字在 PDF 會疊在一起）
 #   預設為合夥人審閱版（含「請 Sam 決定」內部頁與研究整合附錄）；--client 產生客戶版，不含內部頁
 import sys, os, copy, math, re
 from pptx import Presentation
@@ -22,6 +23,9 @@ BRIEF = '--brief' in sys.argv[3:]
 MEMO = '--memo' in sys.argv[3:]   # 合夥人審閱版另附「請 Sam 決定」與「團隊分工」兩頁（預設不附）
 INTERNAL = '--client' not in sys.argv[3:] and not BRIEF
 DEMO = sys.argv[sys.argv.index('--demo') + 1] if '--demo' in sys.argv else None
+STATIC = '--static' in sys.argv[3:]
+# 播放時的動畫：(投影片, 圖形, 種類, 參數)；數字逐格跳動、圖表擦去出現，最後統一寫入
+ANIM = []
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
 # 範本佈景主題色：tx1 黑、lt2 淺灰、accent6 線條灰、accent4 中灰；範本不用純黑色塊，深色塊用深灰
 INK = RGBColor(0x00, 0x00, 0x00); GREY = RGBColor(0x59, 0x59, 0x59); LG = RGBColor(0xEB, 0xEB, 0xEB); LINE = RGBColor(0xCB, 0xD1, 0xD6)
@@ -243,7 +247,7 @@ def cards(s, items, y=1.45, h_big=0.95, h_txt=1.6):
     for i, (h, big, t, src) in enumerate(items):
         x = 0.45 + i * (w + 0.13)
         tb(s, x, y, w, 0.5, h, size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
-        tb(s, x, y + 0.55, w, h_big, big, size=30 if len(big) < 7 else 24, bold=True, color=OR, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        ANIM.append((s, tb(s, x, y + 0.55, w, h_big, big, size=30 if len(big) < 7 else 24, bold=True, color=OR, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER), 'count', 0.15 * i))
         tb(s, x, y + 0.55 + h_big, w, h_txt, t, size=13.5, fill=LG, margin=0.16, spacing=1.15)
         srcseg = [('來源：', {}), (src[0], {'link': src[1]})] if isinstance(src, tuple) else [('來源：' + src, {})]
         tb(s, x, y + 0.55 + h_big + h_txt, w, 0.55, [srcseg], size=9.5, color=GREY, fill=LG, margin=0.07)
@@ -290,6 +294,7 @@ if INTERNAL:
     tb(s, 0.45, 1.45, 4.05, 0.45, 'AI 越來越便宜', size=13.5, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
     cd = CategoryChartData(); cd.categories = ['2022 年 11 月', '2024 年 10 月']; cd.add_series('使用成本', (100, 0.36))
     ch = chart_xy(s, 0.45, 1.95, 4.05, 2.35, XL_CHART_TYPE.COLUMN_CLUSTERED, cd)
+    ANIM.append((s, s.shapes[-1], 'wipe', 'up'))
     ch.plots[0].gap_width = 60; ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
     ser = ch.plots[0].series[0]; ser.format.fill.solid(); ser.format.fill.fore_color.rgb = OR
     ch.plots[0].has_data_labels = True; dl = ch.plots[0].data_labels; dl.number_format = '0.## "元"'; dl.number_format_is_linked = False
@@ -299,6 +304,7 @@ if INTERNAL:
     xd = XyChartData(); sr = xd.add_series('成效')
     for px, py in [(0, 0), (1, -1.2), (2, -1.8), (3, -1.2), (4, 0.6), (5, 2.6), (6, 5)]: sr.add_data_point(px, py)
     ch = chart_xy(s, 4.63, 1.95, 4.05, 2.35, XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS, xd)
+    ANIM.append((s, s.shapes[-1], 'wipe', 'right'))
     ch.value_axis.visible = False; ch.category_axis.visible = False
     ch.value_axis.has_major_gridlines = False; ch.category_axis.has_major_gridlines = False
     ln = ch.plots[0].series[0].format.line; ln.color.rgb = OR; ln.width = Pt(3.5)
@@ -410,7 +416,7 @@ w = (12.45 - 0.1 * 3) / 4
 for i, (h, big, t, src) in enumerate(STATS):
     x = 0.45 + i * (w + 0.1)
     tb(s, x, 1.45, w, 0.4, h, size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
-    tb(s, x, 1.9, w, 0.95, [[(big, {'bold': True, 'size': 26, 'color': OR})], [(t, {'size': 11})]], fill=LG, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+    ANIM.append((s, tb(s, x, 1.9, w, 0.95, [[(big, {'bold': True, 'size': 26, 'color': OR})], [(t, {'size': 11})]], fill=LG, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08), 'count', 0.15 * i))
     tb(s, x, 2.85, w, 0.28, [[('來源：', {}), (src[0], {'link': src[1]})]], size=9, color=GREY, fill=LG, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.03)
 COLS = [('交付：快了，但更不穩', [('↑', '交付速度變快'), ('↓', '交付穩定度下降')]),
         ('舊系統的效益比較小', [('35–40%', '新寫的簡單功能'), ('≤ 10%', '複雜的既有系統')]),
@@ -420,7 +426,8 @@ for i, (h, nums) in enumerate(COLS):
     tb(s, x, 3.25, 4.05, 0.42, h, size=12.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
     for j, (big, lab) in enumerate(nums):
         hh = 1.5 / len(nums)
-        tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 12})]], fill=LG if i < 2 else TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+        sh = tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 12})]], fill=LG if i < 2 else TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+        if any(c.isdigit() for c in big): ANIM.append((s, sh, 'count', 0.9 + 0.15 * i))
 callout(s, 5.42, '所以：', '效益取決於流程與治理，不取決於買了哪個工具。導入 AI 時，需求、審查、上線與控制方式要一起改，這正是我們協助的部分。', h=0.7, size=12)
 note_links(s, [('交付速度與穩定度：Google DORA 2025', 'https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report'),
                ('既有系統效益：Stanford 軟體工程生產力研究（經 DORA 2026 引用）', 'https://softwareengineeringproductivity.stanford.edu'),
@@ -618,10 +625,10 @@ callout(s, 5.85, '一句話：', 'AI 幫你把每一步做得更快，每一步�
 s = content('AI 寫程式很快就是常態；決勝關鍵在治理',
             '速度大家都買得到；讓每一步查得到、每個關鍵決定由人做，才是保險公司能放心擴大的條件。')
 mark('close')
-tb(s, 0.45, 1.45, 12.45, 3.05, [[('AI 的使用成本，兩年降到 1/280；', {'size': 30, 'color': WHITE})],
+ANIM.append((s, tb(s, 0.45, 1.45, 12.45, 3.05, [[('AI 的使用成本，兩年降到 1/280；', {'size': 30, 'color': WHITE})],
                                [('出了事，責任一分都沒有變少。', {'bold': True, 'size': 36, 'color': WHITE})], [('', {'size': 8})],
                                [('未來的差距，不在誰寫得快，而在誰敢讓 AI 寫的程式上線。', {'size': 18, 'color': WHITE})]],
-   fill=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.3, spacing=1.15)
+   fill=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.3, spacing=1.15), 'count', 0.3))
 note_links(s, [('1/280：Stanford AI Index 2025（同等能力的 AI，2022-11 → 2024-10）', 'https://hai.stanford.edu/ai-index/2025-ai-index-report'),
                ('責任：保險業作業委外辦法、AI 自律規範', 'https://www.leeandli.com/TW/Newsletters/7525.htm')], y=4.65)
 tb(s, 0.45, 5.15, 12.45, 0.3, '敢上線的前提：每一步查得到、每個關鍵決定由人做。這就是我們幫保險公司建好的東西。', size=13, bold=True, color=OR, align=PP_ALIGN.CENTER, margin=0.02)
@@ -995,6 +1002,93 @@ for sl in p.slides:
         for para in sl.notes_slide.notes_text_frame.paragraphs:
             for r in para.runs:
                 if '⟦' in r.text: r.text = drop_missing(re.sub(r'⟦(p|app|r):(\w+)⟧', resolve, r.text))
+
+# ───────── 動畫：數字逐格往上數、圖表擦去出現（投影片一出現就自動播放） ─────────
+# PowerPoint 沒有數字跳動效果：在同一位置疊上中間值的複本，依序出現、消失，最後留下原本的圖形
+NUM = re.compile(r'\d+(?:\.\d+)?')
+P_NS = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+
+def frame_text(t, f):
+    # 依進度 f（0–1）算出中間值；1/280 這種比值改成分母往上數
+    m = re.search(r'1/(\d+)', t)
+    if m: return t.replace(m.group(0), f'1/{max(1, round(int(m.group(1)) * f))}')
+    def sub(mm):
+        v = float(mm.group(0)) * f
+        return f'{v:.1f}' if v < 10 and f < 1 and '.' not in mm.group(0) and float(mm.group(0)) < 10 else str(round(v))
+    return NUM.sub(sub, t)
+
+def count_frames(sl, sh, n=12):
+    # 只改第一段裡第一個含數字的文字，標籤（例如「2026 年」）不動
+    tnode = next(t for t in sh._element.find(qn('p:txBody')).find(qn('a:p')).iter(qn('a:t')) if NUM.search(t.text or ''))
+    final, seen, out = tnode.text, set(), []
+    nid = max(x.shape_id for x in sl.shapes) + 1
+    for k in range(n):
+        f = 1 - (1 - k / n) ** 3
+        txt = frame_text(final, f)
+        if txt in seen or txt == final: continue
+        seen.add(txt)
+        el = copy.deepcopy(sh._element)
+        el.find('.//' + qn('p:cNvPr')).set('id', str(nid)); el.find('.//' + qn('p:cNvPr')).set('name', f'計數 {nid}')
+        next(t for t in el.find(qn('p:txBody')).find(qn('a:p')).iter(qn('a:t')) if NUM.search(t.text or '')).text = txt
+        sh._element.addprevious(el); out.append(nid); nid += 1
+    return out
+
+def effect(ids, spid, cls, delay, node, filt=None, sub='0', dur=500):
+    # 一個效果：設成可見或隱藏，必要時加擦去
+    preset = '22' if filt else '1'
+    vis = 'visible' if cls == 'entr' else 'hidden'
+    i0 = next(ids)
+    x = (f'<p:par><p:cTn id="{i0}" presetID="{preset}" presetClass="{cls}" presetSubtype="{sub}" fill="hold" grpId="{0 if cls == "entr" else 1}" nodeType="{node}">'
+         f'<p:stCondLst><p:cond delay="{int(delay * 1000)}"/></p:stCondLst><p:childTnLst>'
+         f'<p:set><p:cBhvr><p:cTn id="{next(ids)}" dur="1" fill="hold"><p:stCondLst><p:cond delay="{dur - 1 if cls == "exit" and filt else 0}"/></p:stCondLst></p:cTn>'
+         f'<p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr><p:to><p:strVal val="{vis}"/></p:to></p:set>')
+    if filt:
+        x += (f'<p:animEffect transition="in" filter="{filt}"><p:cBhvr><p:cTn id="{next(ids)}" dur="{dur}"/>'
+              f'<p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl></p:cBhvr></p:animEffect>')
+    return x + '</p:childTnLst></p:cTn></p:par>'
+
+def animate(sl, items):
+    import itertools
+    ids = itertools.count(5)
+    effs, builds = [], []
+    STEP = 0.07
+    for sh, kind, arg in items:
+        if kind == 'wipe':
+            effs.append((0.2, effect(ids, sh.shape_id, 'entr', 0.2, '', 'wipe(up)' if arg == 'up' else 'wipe(right)', '4' if arg == 'up' else '8', 1200)))
+            continue
+        frames = count_frames(sl, sh)
+        t = 0.3 + arg
+        for fid in frames:
+            effs.append((t, effect(ids, fid, 'entr', t, '')))
+            effs.append((t + STEP, effect(ids, fid, 'exit', t + STEP, '')))
+            builds += [f'<p:bldP spid="{fid}" grpId="0" animBg="1"/>', f'<p:bldP spid="{fid}" grpId="1" animBg="1"/>']
+            t += STEP
+        effs.append((t, effect(ids, sh.shape_id, 'entr', t, '')))
+        builds.append(f'<p:bldP spid="{sh.shape_id}" grpId="0" animBg="1"/>')
+    effs.sort(key=lambda e: e[0])
+    body = ''.join(x.replace('nodeType=""', 'nodeType="afterEffect"' if i == 0 else 'nodeType="withEffect"', 1) for i, (_, x) in enumerate(effs))
+    xml = (f'<p:timing xmlns:p="{P_NS}"><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>'
+           '<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>'
+           '<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>'
+           f'<p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>{body}</p:childTnLst></p:cTn></p:par>'
+           '</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn>'
+           '<p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>'
+           '<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>'
+           f'</p:childTnLst></p:cTn></p:par></p:tnLst><p:bldLst>{"".join(builds)}</p:bldLst></p:timing>')
+    from lxml import etree
+    old = sl._element.find(qn('p:timing'))
+    if old is not None: sl._element.remove(old)
+    node = etree.fromstring(xml)
+    ext = sl._element.find(qn('p:extLst'))
+    if ext is not None: ext.addprevious(node)
+    else: sl._element.append(node)
+
+if not STATIC:
+    live = {sl.slide_id for sl in p.slides}
+    by = {}
+    for sl, sh, kind, arg in ANIM:
+        if sl.slide_id in live: by.setdefault(sl.slide_id, (sl, []))[1].append((sh, kind, arg))
+    for sl, items in by.values(): animate(sl, items)
 
 p.save(OUT)
 print(OUT, total, 'slides', 'brief' if BRIEF else 'internal' if INTERNAL else 'client')
