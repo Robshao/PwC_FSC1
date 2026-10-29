@@ -4,6 +4,7 @@
 # 版面：內容頁用範本「3__Pattern header」（灰底頁首＋左側橘條），標題下一句結論；字型 Georgia＋微軟正黑體
 # 用法：python3 build_sam_proposal.py <範本.pptx> <輸出.pptx> [--client] [--demo <示範素材資料夾>]
 #   示範素材由 build_it_demo_assets.py 產生；沒有帶 --demo 時，現場示範頁保留待填框
+#   --memo：合夥人審閱版加上「請 Sam 決定」與「團隊分工」兩頁內部頁
 #   --brief：第一次會議版，客戶版中的 10 頁，不含議程、章節頁與附錄；備註為每頁 3 個重點加 1 個追問
 #   預設為合夥人審閱版（含「請 Sam 決定」內部頁與研究整合附錄）；--client 產生客戶版，不含內部頁
 import sys, os, copy, math, re
@@ -12,10 +13,13 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.chart.data import CategoryChartData, XyChartData
+from pptx.enum.chart import XL_CHART_TYPE, XL_LABEL_POSITION
 from pptx.oxml.ns import qn
 
 TPL, OUT = sys.argv[1], sys.argv[2]
 BRIEF = '--brief' in sys.argv[3:]
+MEMO = '--memo' in sys.argv[3:]   # 合夥人審閱版另附「請 Sam 決定」與「團隊分工」兩頁（預設不附）
 INTERNAL = '--client' not in sys.argv[3:] and not BRIEF
 DEMO = sys.argv[sys.argv.index('--demo') + 1] if '--demo' in sys.argv else None
 OR = RGBColor(0xFD, 0x51, 0x08); OR2 = RGBColor(0xFE, 0x7C, 0x39); TINT = RGBColor(0xFF, 0xE8, 0xD4)
@@ -220,6 +224,19 @@ def pic(s, path, x, y, w, h):
     k = min(bw / iw, bh / ih); pw, ph = iw * k, ih * k
     return s.shapes.add_picture(path, Inches(bx + (bw - pw) / 2), Inches(by + (bh - ph) / 2), Inches(pw), Inches(ph))
 
+def note_links(s, items, y, prefix='來源：'):
+    # 頁底來源列，可點擊：items 為 (文字, 連結或 None)
+    segs = [(prefix, {})]
+    for i, (t, url) in enumerate(items):
+        if i: segs.append(('；', {}))
+        segs.append((t, {'link': url}) if url else (t, {}))
+    tb(s, 0.45, y, 12.45, 0.32, [segs], size=9.5, color=GREY, margin=0.03)
+
+def chart_xy(s, x, y, w, h, kind, data):
+    gf = s.shapes.add_chart(kind, Inches(x), Inches(Y(y)), Inches(w), Inches(H(h)), data)
+    ch = gf.chart; ch.has_legend = False; ch.font.size = Pt(11); ch.font.name = FONT
+    return ch
+
 def cards(s, items, y=1.45, h_big=0.95, h_txt=1.6):
     # 大數字卡：(標題, 大數字, 說明, 來源)
     n = len(items); w = (12.45 - 0.13 * (n - 1)) / n
@@ -227,8 +244,9 @@ def cards(s, items, y=1.45, h_big=0.95, h_txt=1.6):
         x = 0.45 + i * (w + 0.13)
         tb(s, x, y, w, 0.5, h, size=13, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
         tb(s, x, y + 0.55, w, h_big, big, size=30 if len(big) < 7 else 24, bold=True, color=OR, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        tb(s, x, y + 0.55 + h_big, w, h_txt, t, size=11.5, fill=LG, margin=0.14)
-        tb(s, x, y + 0.55 + h_big + h_txt, w, 0.55, '來源：' + src, size=9, color=GREY, fill=LG, margin=0.07)
+        tb(s, x, y + 0.55 + h_big, w, h_txt, t, size=13.5, fill=LG, margin=0.16, spacing=1.15)
+        srcseg = [('來源：', {}), (src[0], {'link': src[1]})] if isinstance(src, tuple) else [('來源：' + src, {})]
+        tb(s, x, y + 0.55 + h_big + h_txt, w, 0.55, [srcseg], size=9.5, color=GREY, fill=LG, margin=0.07)
 
 STAGES = ['需求分析', 'SA&D', '開發', '測試', '上版／交付', '維運']
 
@@ -237,9 +255,10 @@ s = p.slides.add_slide(L['標題投影片'])
 set_ph(s, 0, '把 AI 原生開發做成產品：\n做得快，也管得住' if INTERNAL else 'AI 原生開發：\n做得快，也管得住', 28)
 set_ph(s, 1, '從框架到實務：可重複的流程、內建治理、關鍵決定由人做\nPwC FSC1｜給保險業的提案｜2026 年 10 月', 12)
 
-# ───────── 內部：請 Sam 決定（只在合夥人審閱版） ─────────
+# ───────── 內部：請 Sam 決定（只在合夥人審閱版加 --memo） ─────────
 if INTERNAL:
     CUR[0] = '內部審閱'
+if INTERNAL and MEMO:
     s = content('內部｜請 Sam 決定：是否以本提案接觸首批保險客戶',
                 '建議：同意以「診斷＋一個用例試點」接觸 1–2 家保險公司；第 ⟦p:demo⟧ 頁示範素材確認可對外後即出門。', tags=('內部',))
     mark('sam')
@@ -263,26 +282,37 @@ if INTERNAL:
            ['C　等示範完成再決定', '風險最低，但獨立性與客戶關係的確認可以先並行', '不等：先做確認，示範完成即出門']]
     grid(s, 0.45, 4.65, [3.9, 6.25, 2.3], ['考慮過的做法', '評估', '結論'], OPT, 0.6, size=11.5, hot=(0,))
 
-    # ───────── 內部：為什麼要做成產品 ─────────
-    s = content('內部｜為什麼要做成產品：開發變便宜，治理才是能賣的能力',
-                '做出來不再是門檻；可重複交付、內建治理與人工把關的做法，才是客戶願意付費、我們能規模化的東西。', tags=('內部',))
+if INTERNAL:
+    # ───────── 為什麼要做成產品（合夥人審閱版的開場頁，併入原「一頁看懂」的建議） ─────────
+    s = content('為什麼要做成產品：開發變便宜，治理才是能賣的能力',
+                'AI 讓「寫程式」越來越便宜；客戶真正缺的，是一套每次都能照做、而且管得住的方法。', tags=('內部',))
     mark('product')
-    PCOL = [('市場在發生什麼', ['・DORA 2026 引 Stanford AI Index：模型使用成本 2022-11 到 2024-10 降為 1/280；導入的主要負擔轉到治理：審查負擔、流程調整、人才培訓',
-                              '・DORA 2026：只買授權不保證回報，回報來自內部平台、清楚流程與團隊協作',
-                              '・同業已把服務做成產品：加速器、工具組、導入藍圖（附錄 ⟦app:peers⟧）']),
-            ('對我們的意義', ['・只接專案：每案從頭來，營收只能靠加人成長',
-                            '・做成產品：範本、規則、關卡與法規清單每案沿用，越做越快',
-                            '・治理與人工把關是產品的核心，不是附加服務']),
-            ('我們已經有的資產', ['・六份規格範本與任務格式（驗收場景、最多改 5 個檔案）' + ('，見第 ⟦p:demo⟧ 頁' if DEMO else ''),
-                                '・品質閘門與 AI 任務四象限（第 ⟦p:tasks⟧ 頁）',
-                                '・保險業法規檢查清單（附錄 ⟦app:rules⟧）'])]
-    for i, (h, items) in enumerate(PCOL):
-        x = 0.45 + i * 4.18
-        tb(s, x, 1.45, 4.05, 0.5, h, size=13.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
-        tb(s, x, 2.0, 4.05, 3.25, [[(t, {})] for t in items], size=12, fill=TINT if i == 1 else LG, margin=0.16, spacing=1.1)
-    callout(s, 5.5, '做法：', '先賣「診斷＋一個用例試點」，每個試點至少萃取一個可重用的範本或規則；資產成熟、有實績後，再推客戶自己做的工具包（第 ⟦p:sam⟧ 頁做法 B）。', h=0.85, size=12)
-    note(s, '成本數字為 DORA 2026 引述 Stanford AI Index；「只接專案靠加人成長」整理自內部產品化討論（MIT Sloan Management Review，2024）。', y=6.55)
+    tb(s, 0.45, 1.45, 4.05, 0.45, 'AI 越來越便宜', size=13.5, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+    cd = CategoryChartData(); cd.categories = ['2022 年 11 月', '2024 年 10 月']; cd.add_series('使用成本', (100, 0.36))
+    ch = chart_xy(s, 0.45, 1.95, 4.05, 2.35, XL_CHART_TYPE.COLUMN_CLUSTERED, cd)
+    ch.plots[0].gap_width = 60; ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
+    ser = ch.plots[0].series[0]; ser.format.fill.solid(); ser.format.fill.fore_color.rgb = OR
+    ch.plots[0].has_data_labels = True; dl = ch.plots[0].data_labels; dl.number_format = '0.## "元"'; dl.number_format_is_linked = False
+    dl.position = XL_LABEL_POSITION.OUTSIDE_END; dl.font.size = Pt(14); dl.font.bold = True
+    tb(s, 0.45, 4.35, 4.05, 0.85, '同樣能力的 AI，使用成本兩年降到約 1/280：以前花 100 元，現在不到 0.4 元。', size=12.5, fill=LG, margin=0.14, anchor=MSO_ANCHOR.MIDDLE)
+    tb(s, 4.63, 1.45, 4.05, 0.45, '導入 AI 的真實曲線（示意）', size=13.5, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+    xd = XyChartData(); sr = xd.add_series('成效')
+    for px, py in [(0, 0), (1, -1.2), (2, -1.8), (3, -1.2), (4, 0.6), (5, 2.6), (6, 5)]: sr.add_data_point(px, py)
+    ch = chart_xy(s, 4.63, 1.95, 4.05, 2.35, XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS, xd)
+    ch.value_axis.visible = False; ch.category_axis.visible = False
+    ch.value_axis.has_major_gridlines = False; ch.category_axis.has_major_gridlines = False
+    ln = ch.plots[0].series[0].format.line; ln.color.rgb = OR; ln.width = Pt(3.5)
+    tb(s, 5.6, 3.85, 2.2, 0.35, '↑ 先變慢：學習、審查變多', size=10.5, bold=True, color=GREY, margin=0.02)
+    tb(s, 7.0, 1.98, 1.6, 0.4, '再往上', size=10.5, bold=True, color=OR, margin=0.02)
+    tb(s, 4.63, 4.35, 4.05, 0.85, '一開始會先變慢；下滑的那一段，就是審查、流程、治理沒做好的成本。', size=12.5, fill=LG, margin=0.14, anchor=MSO_ANCHOR.MIDDLE)
+    tb(s, 8.81, 1.45, 4.05, 0.45, '所以我們要賣的', size=13.5, bold=True, color=WHITE, fill=DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+    tb(s, 8.81, 1.95, 4.05, 3.25, [[('不是寫程式的人力，而是一套每次都能照做、管得住的方法。', {'bold': True})], [('', {'size': 6})],
+                                  '・審查、關卡、紀錄做成每個案子都能直接用的範本', '・每做一個試點，就多一份能重複用的資產', '・做越多，下一個越快、越便宜'], size=13, fill=TINT, margin=0.18, spacing=1.1)
+    callout(s, 5.4, '做法：', '先賣「診斷＋一個試點」：4–6 週診斷、6–8 週做一個用例，達標才擴大。每個試點至少留下一個能重複用的範本或規則；累積夠了、有實績，再推出客戶自己就能用的工具包。', h=0.9, size=12.5)
+    note_links(s, [('Stanford AI Index 2025（經 DORA 2026 引用）', 'https://hai.stanford.edu/ai-index/2025-ai-index-report'),
+                   ('DORA，The ROI of AI-assisted Software Development，2026', 'https://services.google.com/fh/files/misc/dora-roi-of-ai-assisted-software-development-2026.pdf')], y=6.45)
 
+if INTERNAL and MEMO:
     # ───────── 內部：FSC1 團隊分工 ─────────
     s = content('內部｜FSC1 團隊分工：BA 管業務與法規，IT 管實作與證明',
                 '客戶買的是兩種別人難以複製的能力；決定權先講清楚，示範與報價才不會卡住。', tags=('內部',))
@@ -300,23 +330,24 @@ if INTERNAL:
     grid(s, 0.45, 4.8, [3.6, 8.85], ['客戶可能會問', '建議回答'], QA, 0.47, size=10.5, head_h=0.36)
     note(s, '交接點：IT→BA 的示範截圖與數字未交，不約推案會議；BA→IT 的需求說明沒有核准紀錄，不進 SA&D。名字與分工依內部會議資料整理，待確認。', y=6.68)
 
-# ───────── 一頁看懂 ─────────
+# ───────── 一頁看懂（客戶版；合夥人審閱版併入產品化頁） ─────────
 CUR[0] = '提案摘要'
-s = content('一頁看懂：做得快也管得住，從一個用例開始',
-            '先做 4–6 週診斷與 6–8 週單一用例試點；達標後，範本、規則與關卡沿用到下一個系統。')
-WHY = [('為什麼是現在', '委外新辦法與 AI 自律規範已上路，AI 產出的最終責任在保險公司；開發流程要拿得出「誰要求、AI 做了什麼、誰核准」的紀錄。', '第 ⟦p:urgency⟧、⟦p:compliance⟧ 頁'),
-       ('為什麼只買工具不夠', 'DORA 2025：AI 讓交付變快，但交付穩定度仍在下降。效益取決於需求、審查、上線與控制方式有沒有一起改。', '第 ⟦p:tools⟧ 頁'),
-       ('為什麼找我們', 'FSC1 自己已經用這套流程開發；懂保險業務與法規的 BA 和實作的 IT 同一組人，從貴公司的一個真實需求開始。', '第 ⟦p:demo⟧、⟦p:why⟧ 頁')]
-for i, (h, t, ref) in enumerate(WHY):
-    x = 0.45 + i * 4.18
-    tb(s, x, 1.45, 4.05, 0.55, f'{i + 1}　{h}', size=14, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
-    tb(s, x, 2.05, 4.05, 2.05, t, size=14, fill=LG, margin=0.18, spacing=1.15)
-    tb(s, x, 4.1, 4.05, 0.4, '詳見' + ref, size=10, color=GREY, fill=LG, margin=0.16)
-tb(s, 0.45, 4.75, 0.1, 1.45, '', fill=OR)
-tb(s, 0.55, 4.75, 6.1, 1.45, [[('請貴公司決定', {'bold': True, 'color': OR, 'size': 13})],
-                              '安排一場現場示範，指定 IT 與業務窗口，選出 1–2 個候選用例，啟動準備度診斷。'], size=13.5, fill=TINT, margin=0.18)
-tb(s, 6.8, 4.75, 6.1, 1.45, [[('如果先不做', {'bold': True, 'color': GREY, 'size': 13})],
-                             'AI 工具照樣在開發團隊擴散，但流程與紀錄沒跟上；等到金檢或內稽時再補紀錄，成本更高、風險更大。'], size=13.5, fill=LG, margin=0.18)
+if not INTERNAL:
+  s = content('一頁看懂：做得快也管得住，從一個用例開始',
+              '先做 4–6 週診斷與 6–8 週單一用例試點；達標後，範本、規則與關卡沿用到下一個系統。')
+  WHY = [('為什麼是現在', '委外新辦法與 AI 自律規範已上路，AI 產出的最終責任在保險公司；開發流程要拿得出「誰要求、AI 做了什麼、誰核准」的紀錄。', '第 ⟦p:urgency⟧、⟦p:compliance⟧ 頁'),
+         ('為什麼只買工具不夠', '國際研究：AI 讓交付變快，但也更不穩；PwC 調查也顯示，多數 CEO 還沒看到 AI 的財務效益。差別在流程與治理。', '第 ⟦p:tools⟧ 頁'),
+         ('為什麼找我們', 'FSC1 自己已經用這套流程開發；懂保險業務與法規的 BA 和實作的 IT 同一組人，從貴公司的一個真實需求開始。', '第 ⟦p:demo⟧、⟦p:why⟧ 頁')]
+  for i, (h, t, ref) in enumerate(WHY):
+      x = 0.45 + i * 4.18
+      tb(s, x, 1.45, 4.05, 0.55, f'{i + 1}　{h}', size=14, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+      tb(s, x, 2.05, 4.05, 2.05, t, size=14, fill=LG, margin=0.18, spacing=1.15)
+      tb(s, x, 4.1, 4.05, 0.4, '詳見' + ref, size=10, color=GREY, fill=LG, margin=0.16)
+  tb(s, 0.45, 4.75, 0.1, 1.45, '', fill=OR)
+  tb(s, 0.55, 4.75, 6.1, 1.45, [[('請貴公司決定', {'bold': True, 'color': OR, 'size': 13})],
+                                '安排一場現場示範，指定 IT 與業務窗口，選出 1–2 個候選用例，啟動準備度診斷。'], size=13.5, fill=TINT, margin=0.18)
+  tb(s, 6.8, 4.75, 6.1, 1.45, [[('如果先不做', {'bold': True, 'color': GREY, 'size': 13})],
+                               'AI 工具照樣在開發團隊擴散，但流程與紀錄沒跟上；等到金檢或內稽時再補紀錄，成本更高、風險更大。'], size=13.5, fill=LG, margin=0.18)
 
 # ───────── 議程（範本 Agenda 版面：編號圓圈、章節名稱、說明、頁碼） ─────────
 CUR[0] = '議程'
@@ -339,49 +370,60 @@ note(s, '右側數字為頁碼。頁面右上方標示「建議」「示意」�
 section('01', '面向誰\nWho we serve', '面向誰')
 
 s = content('保險公司現在就要把 AI 治理設計進開發流程',
-            'AI 產出的最終責任已落在保險公司；開發流程要留下「誰要求、AI 做了什麼、誰核准」的紀錄。')
+            '保險業過半已在用 AI，生成式 AI 快速擴散；但 AI 寫的程式近半有資安漏洞，而責任在保險公司。')
 mark('urgency')
-cards(s, [('責任落在保險公司', '2025-12-31', '保險業作業委外新辦法施行；AI 自律規範要求保險公司對 AI 結果負最終責任。', '理律法律事務所；壽險／產險公會'),
-          ('監理要求可問責', '2024-06', '金管會 AI 指引要求治理及問責、透明性；新加坡金管局 2024-12 檢視銀行後指出，多數已建 AI 清冊，高風險 AI 須獨立驗證。', '金管會；新加坡金融管理局（MAS）'),
-          ('開發需求集中', '2026-01-01', 'IFRS 17 與 TW-ICS 接軌上路，財務、精算與報表相關系統都要跟著調整，新的開發需求集中出現。', '金管會保險局')])
-callout(s, 5.55, '意涵：', '紀錄必須在流程裡設計好，不能事後補；新制帶來的系統調整，正好是把 AI 與治理一起導入的時機。', h=0.75, size=12)
+cards(s, [('保險業已在用 AI', '53%', '2024 年是 43%；壽險公司更高達 65%。', ('金管會 2026-10 調查（工商時報）', 'https://www.ctee.com.tw/news/20261016700947-430301')),
+          ('生成式 AI 擴散', '76%', '有用 AI 的金融業者中，已導入生成式 AI 的比例；一年前是 48%。', ('金管會 2026-10 調查（聯合報）', 'https://udn.com/news/story/7239/9817114')),
+          ('AI 寫的程式', '45%', '含有資安漏洞。測了 100 多個 AI 模型、80 個寫程式任務。', ('Veracode，2025-07', 'https://www.veracode.com/press-release/ai-generated-code-poses-major-security-risks-in-nearly-half-of-all-development-tasks-veracode-research-reveals/'))])
+callout(s, 5.55, '責任在誰：', '委外新辦法（2025 年底施行）和 AI 自律規範都寫明，AI 產出的最終責任在保險公司。紀錄要設計進流程，不能事後補。', h=0.75, size=12.5)
 
 s = content('優先客群：有自建開發團隊的壽險與產險公司',
             '依經驗推估：IT 主管決策與付費，法遵、風控與資安握有否決權；決策鏈需在診斷訪談中確認。', tags=('假設',))
-ROWS = [['IT／數位主管', '決策與付費', '交付跟不上業務與新制需求；AI 工具用了，整體卻沒變快', '一個可量測的用例試點'],
-        ['業務單位主管', '提出需求、共同贊助', '需求來回多輪、上線時間難預期', '業務和 AI 一起寫需求說明'],
-        ['法遵、風控、資安', '否決權', '委外、個資與 AI 責任；稽核要拿得出紀錄', '法規檢查清單、人工關卡、完整紀錄'],
-        ['管理層', '核准預算', 'AI 投資要看到回報', '小範圍起步，先講好成功標準']]
-grid(s, 0.45, 1.45, [2.4, 1.9, 4.3, 3.85], ['角色', '採購中的角色', '他們的問題', '我們給的答案'], ROWS, 0.85, size=12)
-tb(s, 0.45, 5.4, 12.45, 0.85, [[('優先客群的條件：', {'bold': True, 'color': OR}), ('有自建或駐點開發團隊；已有版本控制與 CI；近期有新制相關或核心系統周邊的開發需求。', {})]], size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
+HUB = [((0.45, 1.45), 'IT／數位主管', '決策與付費', '交付跟不上，AI 用了卻沒變快', '一個看得到數字的試點'),
+       ((8.3, 1.45), '業務單位主管', '提需求、共同贊助', '需求來回很多輪，上線時間說不準', 'BA 用 AI 當場做出原型，一起確認需求'),
+       ((0.45, 3.75), '法遵、風控、資安', '握有否決權', '委外、個資、AI 出事誰負責', '法規清單、人工關卡、完整紀錄'),
+       ((8.3, 3.75), '管理層', '核准預算', 'AI 花了錢要看到回報', '小範圍起步，成功標準先講好')]
+for (x, y), role, part, care, give in HUB:
+    tb(s, x, y, 4.6, 1.75, [[(role, {'bold': True, 'color': OR, 'size': 14}), ('　' + part, {'size': 11, 'color': GREY})],
+                            [('在意：', {'bold': True}), (care, {})], [('我們給：', {'bold': True}), (give, {})]], size=12.5, fill=LG, margin=0.16, spacing=1.1)
+circle(s, 5.72, 1.55, 1.9, '', fill=OR)
+tb(s, 5.72, 2.05, 1.9, 0.9, ['保險公司的', 'AI 開發試點'], size=13.5, bold=True, color=WHITE, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
+for (x1, y1, x2, y2) in [(5.05, 2.3, 5.75, 2.45), (8.3, 2.3, 7.6, 2.45), (5.05, 4.2, 5.95, 3.25), (8.3, 4.2, 7.4, 3.25)]:
+    hline(s, x1, y1, x2, y2, OR2, 2.0)
+tb(s, 5.2, 4.1, 2.95, 1.4, [[('新做法：前線打樣的 BA', {'bold': True, 'color': OR, 'size': 12.5})],
+                            '我們的 BA 駐點客戶現場，用 AI 直接做出可操作的原型，類似軟體業的「前線部署工程師」做法。'], size=11, fill=TINT, line=OR, margin=0.12)
+tb(s, 0.45, 5.75, 12.45, 0.6, [[('優先客群：', {'bold': True, 'color': OR}), ('有自己或駐點的開發團隊；已有版本控制與 CI；近期有新制或核心系統周邊的開發需求。', {})]], size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
 
 # ───────── 02 解決什麼問題 ─────────
 section('02', '解決什麼問題\nProblems we solve', '解決什麼問題')
 
 s = content('AI 已普及，但交付沒有跟著變好：AI 放大原有的流程與治理',
-            'AI 使用率已達八至九成，但交付穩定度下降；DORA 2026 指出，只買授權不保證回報。')
+            'AI 已經普及，但多數企業還沒看到財務效益；差別在流程與治理，不在工具。')
 mark('tools')
-# 上排：AI 已普及的五個數字；下排：交付表現、既有系統的效益、DORA 2026 結論
-STATS = [('開發者', '84%', '正在使用或計畫使用 AI 工具'), ('技術團隊', '約 90%', '在工作中使用 AI'),
-         ('JPMorgan', '10–20%', '工程師生產力提升（公司自述）'), ('Citi', '3 萬名', '開發者導入 AI 寫程式助手'),
-         ('保險業', '57%', '高階主管把生成式 AI 列為 2026 年首要科技投資')]
-w = (12.45 - 0.1 * 4) / 5
+STATS = [('開發者', '84%', '正在使用或計畫使用 AI 工具'), ('JPMorgan', '10–20%', '工程師生產力提升（公司自述）'),
+         ('Citi', '3 萬名', '開發者導入 AI 寫程式助手'), ('保險業高階主管', '57%', '把生成式 AI 列為 2026 年首要科技投資（PwC 調查）')]
+w = (12.45 - 0.1 * 3) / 4
 for i, (h, big, t) in enumerate(STATS):
     x = 0.45 + i * (w + 0.1)
-    tb(s, x, 1.45, w, 0.4, h, size=12, bold=True, color=WHITE, fill=OR if i < 4 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
-    tb(s, x, 1.9, w, 1.15, [[(big, {'bold': True, 'size': 24, 'color': OR})], [(t, {'size': 10.5})]], fill=LG if i < 4 else TINT, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
-COLS = [('交付表現（DORA 2025）', [('↑', '交付速度：轉為正相關'), ('↓', '交付穩定度：仍為負相關')]),
-        ('既有系統的效益較小', [('35–40%', '新開發的簡單任務'), ('≤ 10%', '複雜的既有系統（常見）')]),
-        ('研究結論（DORA 2026）', [('放大器', '回報來自內部平台、清楚的流程與團隊協作，不是工具本身')])]
+    tb(s, x, 1.45, w, 0.4, h, size=12, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
+    tb(s, x, 1.9, w, 1.15, [[(big, {'bold': True, 'size': 26, 'color': OR})], [(t, {'size': 11})]], fill=LG, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+COLS = [('交付：快了，但更不穩', [('↑', '交付速度變快'), ('↓', '交付穩定度下降')]),
+        ('舊系統的效益比較小', [('35–40%', '新寫的簡單功能'), ('≤ 10%', '複雜的既有系統')]),
+        ('CEO 怎麼說（PwC 調查）', [('56%', '還沒看到 AI 帶來明顯的財務效益')])]
 for i, (h, nums) in enumerate(COLS):
     x = 0.45 + i * 4.18
     tb(s, x, 3.25, 4.05, 0.42, h, size=12.5, bold=True, color=WHITE, fill=OR if i < 2 else DARK, anchor=MSO_ANCHOR.MIDDLE, margin=0.1)
     for j, (big, lab) in enumerate(nums):
         hh = 1.5 / len(nums)
-        tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 11.5})]], fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+        tb(s, x, 3.72 + j * hh, 4.05, hh, [[(big + '　', {'bold': True, 'size': 22 if len(big) < 6 else 20, 'color': OR}), (lab, {'size': 12})]], fill=LG if i < 2 else TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
 callout(s, 5.42, '所以：', '效益取決於流程與治理，不取決於買了哪個工具。導入 AI 時，需求、審查、上線與控制方式要一起改，這正是我們協助的部分。', h=0.7, size=12)
-note(s, '來源：Stack Overflow 2025；Google DORA 2024、2025、2026；JPMorgan（公司自述）；Deloitte Insights 2025；PwC 保險高階主管調查。完整連結見附錄 ⟦app:src⟧。', y=6.22)
-note(s, '既有系統的生產力數字為 DORA 2026 引述的 Stanford 研究。DORA 2024 模型估計：AI 採用率每增加 25%，穩定度 −7.2%、速度 −1.5%。顧問業者已推出相關方案（附錄 ⟦app:peers⟧）。', y=6.52)
+note_links(s, [('Stack Overflow 2025', 'https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/'),
+               ('JPMorgan（Yahoo Finance）', 'https://finance.yahoo.com/news/jpmorgan-engineers-efficiency-jumps-much-190410471.html'),
+               ('Citi（Deloitte Insights）', 'https://www.deloitte.com/global/en/insights/industry/financial-services/financial-services-industry-predictions/2025/ai-and-bank-software-development.html'),
+               ('PwC 保險高階主管調查', 'https://amp.claimsjournal.com/news/national/2025/11/17/334094.htm'),
+               ('PwC 第 29 屆全球 CEO 調查', 'https://www.pwc.com/gx/en/ceo-survey/2026/pwc-ceo-survey-2026.pdf')], y=6.22)
+note_links(s, [('交付速度與穩定度：Google DORA 2025', 'https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report'),
+               ('既有系統效益：Stanford 軟體工程生產力研究（經 DORA 2026 引用）', 'https://softwareengineeringproductivity.stanford.edu')], y=6.52, prefix='')
 
 s = content('我們的解法：把開發流程串成循環，用三個機制守住',
             'AI 參與每一步；接受需求、核准合併、授權上線等五個關鍵決定，由貴公司指定的人做。')
@@ -391,8 +433,8 @@ ROWS = [['交接靠檔案', '需求說明 → 規格 → 實作計畫 → 測試
         ['規則自動執行', '資安、個資、委外規範寫成 AI 自動套用的規則；必守的事由自動關卡擋下', '合規與品質靠個人'],
         ['關卡有人簽', '接受需求、確認規格、核准計畫、核准合併、授權上線，五個決定由指定的人做', '怕失控、稽核查不到']]
 grid(s, 5.2, 1.45, [1.75, 3.9, 2.05], ['機制', '怎麼運作', '解決的問題'], ROWS, 1.12, size=11.5)
-callout(s, 5.7, '原則：', 'AI 可以一路做到正式環境的門口，但不能自己開門。本方法不綁特定 AI 工具，依貴公司政策與合約選定。', h=0.75)
-note(s, f'流程整合自 {V3}。DORA 2026 建議以不可略過的檢查點、提交前自動檢查、小批次與版本控制承接 AI 帶來的審查負擔，與三個機制一致（附錄 ⟦app:src⟧）。', y=6.45)
+callout(s, 5.7, '原則：', 'AI 可以一路做到正式環境、把上線準備好，但不能自己按下上線。本方法不綁特定 AI 工具，依貴公司政策與合約選定。', h=0.75)
+note(s, f'流程整合自 {V3}。國際研究也建議用不可略過的檢查點、提交前自動檢查、小批次與版本控制，承接 AI 帶來的審查負擔（附錄 ⟦app:src⟧）。', y=6.45)
 
 s = content('AI 分工：重複、判斷少的先交給 AI；關鍵決定永遠由人做',
             '依任務「多常發生 × 需要判斷」分四類；第一個試點用例，優先挑左上角工作多的需求。')
@@ -404,24 +446,24 @@ Q = [(0, 0, '常發生 × 判斷少', 'AI 先做，人確認', ['欄位清單、
      (1, 1, '少發生 × 判斷多', '人決定，AI 只提供資料', ['接受需求、架構選型、核准合併、', '授權上線、事件處置'], WHITE)]
 for c_, r, h, rule, items, bg in Q:
     x, y = MX + c_ * (QW + 0.06), MY + r * (QH + 0.06)
-    tb(s, x, y, QW, QH, '', fill=bg, line=LINE)
+    box = tb(s, x, y, QW, QH, '', fill=bg, line=OR if (c_, r) == (0, 0) else LINE)
+    if (c_, r) == (0, 0): box.line.width = Pt(3)
     tb(s, x + 0.12, y + 0.08, QW - 0.24, 0.62, [[(h, {'bold': True, 'size': 11, 'color': GREY})], [(rule, {'bold': True, 'size': 13, 'color': OR})]], margin=0.02)
     tb(s, x + 0.12, y + 0.76, QW - 0.24, QH - 0.84, items, size=11.5, margin=0.02)
+tb(s, MX + QW - 1.35, MY + 0.1, 1.25, 0.34, '★ 從這裡開始', size=10.5, bold=True, color=WHITE, fill=OR, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.02)
 tb(s, 0.45, MY, 0.65, QH, '常發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
 tb(s, 0.45, MY + QH + 0.06, 0.65, QH, '少發生', size=11, bold=True, color=GREY, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, margin=0.0)
 tb(s, MX, MY + 2 * QH + 0.1, 2 * QW + 0.06, 0.3, '需要判斷：少 ─────────────→ 多', size=10.5, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.0)
-tb(s, 8.75, 1.5, 4.15, 4.4, [[('對貴公司的意義', {'bold': True, 'color': OR, 'size': 13})],
-                             [('先挑左上角：', {'bold': True}), ('第一個試點用例，優先挑這類工作多的需求，最快看到效果。', {})],
-                             [('', {'size': 5})],
-                             [('右下角就是五個關卡：', {'bold': True}), ('這些決定由貴公司指定的人做，AI 只提供資料（第 ⟦p:solution⟧ 頁）。', {})],
-                             [('', {'size': 5})],
-                             [('依實際專案調整：', {'bold': True}), ('分類在準備度診斷時，依貴公司的專案與規範確認（第 ⟦p:offer⟧ 頁）。', {})]], size=12, fill=LG, margin=0.18)
+tb(s, 8.75, 1.5, 4.15, 0.6, '第一階段：從左上角開始', size=14, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, margin=0.14)
+tb(s, 8.75, 2.1, 4.15, 3.8, [[('① 先挑左上角', {'bold': True, 'color': OR, 'size': 13.5})], '第一個試點，挑這類工作多的需求：AI 先做、人確認，最快看到效果。',
+                             [('', {'size': 6})], [('② 右下角永遠由人決定', {'bold': True, 'color': OR, 'size': 13.5})], '接受需求、核准合併、授權上線，就是五個人工關卡（第 ⟦p:solution⟧ 頁）。',
+                             [('', {'size': 6})], [('③ 依實際專案調整', {'bold': True, 'color': OR, 'size': 13.5})], '分類在診斷時，依貴公司的專案與規範確認（第 ⟦p:offer⟧ 頁）。'], size=12, fill=TINT, line=OR, margin=0.18)
 note(s, f'整理自 FSC1 開發流程實務；方法參考 {SMR}。分類為初步判斷。', y=6.45)
 
 if DEMO:
     # IT 團隊交付的示範：再保險系統主檔模組（TASK-000013 任務包與錄影），文件為原文節錄
     s = content('現場示範：再保險系統主檔模組，從業務規則到上線畫面',
-                '以 FSC1 IT 團隊的實作為例：業務規則、規格、任務與測試一路相連，每一步都留下文件與紀錄。', tags=('待確認',))
+                '以 FSC1 IT 團隊的實作為例：規則、規格、任務與測試一路相連；下方錄影是系統自動跑的畫面測試。', tags=('待確認',))
     mark('demo')
     FR = [('需求說明', '7 條業務規則，含制裁主管覆核'), ('規格與規範', '6 份規格，各有審閱週期'), ('實作計畫', '列明驗收場景，最多改 5 個檔案'),
           ('程式與測試', '10 個測試案例；閘門要求覆蓋率 > 90%'), ('追溯與紀錄', '任務回溯規則代碼，寫入審計')]
@@ -432,13 +474,15 @@ if DEMO:
         tb(s, x, 1.9, W, 1.85, '', fill=WHITE, line=LINE)
         pic(s, os.path.join(DEMO, f'step{i + 1}.png'), x + 0.03, 1.93, W - 0.06, 1.79)
         tb(s, x, 3.8, W, 0.55, t, size=10.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
-    SCR = [('currencies', '結算幣別選單：清單'), ('countries', '國家選單：新增'), ('regions', '區域選單：新增與提醒')]
+    SCR = [('countries', '國家選單：查詢、新增、欄位檢核'), ('regions', '區域選單：新增與提醒'), ('currencies', '結算幣別選單：查詢結果')]
     for i, (k, cap) in enumerate(SCR):
         x = 0.45 + i * 4.18
         tb(s, x, 4.5, 4.05, 1.62, '', fill=WHITE, line=LINE)
-        pic(s, os.path.join(DEMO, f'screen_{k}.png'), x + 0.03, 4.53, 3.99, 1.56)
-        tb(s, x, 6.14, 4.05, 0.3, cap, size=10, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.02)
-    note(s, '文件為 TASK-000013「金融機構主檔」任務包原文節錄；畫面取自同一系統的示範錄影，使用測試資料。追溯表見附錄 ⟦app:trace⟧。', y=6.55)
+        vh = H(1.56); vw = vh * 800 / 450
+        s.shapes.add_movie(os.path.join(DEMO, f'video_{k}.mp4'), Inches(x + (4.05 - vw) / 2), Inches(Y(4.53)), Inches(vw), Inches(vh),
+                           poster_frame_image=os.path.join(DEMO, f'screen_{k}.png'), mime_type='video/mp4')
+        tb(s, x, 6.14, 4.05, 0.3, '▶ ' + cap, size=10, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.02)
+    note(s, '上方為 TASK-000013「金融機構主檔」任務包原文節錄；下方為同一系統自動執行畫面測試的錄影（點擊播放，測試資料）。追溯表見附錄 ⟦app:trace⟧。', y=6.55)
 else:
     s = content('現場示範：用一個用例走完從需求到上線的每一步',
                 'FSC1 已在使用這套做法；現場可用貴公司提供的一個需求，走完以下五個步驟。', tags=('待確認',))
@@ -460,26 +504,36 @@ else:
 section('03', '帶來什麼價值\nValue we deliver', '帶來什麼價值')
 
 s = content('帶來什麼價值：每個痛點對應一項成果與衡量指標',
-            '試點以流程指標驗收；DORA 四項交付指標需要較長期間與足夠的上線次數，於擴大階段起追蹤。', tags=('建議',))
-ROWS = [['需求來回多輪', '業務和 AI 一起寫需求說明', '新功能更快上線', '從第一次討論到需求定稿的時間'],
-        ['審查排隊、品質看人', 'AI 先審、人判斷風險', '工程師把時間花在需要判斷的工作', '第一次審查的等待時間、返工次數'],
-        ['上線出錯', 'AI 每次改動自行測試', '上線事故減少', '變更失敗率、復原時間（DORA，擴大階段）'],
-        ['法規與稽核壓力', '規範規則＋自動關卡＋紀錄', '金檢與內稽時拿得出佐證', '內稽調閱佐證所需時間'],
-        ['交付慢且難預期', '每階段交出檔案，下一步直接接手', '交付時間可預期', '交付時間、部署頻率（DORA，擴大階段）']]
-grid(s, 0.45, 1.45, [2.4, 3.2, 3.2, 3.65], ['痛點', '→ 解決方式', '→ 商業價值', '→ 衡量指標'], ROWS, 0.84, size=11.5)
-note(s, 'DORA 四項指標（部署頻率、交付時間、變更失敗率、復原時間）為業界通用的交付績效指標。效益不預先承諾數字，以實測為準。', y=6.25)
-note(s, 'DORA 2026：回收期 6–9 個月是敏捷團隊的優異目標；需要大量治理的大型企業導入，12–18 個月屬可接受。', y=6.55)
+            'AI 很快就能做出原型，需求、審查、測試都跟著變快；每一項都用一個數字驗收。', tags=('建議',))
+VAL = [('需求來回很多輪', 'AI 快速做出原型，業務當場確認', '需求定稿時間'),
+       ('審查排隊', 'AI 先審，人只判斷風險', '審查等待時間、返工次數'),
+       ('上線出錯', '每次改動都自動測試', '變更失敗率'),
+       ('稽核壓力', '每一步自動留下紀錄', '調閱佐證所需時間'),
+       ('交付難預期', '每階段交出檔案，進度看得到', '交付時間')]
+for i, (pain, val, kpi) in enumerate(VAL):
+    y = 1.45 + i * 0.87
+    tb(s, 0.45, y, 2.75, 0.75, pain, size=13.5, bold=True, color=GREY, fill=LG, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.08)
+    arrow(s, 3.3, y + 0.24, 0.4, 0.28)
+    tb(s, 3.8, y, 5.75, 0.75, val, size=15, bold=True, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, margin=0.16)
+    tb(s, 9.65, y, 3.25, 0.75, [[('量：', {'bold': True, 'color': OR}), (kpi, {})]], size=12, fill=WHITE, line=LINE, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
+note(s, '試點前先量基準、訂合格線；效益不先承諾數字，以實測為準。', y=6.0)
+note(s, '回收期參考：需要大量治理的大型企業導入，12–18 個月屬可接受（國際研究，附錄 ⟦app:src⟧）。', y=6.3)
 
 s = content('給法遵與風控：每一個 AI 產出，都查得到誰要求、誰核准',
-            '金檢與內稽會問的五個問題，在流程中都有對應的做法與紀錄；條文對照見附錄 ⟦app:rules⟧' + ('，實例見附錄 ⟦app:trace⟧。' if DEMO else '。'))
+            '金檢與內稽一定會問這五題，每一題都有做法、也留得下紀錄；條文見附錄 ⟦app:rules⟧' + ('，實例見附錄 ⟦app:trace⟧。' if DEMO else '。'))
 mark('compliance')
-ROWS = [['AI 工具有沒有納入委外管理與 AI 清冊？', '診斷時判斷是否屬委外並登錄 AI 清冊；高風險用途加審', '委外判斷紀錄、AI 清冊'],
-        ['客戶個資有沒有進到 AI？', '資料分級；集中設定禁止讀取機密檔與金鑰；試點用假資料', '設定檔與存取紀錄'],
-        ['這個改動是誰核准上線的？', '五個關卡各有指定核准人；寫程式的 AI 不能核准自己的程式', '核准紀錄（人、時間、版本）'],
-        ['出事能不能退回？', '退版流程事先演練；AI 建議退版，服務負責人核准後執行', '演練與事件紀錄'],
-        ['AI 做了什麼，事後查得到嗎？', '需求說明、規格、實作計畫與測試結果版本化保存', '完整的文件軌跡']]
-grid(s, 0.45, 1.45, [3.6, 5.6, 3.25], ['金檢與內稽會問', '流程中的做法', '留下的紀錄'], ROWS, 0.74, size=12)
-callout(s, 5.75, '對法遵的意義：', 'AI 使用從「難以稽核的個人行為」變成「有紀錄的流程」。法規檢查清單為草稿，診斷時與貴公司法遵逐條確認。', h=0.75)
+QS = [('AI 工具有納管嗎？', '診斷時就判斷是否屬委外，並登錄 AI 清冊。', 'AI 清冊'),
+      ('個資會進到 AI 嗎？', '資料分級，機密檔 AI 讀不到；試點用假資料。', '設定與存取紀錄'),
+      ('上線是誰核准的？', '指定的人核准；AI 不能核准自己寫的程式。', '核准紀錄'),
+      ('出事能退回嗎？', '退版先演練；AI 建議退版，人決定。', '演練紀錄'),
+      ('事後查得到嗎？', '需求、規格、計畫、測試結果都存版本。', '完整文件軌跡')]
+W = 2.41
+for i, (q, a_, rec) in enumerate(QS):
+    x = 0.45 + i * (W + 0.1)
+    tb(s, x, 1.45, W, 0.95, q, size=14, bold=True, color=WHITE, fill=OR, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.1)
+    tb(s, x, 2.45, W, 1.85, a_, size=13.5, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.16, spacing=1.15)
+    tb(s, x, 4.35, W, 0.55, [[('留下：', {'bold': True, 'color': OR}), (rec, {})]], size=12, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
+callout(s, 5.3, '一句話：', 'AI 的使用，從「難以稽核的個人行為」變成「有紀錄的流程」。法規檢查清單是草稿，診斷時與貴公司法遵逐條確認。', h=0.8, size=12.5)
 
 s = content('你買到什麼：先診斷，再做一個用例的試點',
             '成功標準在試點前雙方講好，達標才擴大；固定範圍、固定價格，金額另行報價。', tags=('建議', '示意'))
@@ -522,23 +576,26 @@ for i, (h, t, c) in enumerate(STAIR):
     x = 0.45 + i * 2.35; h_ = 1.4 + i * 0.75; y = 5.35 - h_
     tb(s, x, y, 2.25, h_, [[(f'{i + 1}　{h}', {'bold': True, 'size': 13, 'color': WHITE})], [(t, {'size': 10.5, 'color': WHITE})]], fill=[OR, OR2, OR, DARK][i], margin=0.12)
     tb(s, x, 5.42, 2.25, 0.6, c, size=10, bold=True, color=OR, fill=TINT, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER, margin=0.06)
+up = s.shapes.add_connector(1, Inches(0.6), Inches(Y(3.7)), Inches(9.6), Inches(Y(1.3)))
+up.line.color.rgb = OR2; up.line.width = Pt(4)
+up.line._get_or_add_ln().append(up.line._get_or_add_ln().makeelement(qn('a:tailEnd'), {'type': 'triangle', 'w': 'lg', 'len': 'lg'}))
 tb(s, 9.95, 1.45, 2.95, 4.57, [[('為什麼這樣做', {'bold': True, 'color': OR, 'size': 13})],
                                [('風險小：', {'bold': True}), ('第一步只動一個用例。', {})],
                                [('成本可控：', {'bold': True}), ('每一步只承諾下一步。', {})],
                                [('有數據才擴大：', {'bold': True}), ('每一步都對照同一套指標。', {})],
                                [('越做越快：', {'bold': True}), ('範本與規則沿用，下一個用例不必從頭來。', {})],
-                               [('先講好 J 曲線：', {'bold': True}), ('DORA 2026 指出導入初期會有短暫下滑，常見的失敗是在低谷時撤資；成功標準與期間事先講好。', {})]], size=11, fill=LG, margin=0.16)
+                               [('先講好 J 曲線：', {'bold': True}), ('導入初期會先變慢一陣子，最常見的失敗是在低谷時喊停；成功標準和觀察期間要先講好。', {})]], size=11, fill=LG, margin=0.16)
 note(s, '各用例可沿用與需客製的內容、延伸到其他系統與產業的方式，見附錄 ⟦app:ext⟧。', y=6.2)
 
 s = content('如何開始：先看現場示範，再挑一個用例',
-            '從現場示範到啟動診斷共三步；請貴公司先指定窗口，並提供候選需求清單。', tags=('示意',))
+            '三個步驟就能開始；請貴公司先指定窗口，並給我們一份想做的需求清單。', tags=('示意',))
 PH = [('0　準備度診斷', '約 4–6 週', '選定用例與成功標準'), ('1　用例試點', '約 6–8 週', '指標達到合格線'), ('2　相鄰用例', '依範圍', '管理層核准擴大'), ('3　全公司', '持續', '—')]
 for i, (h, d, g) in enumerate(PH):
     x = 0.45 + i * 3.14
     tb(s, x, 1.45, 3.0, 0.7, [[(h, {'bold': True, 'size': 13.5})], [(d, {'size': 10.5})]], color=WHITE, fill=[OR, OR, OR2, MID][i], anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
     tb(s, x, 2.2, 3.0, 0.5, [[('進下一步：', {'bold': True, 'color': OR}), (g, {})]], size=11, fill=LG, anchor=MSO_ANCHOR.MIDDLE, margin=0.12)
     if i < 3: arrow(s, x + 3.0, 1.63, 0.14, 0.3)
-NX = [('現場示範', '用貴公司提供的一個需求，示範從需求說明到核准紀錄。'), ('對齊工作坊', '挑 1–2 個候選用例，確認前提與限制。'), ('啟動準備度診斷', '確認範圍與雙方窗口，開始盤點現況與法規檢查。')]
+NX = [('現場示範', '拿貴公司的一個真實需求，當場跑一次：從寫需求到上線前的核准。'), ('一起挑題目', '開一次會，挑出 1–2 個最適合先做的需求，順便確認資料、系統和法規上有哪些限制。'), ('開始診斷', '定好範圍和雙方窗口，開始盤點現在的開發流程和法規要求。')]
 for i, (h, t) in enumerate(NX):
     y = 2.95 + i * 0.92
     circle(s, 0.45, y + 0.13, 0.55, str(i + 1), size=15)
@@ -620,17 +677,6 @@ ROWS = [['用例效益偏低', '用例落在複雜的既有系統，重複性工
 grid(s, 0.45, 1.45, [2.3, 2.6, 2.85, 2.65, 2.05], ['風險', '提早發現的訊號', '事前降低', '發生時的應變', '負責'], ROWS, 0.85, size=10.5)
 note(s, '依 DORA 2026（J 曲線、既有系統效益）與試點規劃整理；正式清單於診斷時與貴公司共同確認。', y=6.35)
 
-if INTERNAL and DEMO:
-    s = content(f'附錄 {appendix("video")}｜示範錄影：再保險系統主檔模組',
-                '內部參考：IT 團隊的三段示範錄影（各約 5 秒），點擊畫面播放；對外以現場示範為主。', tags=('內部',))
-    for i, (k, cap) in enumerate([('countries', '國家選單'), ('regions', '區域選單'), ('currencies', '結算幣別選單')]):
-        x = 0.45 + i * 4.18
-        w, h = 4.05, 4.05 * 450 / 800
-        s.shapes.add_movie(os.path.join(DEMO, f'video_{k}.mp4'), Inches(x), Inches(Y(1.6)), Inches(w), Inches(h),
-                           poster_frame_image=os.path.join(DEMO, f'screen_{k}.png'), mime_type='video/mp4')
-        tb(s, x, 1.6 + h / K + 0.08, w, 0.35, cap, size=12, bold=True, color=GREY, align=PP_ALIGN.CENTER, margin=0.02)
-    note(s, '錄影使用測試資料；對外使用前請 IT 確認不含客戶資料或客戶專屬設計。', y=6.3)
-
 if INTERNAL:
     s = content(f'附錄 {appendix("research")}｜研究整合：兩份研究互補，衝突處的取捨',
                 '內部參考：兩份研究的差異，以及本提案採用哪一邊、為什麼。提交客戶前移除本頁。', tags=('內部',))
@@ -651,6 +697,10 @@ SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%）', 'https://s
         ('Yahoo Finance，JPMorgan 工程師使用寫程式助手效率提升至多 20%，2025-03', 'https://finance.yahoo.com/news/jpmorgan-engineers-efficiency-jumps-much-190410471.html'),
         ('Deloitte Insights，AI and bank software development，2025（Citi 3 萬名開發者）', 'https://www.deloitte.com/global/en/insights/industry/financial-services/financial-services-industry-predictions/2025/ai-and-bank-software-development.html'),
         ('Claims Journal，PwC 保險高階主管調查（57%），2025-11-17', 'https://amp.claimsjournal.com/news/national/2025/11/17/334094.htm'),
+        ('金管會 AI 使用調查，2026-10（工商時報報導：保險業 53%、生成式 AI 76%）', 'https://www.ctee.com.tw/news/20261016700947-430301'),
+        ('Veracode，2025 GenAI Code Security Report 新聞稿（45%）', 'https://www.veracode.com/press-release/ai-generated-code-poses-major-security-risks-in-nearly-half-of-all-development-tasks-veracode-research-reveals/'),
+        ('PwC，第 29 屆全球 CEO 調查，2026（56%）', 'https://www.pwc.com/gx/en/ceo-survey/2026/pwc-ceo-survey-2026.pdf'),
+        ('Stanford HAI，AI Index 2025（模型使用成本）', 'https://hai.stanford.edu/ai-index/2025-ai-index-report'),
         ('McKinsey，Technology Trends Outlook 2026（代理式軟體開發列為新趨勢）', 'https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/the-top-trends-in-tech'),
         ('Allen & Gledhill，MAS 發布 AI 模型風險管理資訊文件（2024-12-05）', 'https://www.allenandgledhill.com/sg/publication/articles/29565/mas-publishes-information-paper-on-ai-model-risk-management'),
         ('理律法律事務所，保險業作業委外新辦法（2025-12-31 施行）', 'https://www.leeandli.com/TW/Newsletters/7525.htm'),
@@ -659,8 +709,8 @@ SRCS = [('Stack Overflow，2025 Developer Survey 新聞稿（84%）', 'https://s
         (f'研究一：{V3}；研究二：AI 原生 SDLC 說明，整理自 {PB}', None)]
 for i, (lab, url) in enumerate(SRCS):
     seg = (lab, {'link': url}) if url else (lab, {})
-    tb(s, 0.45, 1.45 + i * 0.355, 12.45, 0.33, [[(f'{i + 1}. ', {'bold': True, 'color': OR}), seg]], size=10, fill=LG if i % 2 == 0 else WHITE, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
-note(s, '「−1.5%」「−7.2%」為 AI 採用率每增加 25% 的模型估計；JPMorgan 數字為公司自述。', y=6.5)
+    tb(s, 0.45, 1.45 + i * 0.28, 12.45, 0.26, [[(f'{i + 1}. ', {'bold': True, 'color': OR}), seg]], size=9.5, fill=LG if i % 2 == 0 else WHITE, anchor=MSO_ANCHOR.MIDDLE, margin=0.08)
+note(s, '「−1.5%」「−7.2%」為 AI 採用率每增加 25% 的模型估計；JPMorgan 數字為公司自述；金管會數字依媒體報導，以金管會公布為準。', y=6.62)
 
 # ───────── 講者備註 ─────────
 # 依頁面標題比對（先比對較具體的鍵）；第二段只在合夥人審閱版加入，客戶版不含內部提醒
@@ -684,7 +734,7 @@ NOTES = [
 【講法】逐列講定位與對口：BA 對口業務單位與法遵，主導需求分析並提出法規檢查清單；Rex 是方法設計者，對口客戶 IT 主管；Kenny 是每天實際在用的人，對口工程師；Sam 決定推案與報價；R&Q 與法遵把關。下方是客戶最常問的三題與建議回答。頁底是兩個交接點：IT 的示範素材沒交，不約推案會議；需求說明沒有核准紀錄，不進入設計。
 【可能被問】「試點誰帶隊？」→ 請 Sam 指定，客戶需要固定窗口。""", ''),
     ('一頁看懂', """【這頁的重點】如果對方只看一頁，就是這頁：建議、三個理由、請對方決定的事、不做的代價。
-【講法】「我們的建議是：先做 4 到 6 週的準備度診斷，再做 6 到 8 週、一個用例的試點；達到事先講好的標準才擴大，而且範本、規則與關卡會沿用到下一個系統。理由有三個。第一，為什麼是現在：委外辦法和 AI 自律規範已經上路，AI 產出的最終責任在保險公司，流程要拿得出誰要求、AI 做了什麼、誰核准的紀錄。第二，為什麼只買工具不夠：DORA 2025 發現，AI 讓交付變快，但交付穩定度在下降。第三，為什麼找我們：我們自己已經這樣在做，懂保險業務與法規的 BA 和實作的 IT 是同一組人。」最後指向下方：今天想請貴公司決定的，是安排一場現場示範並選出 1–2 個候選用例；如果先不做，工具照樣擴散，但紀錄要等到金檢時再補。
+【講法】「我們的建議是：先做 4 到 6 週的準備度診斷，再做 6 到 8 週、一個用例的試點；達到事先講好的標準才擴大，而且範本、規則與關卡會沿用到下一個系統。理由有三個。第一，為什麼是現在：委外辦法和 AI 自律規範已經上路，AI 產出的最終責任在保險公司，流程要拿得出誰要求、AI 做了什麼、誰核准的紀錄。第二，為什麼只買工具不夠：AI 讓交付變快，但也更不穩，PwC 調查也顯示多數 CEO 還沒看到 AI 的財務效益。第三，為什麼找我們：我們自己已經這樣在做，懂保險業務與法規的 BA 和實作的 IT 是同一組人。」最後指向下方：今天想請貴公司決定的，是安排一場現場示範並選出 1–2 個候選用例；如果先不做，工具照樣擴散，但紀錄要等到金檢時再補。
 【轉場】「接下來四章依序展開。」
 【可能被問】「試點要多少錢？」→ 固定範圍、固定價格，另行報價。""", ''),
     ('議程', """【這頁的重點】說明結構與時間安排。
@@ -748,6 +798,49 @@ NOTES = [
     ('資料來源', """【用途】被問數字出處時使用。−1.5%、−7.2% 是 AI 採用率每增加 25% 的模型估計；JPMorgan 數字為公司自述。""", ''),
 ]
 
+# v5：依審閱意見改版的頁面，備註改寫（白話、少引用外部報告名稱）
+UPD = {
+    '內部｜為什麼要做成產品': None,
+    '為什麼要做成產品': ("""【這頁的重點】AI 讓寫程式變便宜，客戶缺的是一套每次都能照做、管得住的方法；這就是我們要做成產品的東西。
+【講法】「左邊這張圖：同樣能力的 AI，兩年內使用成本降到大約 280 分之一，以前花 100 元，現在不到 0.4 元。寫程式這件事會越來越便宜。中間這條線是導入 AI 的真實狀況：一開始會先變慢，因為大家在學、要審查的東西變多、流程要調整；下滑的那一段，就是治理沒做好的成本。所以我們要賣的，不是寫程式的人力，而是一套每次都能照做、管得住的方法：審查、關卡、紀錄都做成範本，每做一個試點就多一份能重複用的資產，做越多越快、越便宜。」
+【做法】先賣診斷加一個試點：診斷 4 到 6 週、試點 6 到 8 週，達標才擴大；每個試點至少留下一個能重複用的範本或規則，累積夠了、有實績，再推出客戶自己能用的工具包。
+【可能被問】「跟 Deloitte 的加速器有什麼不同？」→ 他們偏預建代理與藍圖；我們把在地法規、可稽核關卡和人工把關綁在一起（附錄同業參考）。""",
+        """【內部提醒】J 曲線是示意圖，概念來自 DORA 2026，不是實際數據；成本數字是 Stanford AI Index 的資料。"""),
+    '保險公司現在就要': ("""【這頁的重點】保險業已經在用 AI，而且擴散很快；但 AI 寫的程式有風險，責任在保險公司。
+【講法】「三個數字。第一，金管會今年 10 月的調查：保險業已經有 53% 在用 AI，前年是 43%，壽險公司更高達 65%。第二，有用 AI 的金融業者裡，76% 已經導入生成式 AI，一年前還不到一半。第三，Veracode 測了 100 多個 AI 模型：AI 寫的程式，約 45% 有資安漏洞。而委外新辦法和 AI 自律規範都寫明，責任在保險公司。所以紀錄要設計進流程，不能事後補。」
+【可能被問】「45% 是你們測的嗎？」→ 不是，是資安公司 Veracode 2025 年的研究，來源在頁底可以點。""",
+        """【內部提醒】金管會數字目前依工商時報、聯合報等報導，對外前請對照金管會原始公告。"""),
+    '優先客群': ("""【這頁的重點】採購時有四種人，各自在意的事不同；我們的 BA 能直接用 AI 做出原型，這是新的做法。
+【講法】中間是試點，四個角落是四種人：IT 主管付錢，在意交付跟不上；業務單位在意需求來回很多輪，我們的 BA 可以用 AI 當場做出原型，一起確認需求；法遵、風控、資安握有否決權，在意出事誰負責；管理層在意回報。中間下方是新做法：前線打樣的 BA，像軟體業的「前線部署工程師」一樣，駐點在客戶現場直接做原型。最下面是我們優先找的客戶條件。
+【可能被問】「開發全部外包的公司呢？」→ 可以做，但要先談好外包廠商在試點中的角色（附錄試點風險）。""",
+        """【內部提醒】決策鏈仍是依經驗推估，診斷訪談時確認。"""),
+    'AI 已普及': ("""【這頁的重點】AI 已經普及，但多數企業還沒看到錢；差別在流程與治理。
+【講法】上排四個數字說明普及：開發者 84% 在用或計畫用 AI；JPMorgan、Citi 已大規模導入；PwC 調查，57% 的保險業高階主管把生成式 AI 列為 2026 年首要科技投資。下排是問題：交付變快了，但也更不穩；在複雜的既有系統上，效益常常不到 10%，而保險公司的核心系統大多是這種；PwC 全球 CEO 調查，56% 的 CEO 說 AI 還沒帶來營收或成本上的明顯效益。所以導入 AI 時，需求、審查、上線與控制方式要一起改。
+【可能被問】「JPMorgan 不是提升 10–20%？」→ 那是個人生產力、公司自述；看整體交付和財務效益，結果就不一樣。""",
+        """【內部提醒】56% 依多家媒體報導 PwC 第 29 屆 CEO 調查；PwC 各地網頁寫法略有出入，對外前請對照 PwC 原始報告。57% 仍是轉引 Claims Journal，請改引 PwC 原始報告。"""),
+    'AI 分工': ("""【這頁的重點】第一階段從左上角開始：常發生、判斷少的工作先交給 AI；右下角永遠由人決定。
+【講法】依「多常發生、需要多少判斷」分四類。左上角框起來的是我們的起點：測試案例、文件、Release Note 這類，AI 先做、人確認，最快看到效果，所以第一個試點挑這類工作多的需求。右上，程式碼、API 規格，AI 起草、人逐項審。左下做成範本。右下，接受需求、核准合併、授權上線，永遠由人決定，就是五個人工關卡。分類會在診斷時依客戶的專案確認。
+【轉場】「實際長什麼樣子？看示範。」""", ''),
+    '現場示範': ("""【這頁的重點】不是概念：上方是同一個功能從規則到測試的文件，下方是系統自動跑畫面測試的錄影。
+【講法】「上面五個框是金融機構主檔這個功能：7 條業務規則，包括制裁國家建檔要主管覆核；6 份規格；每個任務寫明驗收場景，最多只能改 5 個檔案；QA 規格定了 10 個測試案例，品質閘門要求覆蓋率超過 90%；每個任務都回溯到規則代碼，制裁建檔寫入審計。下面三段錄影，點一下就會播放：系統自動跑畫面測試，包括查詢、開新增視窗、欄位檢核。」最後邀請：「現場示範可以用貴公司的一個需求走一遍。」
+【可能被問】「覆蓋率 90% 是實際結果嗎？」→ 那是品質閘門要求的門檻，不是已達成的結果；實際執行情形在現場示範時說明。""",
+        """【內部提醒】(1) 請 IT 確認：錄影是否由 AI／自動化測試執行，可否說「AI 協助測試」；(2) 素材對外前確認不含客戶資料或客戶專屬設計；(3) 錄影拍的是國家、區域、幣別，規格是金融機構，最好補一段金融機構選單錄影；(4) 第 5 步仍缺人工核准畫面；(5) 規格負責人欄寫「Lead Agent」，被問到時說明由誰審核。"""),
+    '帶來什麼價值：每個痛點': ("""【這頁的重點】五個痛點，每個都有一個做法、一個數字驗收。
+【講法】由上往下：需求來回很多輪，AI 快速做出原型，業務當場確認，量需求定稿時間；審查排隊，AI 先審、人只判斷風險，量等待時間和返工次數；上線出錯，每次改動自動測試，量變更失敗率；稽核壓力，每一步自動留紀錄，量調閱佐證的時間；交付難預期，每階段交出檔案，量交付時間。試點前先量基準，不先承諾數字。
+【可能被問】「能保證快多少嗎？」→ 不承諾數字，用試點前後的實測證明。回收期參考：需要大量治理的大型企業，12 到 18 個月屬可接受。""", ''),
+    '給法遵與風控': ("""【這頁的重點】金檢和內稽一定會問的五題，每一題都有做法、也留得下紀錄。
+【講法】逐張講：AI 工具有沒有納管？診斷時就判斷委外、登錄 AI 清冊。個資會不會進到 AI？資料分級，機密檔 AI 讀不到。上線誰核准？指定的人，AI 不能核准自己寫的程式。出事能不能退？先演練，AI 建議、人決定。事後查不查得到？所有文件都存版本。一句話：AI 的使用從個人行為變成有紀錄的流程。
+【建議】這頁最好在法遵在場時講，或會前先單獨給法遵看。""", ''),
+    '從一個用例開始，驗證價值': ("""【這頁的重點】每一步只承諾下一步；越往上，範本和規則越多，下一個越快。
+【講法】四個台階，箭頭往上：一個用例，然後驗證價值，決定擴大、調整或停止，再到相鄰用例，最後才是全公司。右邊是為什麼這樣做：風險小、成本可控、有數據才擴大、越做越快。最後一點：導入初期會先變慢一陣子，最常見的失敗是在低谷時喊停，所以成功標準和觀察期間要先講好。""", ''),
+    '如何開始': ("""【這頁的重點】三個步驟就能開始。
+【講法】第一，現場示範：拿貴公司一個真實需求，當場跑一次，從寫需求到上線前的核准。第二，一起挑題目：開一次會，挑出 1 到 2 個最適合先做的需求，順便確認資料、系統和法規上的限制。第三，開始診斷：定好範圍和窗口，開始盤點現在的開發流程和法規要求。右邊是需要貴公司提供的資料。
+【收尾】「AI 幫你把每一步做得更快，每一步都留下紀錄；要不要做、能不能上線，永遠由你的人決定。我們想請貴公司先約一場現場示範。」""", ''),
+}
+NOTES = [(k, *UPD[k]) if k in UPD and UPD[k] else (k, a, b) for k, a, b in NOTES if not (k in UPD and UPD[k] is None)]
+for k, v in UPD.items():
+    if v and k not in [n[0] for n in NOTES]: NOTES.insert(0, (k, *v))
+
 def speaker(sl, title):
     for key, pub, inner in NOTES:
         if key in title:
@@ -773,21 +866,21 @@ BRIEF_KEEP = [
      '今天要我們決定什麼？→ 只請貴公司安排一場用自己需求的現場示範。'),
     ('一頁看懂', ['建議：4–6 週診斷＋6–8 週一個用例試點，達標才擴大', '三個理由：責任在保險公司、只買工具不夠、我們已經在用', '請決定：安排示範、選 1–2 個候選用例'],
      '要多少錢？→ 固定範圍、固定價格，另行報價。'),
-    ('保險公司現在就要', ['委外辦法與 AI 自律規範：AI 結果的最終責任在保險公司', '金管會 AI 指引要求問責與透明；區域監理已在檢查', '紀錄要設計進流程，不能事後補'],
-     '新加坡的例子是銀行？→ 當作區域方向參考；台灣的依據是金管會指引與公會自律規範。'),
-    ('AI 已普及', ['工具已普及：開發者 84%、技術團隊約九成在用', '但交付穩定度下降；複雜的既有系統，效益常在 10% 以下', '回報來自流程與治理，不是工具本身'],
+    ('保險公司現在就要', ['保險業 53% 已在用 AI；用 AI 的業者 76% 已導入生成式 AI', 'AI 寫的程式約 45% 有資安漏洞', '責任在保險公司：紀錄要設計進流程，不能事後補'],
+     '45% 是你們測的嗎？→ 不是，是資安公司 Veracode 2025 年的研究，來源可點。'),
+    ('AI 已普及', ['工具已普及：開發者 84% 在用；57% 保險業高階主管列為首要投資', '但交付更不穩；複雜的既有系統，效益常在 10% 以下', 'PwC 調查：56% 的 CEO 還沒看到 AI 的財務效益'],
      'JPMorgan 不是提升 10–20%？→ 那是個人生產力、公司自述；DORA 看的是整體交付。'),
     ('我們的解法', ['開發流程串成循環，維運發現的問題回到需求', '三個機制：交接靠檔案、規則自動執行、關卡有人簽', 'AI 可以做到正式環境門口，不能自己開門'],
      '要換掉現有的 Jira 或變更管理嗎？→ 不用，關卡與紀錄接在既有工具上。'),
     ('AI 分工', ['依「多常發生 × 需要判斷」把工作分四類', '右下角就是人工關卡：人決定，AI 只提供資料', '第一個試點，挑左上角工作多的需求'],
      '分類由誰決定？→ 診斷時依貴公司的專案確認。'),
-    ('現場示範', ['再保險系統主檔模組：規則 → 規格 → 任務 → 測試 → 追溯', '制裁國家建檔要主管覆核，並寫入審計紀錄', '現場可用貴公司的一個需求走一遍'],
+    ('現場示範', ['再保險系統主檔模組：規則 → 規格 → 任務 → 測試 → 追溯', '下方錄影：系統自動跑畫面測試，點擊播放', '現場可用貴公司的一個需求走一遍'],
      '覆蓋率 90% 是實際結果嗎？→ 那是品質閘門要求的門檻，不是已達成的結果；實際執行情形在現場示範時說明。'),
-    ('給法遵與風控', ['金檢與內稽會問的五個問題，各有做法與紀錄', 'AI 使用從個人行為變成有紀錄的流程', '法規檢查清單為草稿，診斷時逐條確認'],
+    ('給法遵與風控', ['金檢與內稽一定會問的五題，各有做法與紀錄', 'AI 使用從個人行為變成有紀錄的流程', '法規檢查清單為草稿，診斷時逐條確認'],
      '上線是誰核准的？→ 貴公司指定的人；寫程式的 AI 不能核准自己的程式。'),
     ('你買到什麼', ['診斷 4–6 週、試點 6–8 週，各有明確交付物', '成功標準：需求定稿時間、審查等待、返工次數；合格線依基準約定', '達標才擴大，未達標就停'],
      '為什麼要三個月？→ 含診斷與基準量測；試點本身 6–8 週，同時教會團隊，不只交一個功能。'),
-    ('如何開始', ['三步：現場示範 → 對齊工作坊 → 啟動診斷', '請提供：窗口、現有流程與工具、候選需求、法遵規範', '收尾：AI 讓每一步更快、都留下紀錄；要不要做、能不能上線，由你的人決定'],
+    ('如何開始', ['三步：現場示範 → 一起挑題目 → 開始診斷', '請提供：窗口、現有流程與工具、候選需求、法遵規範', '收尾：AI 讓每一步更快、都留下紀錄；要不要做、能不能上線，由你的人決定'],
      '下一步是什麼？→ 約一場用貴公司需求的現場示範。'),
 ]
 if BRIEF:
@@ -827,7 +920,19 @@ def drop_missing(t):
     for a, b in (('；。', '。'), ('，。', '。'), ('。。', '。')): t = t.replace(a, b)
     return t
 
+def voice(t):
+    # 合夥人審閱版是給所內看的：稱呼客戶用第三人稱
+    return t.replace('你買到什麼', '買到什麼').replace('貴公司', '客戶') if INTERNAL else t
+
 for sl in p.slides:
+    if INTERNAL:
+        for sh in sl.shapes:
+            if sh.has_text_frame:
+                for para in sh.text_frame.paragraphs:
+                    for r in para.runs: r.text = voice(r.text)
+        if sl.has_notes_slide:
+            for para in sl.notes_slide.notes_text_frame.paragraphs:
+                for r in para.runs: r.text = voice(r.text)
     for sh in sl.shapes:
         if not sh.has_text_frame: continue
         for para in sh.text_frame.paragraphs:
