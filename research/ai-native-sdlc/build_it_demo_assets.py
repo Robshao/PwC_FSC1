@@ -38,7 +38,7 @@ meta = re.search(r'governance_metadata:.*?(?=-->)', sa, re.S).group(0).strip()
 tree = sorted(os.path.relpath(p, TASK) for p in glob.glob(os.path.join(SPEC, '**', '*.md'), recursive=True))
 audit = '\n'.join(l.strip() for l in sd.splitlines() if 'Audit' in l and ('->>' in l or 'participant' in l))
 
-# 五個步驟各一張：(檔名, 顯示的檔案路徑, 節錄的 Markdown)；框很小，只留重點、去掉路徑
+# 五個步驟各一張：(檔名, 顯示的檔案路徑, 節錄的 Markdown)；直式截圖配合簡報上的直式框，只留重點、去掉路徑
 base = lambda t: re.sub(r'`[^`]*/([^/`]+)`', r'`\1`', t)
 trace = '\n'.join(re.sub(r'：`[^`]*`\s*', '：', l) for l in section(t1, '- **規格追溯依據**', '- **業務背景**').splitlines()[1:] if '架構標準' not in l)
 STEPS = [
@@ -81,7 +81,7 @@ JS = '''
 const { chromium } = require('playwright');
 (async () => {
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: 540, height: 395 }, deviceScaleFactor: 2 });
+  const p = await b.newPage({ viewport: { width: 320, height: 465 }, deviceScaleFactor: 2.5 });
   for (const [src, dst] of JSON.parse(process.argv[2])) {
     await p.goto('file://' + src);
     await p.screenshot({ path: dst });
