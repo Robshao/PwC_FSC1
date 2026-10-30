@@ -56,3 +56,10 @@
 | 10 | claude-code-video-toolkit | 從腳本、配音、音樂到 MP4 的完整流程 | 中：但會用自己的模型取代 Dreamina，偏離所內指定工具 | 不採用（做參考） |
 
 **結論**：這 10 個都沒有比原本的兩個首選（`ai-video-storyboard-skill`、`seedance2.5-skills`）更適合步驟 3–4。後製仍以 CapCut 為主；如果之後想自動化合併片段、燒錄字幕，再考慮 04 `ffmpeg-usage`。
+
+## 安裝狀態（2026-10-07）
+
+| 技能 | 審查結果 | 安裝位置 |
+|---|---|---|
+| ai-video-storyboard | 純提示詞，無腳本、無網路連線；MIT 授權 | 已收錄於儲存庫 `.claude/skills/ai-video-storyboard/` |
+| seedance-25 | 只附一個本機檢查腳本（`lint_prompt.py`），無網路連線；**未附授權檔** | 不收錄進儲存庫，只在本機使用；安裝方式：`git clone https://github.com/sjinn-ai/seedance2.5-skills.git`，再把 `seedance-25/` 複製到 `~/.claude/skills/` |

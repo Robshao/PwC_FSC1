@@ -1,2 +1,16 @@
+# 個人照片與生成素材不進版本控制
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.heic
+*.mp4
+*.mov
+
+# 後製暫存與輸出
+pwc-fsc1-ai-short-vid/05-fsc-insurance-seminar/output/
+pwc-fsc1-ai-short-vid/05-fsc-insurance-seminar/clips/
+__pycache__/
+
 # graphify 產出（可能含客戶內容，不提交）
 graphify-out/

@@ -1,0 +1,117 @@
+<title>客戶分層樣片提案摘要</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+/* Layout: one-page consulting memo — narrow reading column, verdict first, three numbered workstreams, decisions last */
+:root{
+  --bg:#f6f7f9; --paper:#ffffff; --ink:#14213a; --muted:#5b6476; --rule:#d9dde5;
+  --accent:#1e8a9e; --accent-soft:#e3f2f4; --warn:#c0392b; --warn-soft:#fbeae8; --ok:#2e7d4f;
+  --display:"Noto Serif TC","Songti TC",serif; --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1522; --paper:#152033; --ink:#e7ebf2; --muted:#9aa5b8; --rule:#2a3850;
+  --accent:#4fc0d2; --accent-soft:#16343d; --warn:#ef7a6c; --warn-soft:#3a1f1d; --ok:#6fcf97; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1522; --paper:#152033; --ink:#e7ebf2; --muted:#9aa5b8; --rule:#2a3850;
+  --accent:#4fc0d2; --accent-soft:#16343d; --warn:#ef7a6c; --warn-soft:#3a1f1d; --ok:#6fcf97; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7;padding-inline:16px;padding-block:32px}
+.sheet{max-width:880px;margin:0 auto;background:var(--paper);border:1px solid var(--rule);padding:clamp(20px,4vw,48px)}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--display);font-size:clamp(24px,4vw,32px);line-height:1.3;margin:4px 0 0;text-wrap:balance}
+.meta{font-size:13px;color:var(--muted);text-align:right;min-width:0}
+.verdict{margin:24px 0 8px;padding:16px 20px;background:var(--accent-soft);border-left:4px solid var(--accent)}
+.verdict p{margin:0;font-size:17px;font-weight:500}
+h2{font-family:var(--display);font-size:20px;margin:36px 0 12px;display:flex;gap:10px;align-items:baseline}
+h2 .n{font-family:var(--body);font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.08em}
+p{margin:0 0 10px;max-width:68ch}
+.tbl{overflow-x:auto;margin:8px 0 12px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{border-bottom:1px solid var(--rule);padding:9px 10px;text-align:left;vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:500}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:3px;font-weight:700}
+.tag.bad{background:var(--warn-soft);color:var(--warn)}
+.tag.good{background:var(--accent-soft);color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+.tbd{color:var(--warn);font-weight:500}
+ul{margin:4px 0 12px;padding-left:20px} li{margin:2px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:8px 0 12px}
+.cell{border:1px solid var(--rule);padding:12px 14px;min-width:0}
+.cell b{display:block;font-size:14px;margin-bottom:2px}
+.cell span{font-size:13px;color:var(--muted)}
+.ask{margin-top:36px;border-top:2px solid var(--ink);padding-top:16px}
+.ask ol{padding-left:20px}
+footer{margin-top:24px;font-size:12px;color:var(--muted)}
+</style>
+
+<div class="sheet">
+<header>
+  <div>
+    <div class="eyebrow">Executive Summary｜保險業客戶分層服務</div>
+    <h1>同一位客戶，兩種服務：客戶分層概念樣片提案</h1>
+  </div>
+  <div class="meta">樣片：49 秒 AI 生成短片 v5.6<br>主角人物誌：志明，40 歲家庭責任承擔者<br>草稿日期：2026-10-13</div>
+</header>
+
+<div class="verdict"><p>剛確診重病的客戶，被推銷新保單只會流失信任；先分層、先看懂他是誰，顧問才知道第一步是「理賠」與「補家人的缺口」。這支樣片讓主管在 49 秒內親眼看到這個差別，作為客戶分層「策略建立・系統導入」服務的開場。</p></div>
+
+<h2><span class="n">01</span>商業戰略價值</h2>
+<div class="tbl"><table>
+  <thead><tr><th></th><th><span class="tag bad">✕ 產品導向硬推</span></th><th><span class="tag good">✓ 客戶分層顧問模式</span></th></tr></thead>
+  <tbody>
+    <tr><td>判斷依據</td><td>單一維度：收入高、有購買力</td><td>購買能力 × 生命階段 × 既有保障（PwC 戰略分層框架）</td></tr>
+    <tr><td>對志明的第一句話</td><td>「剛好我們新出一張重大疾病險！」</td><td>「志明哥，這陣子辛苦了。新保單⋯我們先不談。」</td></tr>
+    <tr><td>第一個動作</td><td>推一張剛確診者幾乎過不了核保的新保單</td><td>盤點現有保單可理賠金額，協助申請</td></tr>
+    <tr><td>缺口補強對象</td><td>志明本人（不可行）</td><td>配偶與子女：關係人保障缺口（工具 B）</td></tr>
+    <tr><td>客戶關係結果</td><td>信任流失，提高退保與轉保風險</td><td>建立緊密度（工具 C），降低退保風險</td></tr>
+  </tbody>
+</table></div>
+<p><b>預期影響（假說，待試點驗證）</b>：分層後的推薦與客戶生命階段一致，可望提升成約率與保單繼續率、降低滿期與中途退保。本提案不引用未經驗證的提升幅度，建議以試點數據說話。</p>
+<p class="note">試點建議追蹤的 KPI：成約率、13／25 個月保單繼續率、退保率與轉保率（可接 PwC 滿期退保分析工具）、客戶 NPS、單一客戶持有商品數。</p>
+
+<h2><span class="n">02</span>AI 製程效益</h2>
+<p><b>本專案實際紀錄</b>：從劇本到 49 秒成片 v5.6，約 2 個工作天（10/12–10/13）；使用 Gemini 產生角色與場景參考圖、Dreamina Seedance 生成約 12 段有聲影片，字幕、轉場、配樂與混音用 ffmpeg 後製；共迭代 11 個版本（草稿 1–3、v4、v5–v5.6）。</p>
+<div class="tbl"><table>
+  <thead><tr><th>面向</th><th>傳統實拍</th><th>AI 生成（本專案）</th></tr></thead>
+  <tbody>
+    <tr><td>製作週期</td><td class="num">常見 4–8 週<span class="note">（前製、選角、場勘、拍攝、後製）</span></td><td class="num">約 2 個工作天</td></tr>
+    <tr><td>直接成本</td><td class="tbd">待填：請 2–3 家製作公司報價</td><td>工具訂閱費＋內部人力工時 <span class="tbd">（待填實際金額）</span></td></tr>
+    <tr><td>修改一個場景</td><td>需重新安排演員與場地</td><td>重新生成一段 4–7 秒影片，以分鐘到小時計</td></tr>
+    <tr><td>角色、場景數</td><td>每增加一個場景都會增加成本</td><td>醫院、捷運、住家、陽台、咖啡店、客廳共 6 個場景，邊際成本低</td></tr>
+    <tr><td>限制</td><td>—</td><td>解析度偏低（部分 480p）、手部偶有畸形、平台浮水印與授權需確認；正式對外版需人工精修</td></tr>
+  </tbody>
+</table></div>
+<p class="note">實拍週期為業界常見區間，僅供比較架構使用；正式提案前請以實際報價取代，避免高估或低估效益。</p>
+
+<h2><span class="n">03</span>規模化複製能力</h2>
+<p>這支樣片累積了四類可重複使用的資產。換一個目標客群時，只要替換人物誌變數，就能沿用同一套流程。</p>
+<div class="grid">
+  <div class="cell"><b>角色一致性資產</b><span>角色設定圖＋固定外觀描述（服裝、配件、體型），確保跨鏡頭同一張臉</span></div>
+  <div class="cell"><b>場景與道具庫</b><span>台灣住家、捷運、咖啡店等場景圖；串場道具（醫院信封）的伏筆與回收手法</span></div>
+  <div class="cell"><b>提示詞結構</b><span>參考圖分工、對白、鏡頭、光線、聲音、排除條件的固定段落，換變數即可重用</span></div>
+  <div class="cell"><b>後製模板</b><span>錯誤／正確標籤、倒帶轉場、分層卡、CTA 結尾卡、自動壓低配樂的混音設定</span></div>
+</div>
+<div class="tbl"><table>
+  <thead><tr><th>變數</th><th>40 歲家庭責任承擔者（本片）</th><th>30 歲新婚首購族</th><th>55 歲退休準備族</th></tr></thead>
+  <tbody>
+    <tr><td>觸發事件</td><td>確診重病</td><td>剛買房、準備生小孩</td><td>距離退休 5 年，父母需要照護</td></tr>
+    <tr><td>錯誤示範</td><td>推新保單給剛確診者</td><td>推高保費儲蓄險，壓縮房貸現金流</td><td>推長年期投資型商品，忽略退休金流與長照</td></tr>
+    <tr><td>正確示範的第一步</td><td>先申請現有理賠，再補家人缺口</td><td>先算房貸與收入中斷缺口，用定期壽險補足</td><td>先盤點退休金流與長照風險，再談商品</td></tr>
+    <tr><td>可沿用的資產</td><td>—</td><td>捷運、咖啡店、客廳場景；後製模板全部沿用</td><td>咖啡店、客廳場景；顧問角色與後製模板全部沿用</td></tr>
+    <tr><td>需新做</td><td>—</td><td>新主角設定圖、新房場景、3–4 段影片</td><td>新主角設定圖、長輩角色、3–4 段影片</td></tr>
+  </tbody>
+</table></div>
+
+<div class="ask">
+  <h2><span class="n">決策</span>請管理層決定</h2>
+  <ol>
+    <li>是否以 1–2 家保險客戶進行客戶分層試點，並同意上述 KPI 作為成效衡量</li>
+    <li>樣片能否對外播放：癌症情節、人物誌數字、服務名稱需經法遵與品牌審查</li>
+    <li>PwC 名稱與標誌露出方式，以及配樂、AI 平台浮水印的授權處理</li>
+    <li>是否優先製作「30 歲新婚首購族」或「55 歲退休準備族」第二支樣片</li>
+  </ol>
+</div>
+<footer>本片人物、病情與數字皆為虛構示意。實拍成本與週期為比較架構，需以實際報價更新。</footer>
+</div>

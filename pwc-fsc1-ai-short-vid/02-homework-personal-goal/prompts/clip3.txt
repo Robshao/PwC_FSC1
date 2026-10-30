@@ -1,0 +1,16 @@
+@Image 1 is the character reference sheet of the main character, an East Asian businessman around 30: use only his face, hairstyle, and outfit; do not use the grey sheet background or the three-view side-by-side layout. The output contains exactly one person.
+
+[Generation Goal]
+Generate a warm closing shot showing the goal achieved. The central subject is the person from @Image 1, and the primary event is adding one more conference lanyard to a full collection.
+
+[Picture and Event]
+Night in the same office by the tall window, city lights outside. On the wall hang nine conference lanyards in different colors with small instant photos of handshakes between them; the photos show no recognizable faces. The person, in a navy suit jacket and white open-collar shirt, hangs the teal lanyard on the last empty hook, steps back, and smiles proudly. End state: ten lanyards in a row, the person standing in profile beside them.
+
+[Camera and Light]
+Begins as a close shot on the hands at the hook; the camera dollies back slowly to a medium wide shot revealing the whole wall. Warm amber lamp light from the right, cool blue city glow from the left.
+
+[Sound]
+Quiet night ambience and the soft clink of the lanyard clip. No dialogue, no background music.
+
+[Continuity and Exclusions]
+Keep the face consistent with @Image 1. Do not add subtitles, readable text, logos, or other people.

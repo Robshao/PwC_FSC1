@@ -1,0 +1,16 @@
+@Image 1 is the character reference sheet of the main character, an East Asian businessman around 30: use only his face, hairstyle, and outfit; do not use the grey sheet background or the three-view side-by-side layout.
+
+[Generation Goal]
+Generate an energetic networking moment. The central subject is the person from @Image 1, and the primary event is connecting with an experienced professional at a large fintech conference.
+
+[Picture and Event]
+A bright, busy fintech conference hall with large abstract blue-and-teal data screens and blurred attendees. The person from @Image 1, in a navy suit jacket, white open-collar shirt, and teal lanyard, shakes hands with a senior professional in his late 50s with silver hair and a charcoal suit. They both raise their smartphones and the senior professional scans the person's screen. End state: both lower their phones and smile at each other.
+
+[Camera and Light]
+Medium two-shot from the side; the camera arcs slowly around the pair and settles. Bright overhead event lighting with cool teal screen glow behind them.
+
+[Sound]
+Lively conference crowd murmur and a soft handshake. No clear dialogue, no background music.
+
+[Continuity and Exclusions]
+Exactly two main people in the foreground; keep the face consistent with @Image 1. Phone screens show no readable text or app logos. Do not add subtitles, readable signage, brand names, or logos.

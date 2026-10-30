@@ -1,0 +1,16 @@
+@Image 1 is the character reference sheet of the main character, an East Asian businessman around 30: use only his face, hairstyle, and outfit; do not use the grey sheet background or the three-view side-by-side layout. The output contains exactly one person.
+
+[Generation Goal]
+Generate a calm, hopeful opening shot. The central subject is the person from @Image 1, and the primary event is deciding to go out and attend industry conferences.
+
+[Picture and Event]
+Early evening in a quiet modern office, the person sits at a desk by a tall window, wearing a navy suit jacket over a white open-collar shirt. They pick up a blank teal conference lanyard from the desk, smile with quiet determination, and slip it over their neck. End state: lanyard on, looking out at the city skyline.
+
+[Camera and Light]
+Medium side shot at desk height; the camera dollies in slowly and settles on a medium close-up. Cool blue window light from the left and a warm desk lamp from the right.
+
+[Sound]
+Quiet office ambience and the soft rustle of the lanyard. No dialogue, no background music.
+
+[Continuity and Exclusions]
+Keep the face consistent with @Image 1. Do not add subtitles, readable text, logos, or other people.
