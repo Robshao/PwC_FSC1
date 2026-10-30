@@ -1,0 +1,813 @@
+<title>IC Care 接手診斷報告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: a single-column consulting memo (max 1040px) with a numbered section rail; the issue tree breaks out wider and scrolls on its own if needed. */
+:root {
+  --paper: #f4f6f7;
+  --surface: #ffffff;
+  --ink: #17212b;
+  --muted: #5a6571;
+  --line: #d3dae0;
+  --accent: #0d5e63;
+  --accent-soft: #e2eeee;
+  --ok: #2f7a4a;
+  --rel: #2b6c8c;
+  --part: #a8730c;
+  --open: #c04b1c;
+  --miss: #9c2b3a;
+  --f-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2a3642;
+    --accent: #62b8ba; --accent-soft: #15302f;
+    --ok: #6cc58e; --rel: #6eb4d6; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f151b; --surface: #16202a; --ink: #e5eaee; --muted: #9ba7b3; --line: #2a3642;
+  --accent: #62b8ba; --accent-soft: #15302f;
+  --ok: #6cc58e; --rel: #6eb4d6; --part: #e0b04a; --open: #f08a5d; --miss: #e46f7f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 15.5px; line-height: 1.75;
+  padding: 0 20px; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 80px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.3; margin: 0; }
+p { margin: 0; }
+.mono { font-family: var(--f-mono); }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+/* ---------- Cover ---------- */
+.cover { display: grid; gap: 22px; padding-bottom: 28px; border-bottom: 3px solid var(--ink); }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.cover h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: .01em; }
+.cover .sub { font-size: 17px; color: var(--muted); max-width: 62ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 10px 32px; font-size: 13px; color: var(--muted); }
+.meta b { display: block; color: var(--ink); font-weight: 500; font-size: 14px; }
+.meta span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+nav.toc a { color: var(--muted); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc a span { font-family: var(--f-mono); color: var(--accent); margin-right: 4px; }
+
+/* ---------- Sections ---------- */
+section { padding-top: 56px; display: grid; gap: 22px; }
+.sec-head { display: grid; grid-template-columns: 64px 1fr; gap: 0 16px; align-items: baseline; }
+.sec-num { font-family: var(--f-mono); font-size: 13px; color: var(--accent); font-weight: 600; border-top: 2px solid var(--accent); padding-top: 6px; }
+.sec-head h2 { font-size: 26px; font-weight: 900; }
+.sec-head .lede { grid-column: 2; color: var(--muted); margin-top: 6px; max-width: 70ch; }
+.body { display: grid; gap: 18px; padding-left: 80px; }
+.body > p { max-width: 70ch; }
+h3 { font-size: 18px; font-weight: 600; }
+.kicker { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+/* ---------- Chips ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  font-size: 12px; font-weight: 500; line-height: 1; padding: 5px 9px 5px 7px; border-radius: 999px;
+  color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 32%, transparent);
+}
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); flex: none; }
+.s-ok   { --c: var(--ok); }
+.s-rel  { --c: var(--rel); }
+.s-part { --c: var(--part); }
+.s-open { --c: var(--open); }
+.s-miss { --c: var(--miss); }
+.s-act  { --c: var(--accent); }
+.s-miss::before { border-radius: 1px; transform: rotate(45deg); }
+.src { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; padding: 2px 6px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.src.oral { border-style: dashed; }
+
+/* ---------- Executive summary (SCQA) ---------- */
+.scqa { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.scqa-row { display: grid; grid-template-columns: 150px 1fr; border-top: 1px solid var(--line); }
+.scqa-row:first-child { border-top: 0; }
+.scqa-row > div:first-child { padding: 18px 18px; background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.scqa-row > div:first-child b { display: block; font-family: var(--f-display); font-size: 17px; }
+.scqa-row > div:first-child span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.scqa-row > div:last-child { padding: 18px 22px; min-width: 0; }
+.scqa-row.answer > div:first-child { background: var(--accent); color: var(--surface); }
+.scqa-row.answer > div:first-child span { color: color-mix(in srgb, var(--surface) 75%, transparent); }
+.scqa-row.answer > div:last-child { background: var(--accent-soft); }
+.answer-lead { font-family: var(--f-display); font-size: 19px; font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+.scqa ul, .body ul { margin: 6px 0 0; padding-left: 1.2em; }
+.scqa li + li, .body li + li { margin-top: 3px; }
+
+/* ---------- Status scoreboard ---------- */
+.score { display: grid; gap: 14px; }
+.stack { display: flex; height: 34px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.stack div { display: flex; align-items: center; justify-content: center; font-family: var(--f-mono); font-size: 12.5px; font-weight: 600; color: var(--surface); background: var(--c); min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 10px; font-size: 13px; color: var(--muted); }
+.legend .n { font-family: var(--f-mono); color: var(--ink); font-weight: 600; margin-left: 2px; }
+.indicators { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.ind { background: var(--surface); padding: 16px; display: grid; gap: 8px; align-content: start; }
+.ind .k { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+.ind h4 { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.45; }
+.ind p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ---------- Tables ---------- */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.6; }
+th { text-align: left; font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 11px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--ink) 3%, transparent); white-space: nowrap; }
+td { padding: 12px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+tr:first-child td { border-top: 0; }
+td.code { font-family: var(--f-mono); font-size: 12.5px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+td.nowrap { white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Two-column blocks ---------- */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.panel.quote { border-left: 3px solid var(--accent); }
+
+/* ---------- Deliverable tracker ---------- */
+.track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.stage { padding: 16px; display: grid; gap: 8px; align-content: start; border-left: 1px solid var(--line); position: relative; }
+.stage:first-child { border-left: 0; }
+.stage::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c); }
+.stage .k { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+.stage h4 { margin: 0; font-size: 15px; }
+.stage p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ---------- Issue tree ---------- */
+.tree-scroll { overflow-x: auto; margin-left: 80px; padding: 4px 2px 10px; }
+.tree { display: grid; grid-template-columns: 230px 1fr; align-items: center; min-width: 900px; }
+.root {
+  position: relative; background: var(--ink); color: var(--paper); border-radius: 6px; padding: 18px 18px; margin-right: 34px;
+  display: grid; gap: 8px;
+}
+.root .kicker { color: color-mix(in srgb, var(--paper) 70%, transparent); }
+.root p { font-family: var(--f-display); font-size: 16px; line-height: 1.55; font-weight: 600; }
+.root::after { content: ""; position: absolute; right: -34px; top: 50%; width: 34px; border-top: 2px solid var(--muted); }
+.branches, .leaves { list-style: none; margin: 0; padding: 0; }
+.branch { position: relative; display: grid; grid-template-columns: 210px 1fr; align-items: center; padding: 8px 0 8px 28px; }
+.branch::before, .leaf::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; border-left: 2px solid var(--muted); }
+.branch:first-child::before, .leaf:first-child::before { top: 50%; }
+.branch:last-child::before, .leaf:last-child::before { bottom: 50%; }
+.branch:only-child::before, .leaf:only-child::before { display: none; }
+.branch::after, .leaf::after { content: ""; position: absolute; left: 0; top: 50%; width: 28px; border-top: 2px solid var(--muted); }
+.bnode {
+  position: relative; background: var(--surface); border: 1.5px solid var(--accent); border-radius: 6px; padding: 12px 14px; margin-right: 30px;
+  display: grid; gap: 3px;
+}
+.bnode::after { content: ""; position: absolute; right: -32px; top: 50%; width: 30px; border-top: 2px solid var(--line); }
+.bnode .k { font-family: var(--f-mono); font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .06em; }
+.bnode b { font-size: 15px; line-height: 1.4; }
+.bnode i { font-style: normal; font-size: 12.5px; color: var(--muted); }
+.leaf { position: relative; padding: 3px 0 3px 26px; }
+.leaf::before { border-left-color: var(--line); }
+.leaf::after { border-top-color: var(--line); width: 26px; }
+.lnode { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); font-size: 13.5px; line-height: 1.45; }
+.lnode .k { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); flex: none; width: 26px; }
+.lnode .t { flex: 1; min-width: 0; }
+.lnode .chip { flex: none; }
+.tree-note { font-size: 13px; color: var(--muted); margin-left: 80px; max-width: 80ch; }
+
+/* ---------- Details (detailed tree) ---------- */
+details.dt { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+details.dt + details.dt { margin-top: -6px; }
+details.dt summary { cursor: pointer; list-style: none; padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+details.dt summary::-webkit-details-marker { display: none; }
+details.dt summary::before { content: "+"; font-family: var(--f-mono); color: var(--accent); width: 14px; font-weight: 600; }
+details.dt[open] summary::before { content: "−"; }
+details.dt summary .k { font-family: var(--f-mono); color: var(--accent); font-weight: 600; font-size: 13px; }
+details.dt summary b { font-size: 16px; }
+details.dt summary .q { color: var(--muted); font-size: 13.5px; }
+details.dt .tbl { border: 0; border-top: 1px solid var(--line); border-radius: 0 0 6px 6px; }
+
+/* ---------- Harvey balls ---------- */
+.hb { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--ink); vertical-align: -2px; margin-right: 6px; }
+.hb.h { background: var(--ink); }
+.hb.mh { background: conic-gradient(var(--ink) 0 75%, transparent 0); }
+.hb.m { background: conic-gradient(var(--ink) 0 50%, transparent 0); }
+.rank { font-family: var(--f-mono); font-weight: 600; font-size: 12.5px; }
+
+/* ---------- Narrative chain ---------- */
+.chain { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.link { padding: 16px 16px 16px 18px; border-left: 1px solid var(--line); display: grid; gap: 6px; align-content: start; position: relative; }
+.link:first-child { border-left: 0; }
+.link .k { font-family: var(--f-mono); font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: .06em; }
+.link b { font-size: 14.5px; line-height: 1.45; }
+.link p { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.link.future { background: color-mix(in srgb, var(--part) 8%, transparent); }
+
+/* ---------- Moves ---------- */
+.moves { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.move { display: grid; grid-template-columns: 54px 1fr 150px; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.move .n { font-family: var(--f-display); font-weight: 900; font-size: 30px; line-height: 1; color: var(--accent); }
+.move h4 { margin: 0 0 4px; font-size: 16px; }
+.move p { font-size: 14px; color: var(--muted); }
+.move .when { font-family: var(--f-mono); font-size: 12px; color: var(--muted); text-align: right; padding-top: 4px; }
+.move .when b { display: block; color: var(--ink); font-size: 13px; }
+
+.callout { border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-soft); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; }
+.callout b { font-family: var(--f-display); font-size: 17px; }
+
+footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  body { padding: 0 16px; font-size: 15px; }
+  .body, .tree-scroll, .tree-note { padding-left: 0; margin-left: 0; }
+  .sec-head { grid-template-columns: 1fr; gap: 8px; }
+  .sec-head .lede { grid-column: 1; }
+  .sec-num { width: 48px; }
+  .scqa-row { grid-template-columns: 1fr; }
+  .scqa-row > div:first-child { padding: 12px 16px; display: flex; gap: 10px; align-items: baseline; }
+  .scqa-row > div:first-child b { display: inline; }
+  .track { grid-template-columns: 1fr 1fr; }
+  .stage:nth-child(3) { border-left: 0; }
+  .stage:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .move { grid-template-columns: 40px 1fr; }
+  .move .when { grid-column: 2; text-align: left; padding-top: 0; }
+  .move .when b { display: inline; margin-right: 6px; }
+  /* Tree becomes a vertical outline on phones */
+  .tree { grid-template-columns: 1fr; min-width: 0; gap: 14px; }
+  .root { margin-right: 0; }
+  .root::after, .bnode::after { display: none; }
+  .branch { grid-template-columns: 1fr; padding: 0 0 14px 0; gap: 8px; }
+  .branch::before, .branch::after { display: none; }
+  .bnode { margin-right: 0; }
+  .leaves { padding-left: 14px; border-left: 2px solid var(--line); margin-left: 12px; display: grid; gap: 6px; }
+  .leaf { padding: 0; }
+  .leaf::before, .leaf::after { display: none; }
+  .lnode { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="wrap">
+
+  <header class="cover">
+    <div class="eyebrow">Handover Diagnostic · 專案接手診斷</div>
+    <h1>IC Care 專案接手診斷報告</h1>
+    <p class="sub">健康生態圈平台商業模式設計專案：狀態重建、Issue Tree 與第一週接手行動方案。</p>
+    <div class="meta">
+      <div><span>報告日期</span><b class="num">2026-10-07</b></div>
+      <div><span>讀者</span><b>新接手團隊 · Senior Manager</b></div>
+      <div><span>文件性質</span><b>內部工作稿（未對客）</b></div>
+      <div><span>依據資料</span><b>Kickoff、Phase 1 成果、Phase 2 草稿、現況分析、訪談彙整、主管口述</b></div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="目錄">
+    <a href="#exec"><span>00</span>執行摘要</a>
+    <a href="#decision"><span>01</span>決策框定</a>
+    <a href="#problem"><span>02</span>問題陳述</a>
+    <a href="#context"><span>03</span>背景與狀態</a>
+    <a href="#tree"><span>04</span>Issue Tree</a>
+    <a href="#hyp"><span>05</span>假設與優先序</a>
+    <a href="#plan"><span>06</span>分析計畫</a>
+    <a href="#root"><span>07</span>根因與風險</a>
+    <a href="#reco"><span>08</span>建議與行動</a>
+    <a href="#appx"><span>A</span>附錄</a>
+  </nav>
+
+  <!-- 00 Executive summary -->
+  <section id="exec">
+    <div class="sec-head">
+      <div class="sec-num">00</div>
+      <h2>執行摘要</h2>
+      <p class="lede">一頁看懂：專案在哪裡、卡在哪裡、我們建議怎麼接。</p>
+    </div>
+    <div class="body">
+      <div class="scqa">
+        <div class="scqa-row">
+          <div><span>Situation</span><b>現況</b></div>
+          <div>IC Care 委託團隊為其設計<strong>健康生態圈平台商業模式</strong>。原規劃 2026/04–07、約 17 週，分三階段加 Final report。前手已完成啟動、訪談、現況分析與 Phase 1 成果匯報，並留下一份成熟度不低的 Phase 2 草稿（日期已延至 9 月）。</div>
+        </div>
+        <div class="scqa-row">
+          <div><span>Complication</span><b>難點</b></div>
+          <div>前任負責人離職，沒有 handover note、decision log、open issue list，也沒有客戶對齊紀錄。Phase 2 是否定稿不明，Phase 3 與 Final report 未見。在 23 個診斷議題中，<strong>11 個仍未確認或缺文件</strong>。</div>
+        </div>
+        <div class="scqa-row">
+          <div><span>Key Question</span><b>關鍵問題</b></div>
+          <div>新接手團隊應如何在最短時間內重建專案狀態，並決定以 Proceed、Modify、Stop 或 Test further 哪一種策略延續？</div>
+        </div>
+        <div class="scqa-row answer">
+          <div><span>Answer</span><b>答案</b></div>
+          <div>
+            <p class="answer-lead">這是一個內容半成熟、但缺少狀態管理的接手案，不是從零開始的爛尾案。建議先用一週做 Test further，再進入 Modify。</p>
+            <ul>
+              <li>不重做市場分析；把 Phase 2 草稿定位為「高價值、決策地位待確認」的核心資產。</li>
+              <li>以三個問題為閘門：Phase 2 是否已對客？Phase 3 與 Final 是否存在？專案目前是 active、paused、completed 還是 pending feedback？</li>
+              <li>初步判斷最可能的結果是 Modify：整理並與客戶重新對齊 Phase 2，再補完 Phase 3 差異分析與藍圖。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="scqa-row">
+          <div><span>Next Steps</span><b>立即行動</b></div>
+          <div>
+            <ul>
+              <li>確認 Phase 2 草稿是否已對客或已 internal align。</li>
+              <li>追查 Phase 3 成果與 Final report 是否存在。</li>
+              <li>確認最後一次客戶互動與專案目前狀態。</li>
+              <li>補建 handover summary、open issues list、status update memo。</li>
+              <li>整理「公共使命 → 商業化平台」的統一敘事，為 AI 影片需求預作準備。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 Decision framing -->
+  <section id="decision">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <h2>決策框定</h2>
+      <p class="lede">這份診斷要支援三個實際決策，而不只是整理文件。</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">決策一</div>
+          <h3>專案目前處於哪一個狀態？</h3>
+          <p>已結案、暫停、卡在 Phase 2 草稿、等待客戶 feedback，或 Phase 3 與 Final 已完成但未歸檔。</p>
+        </div>
+        <div class="panel">
+          <div class="kicker">決策二</div>
+          <h3>第一週應優先做什麼？</h3>
+          <p>補專案理解、確認 Phase 2 地位、追查缺失文件，或準備內部與對客 status update。</p>
+        </div>
+        <div class="panel">
+          <div class="kicker">決策三</div>
+          <h3>採取哪一種接手策略？</h3>
+          <p>依下方決策閘門，在完成狀態釐清後選定。</p>
+        </div>
+      </div>
+
+      <h3>接手策略選項與觸發條件</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>策略</th><th>適用情境（觸發條件）</th><th>接手後主要工作</th><th>目前判斷</th></tr></thead>
+          <tbody>
+            <tr><td class="nowrap"><b>Test further</b><br><span class="src">先釐清</span></td><td>Phase 2 地位、Phase 3／Final 是否存在、專案狀態三者皆未確認</td><td>一週內完成狀態釐清與文件追查，再決定方向</td><td><span class="chip s-act">建議立即採用</span></td></tr>
+            <tr><td class="nowrap"><b>Modify</b><br><span class="src">整理後延續</span></td><td>Phase 2 僅內部收斂、未取得客戶明確回饋；Phase 3 未完成</td><td>整理 Phase 2 對客版本並對齊，再推進 gap analysis 與 roadmap</td><td><span class="chip s-part">最可能結果</span></td></tr>
+            <tr><td class="nowrap"><b>Proceed</b><br><span class="src">直接延續</span></td><td>Phase 2 已對客且方向已獲客戶認可</td><td>直接啟動 Phase 3 差異分析與發展藍圖、準備 Final report</td><td><span class="chip s-rel">視驗證結果</span></td></tr>
+            <tr><td class="nowrap"><b>Stop</b><br><span class="src">整理歸檔</span></td><td>專案已結案，且 Phase 3 與 Final 已交付</td><td>整理歸檔、補齊文件，轉為後續提案（如 AI 影片）基礎</td><td><span class="chip s-open">機率較低</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Problem statement -->
+  <section id="problem">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <h2>問題陳述</h2>
+      <p class="lede">從「資料不清楚」收斂到「要回答哪個問題」。</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">初始問題陳述</div>
+          <p>專案已完成啟動、訪談、現況分析與 Phase 1 匯報，並已有 Phase 2 草稿。但前任負責人離職，缺乏 handover summary、decision log 與 open issue list，新接手者無法判斷專案目標與範圍、已完成與未完成的交付、目前收斂方向、客戶已認同的內容，以及後續應採取的行動。</p>
+        </div>
+        <div class="panel quote">
+          <div class="kicker">診斷後問題陳述</div>
+          <p>前手已在 Phase 1 形成明確觀點：IC Care 應定位為<strong>「合規健康服務編排者」</strong>，優先從 B2B2C 與高痛點的旅外／保險場景切入。Phase 2 草稿進一步具體化為<strong>「跨境醫療服務協調平台」</strong>與三層產品架構。</p>
+          <p>真正的問題是：Phase 2 的決策地位不明、Phase 3 與 Final 缺失、客戶對齊無法追溯。因此首要任務是<strong>釐清 Phase 2 草稿的決策地位、確認後續交付是否存在，並重建專案狀態與下一步行動</strong>，而不是重新分析市場。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Context & status -->
+  <section id="context">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <h2>專案背景與狀態驗證</h2>
+      <p class="lede">接手案最重要的指標不是財務 KPI，而是「專案狀態指標」。</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">正式目標 <span class="src">文件支持</span></div>
+          <p>為 IC Care 設計在健康生態圈的平台商業模式。交付範圍：市場研究與現況分析、商業模式設計、差異分析與發展藍圖。</p>
+        </div>
+        <div class="panel">
+          <div class="kicker">平台原始使命 <span class="src oral">主管口述</span></div>
+          <p>針對持有健保卡、但在海外保障與即時醫療支援仍有缺口的台灣人，以<strong>商業保險補足健保不足</strong>，提供即時醫療協助。平台兼具公共服務與商業延伸的雙重性格。</p>
+        </div>
+        <div class="panel">
+          <div class="kicker">新需求訊號 <span class="src oral">主管口述</span></div>
+          <p>高層考慮以 <strong>AI 生成影片</strong>作為客戶教育與招商工具，專案可能延伸至對外敘事設計與合作夥伴溝通。</p>
+        </div>
+      </div>
+
+      <h3>交付物追蹤：原規劃 2026/04–07（約 17 週）</h3>
+      <div class="track">
+        <div class="stage s-rel"><div class="k">PHASE 1</div><h4>市場研究與現況分析</h4><span class="chip s-rel">高機率已完成</span><p>成果匯報內容成熟、結構完整。</p></div>
+        <div class="stage s-part"><div class="k">PHASE 2</div><h4>商業模式設計</h4><span class="chip s-part">草稿・地位不明</span><p>方向具體，檔名仍為草稿，日期延至 9 月。</p></div>
+        <div class="stage s-miss"><div class="k">PHASE 3</div><h4>差異分析與發展藍圖</h4><span class="chip s-miss">缺文件</span><p>能力演進方向有雛形，無正式交付物。</p></div>
+        <div class="stage s-miss"><div class="k">FINAL</div><h4>Final report</h4><span class="chip s-miss">缺文件</span><p>未見最終整合版本或發表紀錄。</p></div>
+      </div>
+
+      <h3>五項狀態指標</h3>
+      <div class="indicators">
+        <div class="ind"><div class="k">指標 1</div><h4>原始交付與現存文件是否一致</h4><span class="chip s-part">部分一致</span><p>前兩階段有文件，後兩項缺。</p></div>
+        <div class="ind"><div class="k">指標 2</div><h4>Phase 2 是否完成定稿流程</h4><span class="chip s-open">未確認</span><p>內容成熟，但無對客或 internal align 痕跡。</p></div>
+        <div class="ind"><div class="k">指標 3</div><h4>Phase 3 與 Final 是否存在</h4><span class="chip s-miss">缺文件</span><p>缺檔、未完成、改 scope 或另有存放位置。</p></div>
+        <div class="ind"><div class="k">指標 4</div><h4>客戶對齊是否可追溯</h4><span class="chip s-open">高風險不明</span><p>無會議紀錄、回饋版或決策紀錄。</p></div>
+        <div class="ind"><div class="k">指標 5</div><h4>專案當前狀態</h4><span class="chip s-open">未確認</span><p>active、paused、completed 或 pending feedback。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Issue tree -->
+  <section id="tree">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <h2>Issue Tree</h2>
+      <p class="lede">以關鍵問題為根，拆成五個互斥且涵蓋完整的子問題，每個節點標示目前驗證狀態。</p>
+    </div>
+
+    <div class="body">
+      <div class="score">
+        <div class="kicker">診斷議題驗證狀態（分支 1–4，共 23 項）</div>
+        <div class="stack" role="img" aria-label="23 項議題中：已確認 4、相對確認 3、部分確認 5、未確認 9、缺文件 2">
+          <div class="s-ok" style="flex:4">4</div>
+          <div class="s-rel" style="flex:3">3</div>
+          <div class="s-part" style="flex:5">5</div>
+          <div class="s-open" style="flex:9">9</div>
+          <div class="s-miss" style="flex:2">2</div>
+        </div>
+        <div class="legend">
+          <span class="chip s-ok">已確認<span class="n">4</span></span>
+          <span class="chip s-rel">相對確認<span class="n">3</span></span>
+          <span class="chip s-part">部分確認<span class="n">5</span></span>
+          <span class="chip s-open">未確認<span class="n">9</span></span>
+          <span class="chip s-miss">缺文件／待追查<span class="n">2</span></span>
+          <span class="chip s-act">行動項（分支 5）</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tree-scroll">
+      <div class="tree">
+        <div class="root">
+          <div class="kicker">Key Question</div>
+          <p>如何在最短時間重建 IC Care 專案狀態，並決定以何種策略延續？</p>
+        </div>
+        <ul class="branches">
+          <li class="branch">
+            <div class="bnode"><span class="k">1</span><b>專案目標與範圍</b><i>我們要交付什麼？</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">1.1</span><span class="t">專案目標：健康生態圈平台商模</span><span class="chip s-ok">已確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">1.2</span><span class="t">原始使命：健保不足由商保補位</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">1.3</span><span class="t">原始交付範圍（三階段）</span><span class="chip s-ok">已確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">1.4</span><span class="t">公共使命與商業化如何並存</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">1.5</span><span class="t">最終交付定義是否仍有效</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">2</span><b>進度與交付狀態</b><i>做到哪裡了？</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">2.1</span><span class="t">Phase 1 是否已正式交付</span><span class="chip s-rel">相對確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">2.2</span><span class="t">Phase 2 草稿是否已對客</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">2.3</span><span class="t">Phase 2 方向是否已定案</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">2.4</span><span class="t">Phase 3 成果是否存在</span><span class="chip s-miss">缺文件</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">2.5</span><span class="t">Final report 是否存在</span><span class="chip s-miss">缺文件</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">2.6</span><span class="t">專案目前總體狀態</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">3</span><b>核心分析邏輯與觀點</b><i>已經形成什麼觀點？</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">3.1</span><span class="t">現況定位：初階、偏服務型平台</span><span class="chip s-ok">已確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.2</span><span class="t">核心挑戰與六項能力缺口</span><span class="chip s-ok">已確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.3</span><span class="t">商模方向：B2B2C 優先</span><span class="chip s-rel">相對確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.4</span><span class="t">平台定位：合規健康服務編排者</span><span class="chip s-rel">相對確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.5</span><span class="t">Phase 2 三層產品架構</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.6</span><span class="t">Phase 3 藍圖邏輯</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">3.7</span><span class="t">對外敘事與推廣邏輯</span><span class="chip s-part">部分確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">4</span><b>客戶對齊與待決事項</b><i>客戶認同了什麼？</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">4.1</span><span class="t">Stakeholder map（sponsor、決策者）</span><span class="chip s-part">部分確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">4.2</span><span class="t">Phase 1 客戶是否已認同</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">4.3</span><span class="t">Phase 2 客戶是否已認同</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">4.4</span><span class="t">是否正式收斂至跨境醫療方向</span><span class="chip s-open">未確認</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">4.5</span><span class="t">是否已有 open issue list</span><span class="chip s-open">未確認</span></div></li>
+            </ul>
+          </li>
+          <li class="branch">
+            <div class="bnode"><span class="k">5</span><b>接手行動與風險</b><i>下一步做什麼？</i></div>
+            <ul class="leaves">
+              <li class="leaf"><div class="lnode"><span class="k">5.1</span><span class="t">短期接手任務（五步）</span><span class="chip s-act">已規劃</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">5.2</span><span class="t">主要風險</span><span class="chip s-act">已辨識</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">5.3</span><span class="t">文件缺口</span><span class="chip s-act">已辨識</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">5.4</span><span class="t">知識斷點</span><span class="chip s-act">已辨識</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">5.5</span><span class="t">下一步輸出文件</span><span class="chip s-act">已規劃</span></div></li>
+              <li class="leaf"><div class="lnode"><span class="k">5.6</span><span class="t">AI 影片是否成為新 workstream</span><span class="chip s-part">部分確認</span></div></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="tree-note">MECE 檢查：分支 1–4 依序回答「要什麼、做到哪、想什麼、誰同意」，分支 5 回答「怎麼接」。紅、橘節點集中在分支 2 與 4，代表接手的瓶頸在交付狀態與客戶對齊，而不在分析內容本身。</p>
+
+    <div class="body">
+      <h3>Issue Tree 展開：逐項診斷</h3>
+      <div>
+        <details class="dt" open>
+          <summary><span class="k">1</span><b>專案目標與範圍</b><span class="q">我們要交付什麼？</span></summary>
+          <div class="tbl"><table>
+            <thead><tr><th>#</th><th>議題</th><th>目前結論／關鍵問題</th><th>狀態</th><th>來源</th></tr></thead>
+            <tbody>
+              <tr><td class="code">1.1</td><td>專案目標是否清楚</td><td>為 IC Care 設計健康生態圈平台商業模式</td><td><span class="chip s-ok">已確認</span></td><td><span class="src">Kickoff</span></td></tr>
+              <tr><td class="code">1.2</td><td>原始使命是否清楚</td><td>健保不足由商保補位，支援海外台人即時醫療協助；尚待正式文件佐證</td><td><span class="chip s-part">部分確認</span></td><td><span class="src oral">主管口述</span></td></tr>
+              <tr><td class="code">1.3</td><td>原始交付範圍是否清楚</td><td>市場研究與現況分析、商業模式設計、差異分析與藍圖</td><td><span class="chip s-ok">已確認</span></td><td><span class="src">Kickoff</span></td></tr>
+              <tr><td class="code">1.4</td><td>公共使命與商業化延伸如何並存</td><td>公共角色與商業延伸如何共存？新商模是否與原始使命一致？對外敘事如何兼顧？</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+              <tr><td class="code">1.5</td><td>最終交付定義是否仍有效</td><td>Phase 3 與 Final 是否仍是有效交付，或已在執行中被調整</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+        <details class="dt" open>
+          <summary><span class="k">2</span><b>進度與交付狀態</b><span class="q">做到哪裡了？</span></summary>
+          <div class="tbl"><table>
+            <thead><tr><th>#</th><th>議題</th><th>目前結論／關鍵問題</th><th>狀態</th><th>來源</th></tr></thead>
+            <tbody>
+              <tr><td class="code">2.1</td><td>Phase 1 是否已正式交付</td><td>成果內容成熟、結構完整，高機率已完成</td><td><span class="chip s-rel">相對確認</span></td><td><span class="src">Phase 1 成果</span></td></tr>
+              <tr><td class="code">2.2</td><td>Phase 2 草稿是否已對客</td><td>是否已正式報告、是否已有客戶 feedback、或僅為內部工作稿</td><td><span class="chip s-open">未確認</span></td><td><span class="src">Phase 2 草稿</span></td></tr>
+              <tr><td class="code">2.3</td><td>Phase 2 是否已定方向</td><td>跨境／海外醫療協調平台是否為正式收斂方向，是否仍有其他方案待選</td><td><span class="chip s-open">未確認</span></td><td><span class="src">Phase 2 草稿</span></td></tr>
+              <tr><td class="code">2.4</td><td>Phase 3 是否存在</td><td>曾完成但未歸檔、未完成，或改了 scope</td><td><span class="chip s-miss">缺文件</span></td><td>—</td></tr>
+              <tr><td class="code">2.5</td><td>Final report 是否存在</td><td>曾完成但未歸檔，或未完成</td><td><span class="chip s-miss">缺文件</span></td><td>—</td></tr>
+              <tr><td class="code">2.6</td><td>專案目前總體狀態</td><td>active、paused、completed 或 pending feedback</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+        <details class="dt">
+          <summary><span class="k">3</span><b>核心分析邏輯與觀點</b><span class="q">已經形成什麼觀點？</span></summary>
+          <div class="tbl"><table>
+            <thead><tr><th>#</th><th>議題</th><th>目前結論／關鍵問題</th><th>狀態</th><th>來源</th></tr></thead>
+            <tbody>
+              <tr><td class="code">3.1</td><td>IC Care 現況定位</td><td>具備初階平台基礎，但仍偏服務型平台</td><td><span class="chip s-ok">已確認</span></td><td><span class="src">現況分析</span></td></tr>
+              <tr><td class="code">3.2</td><td>核心挑戰與能力缺口</td><td>資料結構化、Token 漏斗管理、SLA 化、客服自助化、合作方治理、AI 邊界與治理</td><td><span class="chip s-ok">已確認</span></td><td><span class="src">Phase 1 成果</span></td></tr>
+              <tr><td class="code">3.3</td><td>商業模式方向</td><td>B2B2C 優先，不先以純 B2C 為主</td><td><span class="chip s-rel">相對確認</span></td><td><span class="src">Phase 1 成果</span></td></tr>
+              <tr><td class="code">3.4</td><td>平台定位</td><td>合規健康服務編排者</td><td><span class="chip s-rel">相對確認</span></td><td><span class="src">Phase 1 成果</span></td></tr>
+              <tr><td class="code">3.5</td><td>Phase 2 產品化方向</td><td>Travel Care、Global Family Care、International Navigation 三層產品</td><td><span class="chip s-part">部分確認</span></td><td><span class="src">Phase 2 草稿</span></td></tr>
+              <tr><td class="code">3.6</td><td>Phase 3 藍圖邏輯</td><td>能力演進方向已有雛形，缺正式 gap analysis 與 roadmap</td><td><span class="chip s-part">部分確認</span></td><td><span class="src">Phase 2 草稿</span></td></tr>
+              <tr><td class="code">3.7</td><td>對外敘事與推廣邏輯</td><td>AI 影片被視為教育與招商工具；是否已有標準對外敘事待確認</td><td><span class="chip s-part">部分確認</span></td><td><span class="src oral">主管口述</span></td></tr>
+            </tbody>
+          </table></div>
+        </details>
+        <details class="dt">
+          <summary><span class="k">4</span><b>客戶對齊與待決事項</b><span class="q">客戶認同了什麼？</span></summary>
+          <div class="tbl"><table>
+            <thead><tr><th>#</th><th>議題</th><th>目前結論／關鍵問題</th><th>狀態</th><th>來源</th></tr></thead>
+            <tbody>
+              <tr><td class="code">4.1</td><td>Stakeholder map 是否清楚</td><td>已知：創辦人／高階主管、PM、CTO、BD、法務／合規。未知：sponsor、最終決策者、主要窗口</td><td><span class="chip s-part">部分確認</span></td><td><span class="src">訪談彙整</span></td></tr>
+              <tr><td class="code">4.2</td><td>Phase 1 客戶是否已認同</td><td>無回饋紀錄可追溯</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+              <tr><td class="code">4.3</td><td>Phase 2 客戶是否已認同</td><td>無對客痕跡</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+              <tr><td class="code">4.4</td><td>是否正式收斂至跨境醫療方向</td><td>內部收斂不等於客戶共識</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+              <tr><td class="code">4.5</td><td>是否已有 open issue list</td><td>未見；由新接手者補建（見附錄 A1）</td><td><span class="chip s-open">未確認</span></td><td>—</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+        <details class="dt">
+          <summary><span class="k">5</span><b>接手行動與風險</b><span class="q">下一步做什麼？</span></summary>
+          <div class="tbl"><table>
+            <thead><tr><th>#</th><th>議題</th><th>內容</th><th>狀態</th></tr></thead>
+            <tbody>
+              <tr><td class="code">5.1</td><td>短期接手任務</td><td>確認 Phase 2 地位 → 追查 Phase 3／Final → 建 handover summary → 建 issue log → 確認 stakeholder 與最後互動</td><td><span class="chip s-act">已規劃</span></td></tr>
+              <tr><td class="code">5.2</td><td>主要風險</td><td>草稿當定稿、內部收斂當客戶共識、忽略後續交付缺失、敘事未整合、AI 影片範圍不清</td><td><span class="chip s-act">已辨識</span></td></tr>
+              <tr><td class="code">5.3</td><td>文件缺口</td><td>Phase 3 匯報、Final report、client feedback／decision log、最後一次會議紀錄</td><td><span class="chip s-act">已辨識</span></td></tr>
+              <tr><td class="code">5.4</td><td>知識斷點</td><td>無 handover note、open issue list、decision log、client alignment summary</td><td><span class="chip s-act">已辨識</span></td></tr>
+              <tr><td class="code">5.5</td><td>下一步輸出</td><td>Internal handover summary、open issues list、status update memo；視需要延伸 narrative 與 AI 影片 brief</td><td><span class="chip s-act">已規劃</span></td></tr>
+              <tr><td class="code">5.6</td><td>AI 影片是否為新 workstream</td><td>用途已定（教育與招商）；是否屬原案延伸或需獨立管理待確認</td><td><span class="chip s-part">部分確認</span></td></tr>
+            </tbody>
+          </table></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Hypotheses -->
+  <section id="hyp">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <h2>假設與優先順序</h2>
+      <p class="lede">以假設驅動追查：每個假設都附支持理由與可推翻條件，依影響、可能性、驗證速度排序。</p>
+    </div>
+    <div class="body">
+      <div class="tbl">
+        <table>
+          <thead><tr><th>#</th><th>假設</th><th>支持理由</th><th>推翻條件</th></tr></thead>
+          <tbody>
+            <tr><td class="code">H1</td><td><b>內容其實相對完整，真正缺的是 handover synthesis</b></td><td>Kickoff、Phase 1、Phase 2、現況分析、訪談彙整之間已有清楚骨架</td><td>Phase 2 與 Phase 1 的邏輯嚴重斷裂</td></tr>
+            <tr><td class="code">H2</td><td><b>Phase 2 草稿是目前最關鍵的決策節點</b></td><td>草稿成熟度不低，已具體到產品與市場路徑</td><td>草稿從未對客，或僅為內部 brainstorming</td></tr>
+            <tr><td class="code">H3</td><td><b>Phase 3 與 Final 可能曾存在，但未完整歸檔</b></td><td>原時程規劃完整；Phase 2 日期延至 9 月，暗示有後續變動版本</td><td>內部確認專案實際停在 Phase 2</td></tr>
+            <tr><td class="code">H4</td><td><b>策略核心是「公共使命延伸出的商業化平台」</b></td><td>健保補位與商保延伸邏輯、合規編排者定位、跨境醫療協調方向一脈相承</td><td>客戶最終以純商業產品包裝為主</td></tr>
+            <tr><td class="code">H5</td><td><b>AI 影片是未來商業推進工具，而非附屬創意</b></td><td>已明確定義為客戶教育與招商工具</td><td>僅為高層初步想法，未進入正式需求管理</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>優先順序矩陣</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>排序</th><th>假設</th><th>影響</th><th>可能性</th><th>驗證速度</th><th>綜合</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>H2 Phase 2 草稿是關鍵決策節點</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb h"></span>高</td><td><span class="chip s-open">最高</span></td></tr>
+            <tr><td class="rank">2</td><td>H3 Phase 3 與 Final 可能存在但未歸檔</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb mh"></span>中高</td><td class="nowrap"><span class="hb m"></span>中</td><td><span class="chip s-part">高</span></td></tr>
+            <tr><td class="rank">3</td><td>H1 缺的是 synthesis 而非內容</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb m"></span>中</td><td><span class="chip s-part">高</span></td></tr>
+            <tr><td class="rank">4</td><td>H4 公共使命延伸的商業化平台</td><td class="nowrap"><span class="hb h"></span>高</td><td class="nowrap"><span class="hb mh"></span>中高</td><td class="nowrap"><span class="hb m"></span>中</td><td><span class="chip s-part">高</span></td></tr>
+            <tr><td class="rank">5</td><td>H5 AI 影片可能成為後續 workstream</td><td class="nowrap"><span class="hb m"></span>中</td><td class="nowrap"><span class="hb mh"></span>中高</td><td class="nowrap"><span class="hb h"></span>高</td><td><span class="chip s-rel">中</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Analysis plan -->
+  <section id="plan">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <h2>分析與追查計畫</h2>
+      <p class="lede">四項追查，每項都有明確的通過／未通過判定規則，避免無止境蒐集資料。</p>
+    </div>
+    <div class="body">
+      <div class="tbl">
+        <table>
+          <thead><tr><th>追查項目</th><th>目的</th><th>需要找的證據</th><th>判定規則</th><th>驗證</th></tr></thead>
+          <tbody>
+            <tr><td><b>A1 確認 Phase 2 草稿地位</b></td><td>判斷是否已 internal／client align</td><td>對客版本、feedback 紀錄、會議結論</td><td><b>通過：</b>有明確回饋或後續版本，視為已進正式收斂流程<br><b>未通過：</b>無對客痕跡，暫視為內部草稿</td><td class="code">H2</td></tr>
+            <tr><td><b>A2 追查 Phase 3 與 Final</b></td><td>判斷原始規劃是否曾走完</td><td>Phase 3 匯報檔、Final report、最後發表會議版本</td><td><b>找到：</b>專案成熟度高於目前理解<br><b>找不到且確認未完成：</b>補建 status explanation</td><td class="code">H3 · H1</td></tr>
+            <tr><td><b>A3 確認客戶對齊狀態</b></td><td>避免把內部觀點當客戶共識</td><td>會議紀錄、email／Teams 紀錄、主管口述</td><td><b>可回溯明確 feedback：</b>標示 confirmed<br><b>否則：</b>僅標示 assumed／pending confirmation</td><td class="code">H2 · H4</td></tr>
+            <tr><td><b>A4 建立使命與商業化敘事</b></td><td>形成一致的對內／對外 narrative</td><td>原始政策補位背景、商業化延伸 rationale、新商模與既有使命的關係</td><td><b>通過：</b>能形成一致的三段式故事線<br><b>未通過：</b>後續影片與招商內容容易失焦</td><td class="code">H4 · H5</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 Root cause & risks -->
+  <section id="root">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <h2>根因與風險</h2>
+      <p class="lede">接手困難不是因為檔案太多，而是分析、決策、客戶回饋與後續行動之間沒有串起來。</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <div class="panel">
+          <div class="kicker">直接根因</div>
+          <ul>
+            <li>缺正式 handover note</li>
+            <li>缺 decision log</li>
+            <li>缺 open issue list</li>
+            <li>缺 client alignment summary</li>
+            <li>原規劃的後續交付文件缺失或去向不明</li>
+          </ul>
+        </div>
+        <div class="panel quote">
+          <div class="kicker">結構性根因</div>
+          <p>分析內容與交付成果可能都存在，但缺乏<strong>把分析、決策、客戶回饋與後續行動串起來的單一敘事與狀態管理機制</strong>。</p>
+          <div class="kicker" style="margin-top:6px">本質判斷</div>
+          <p>一個已做出相當多內容、但缺少 decision history 與狀態說明的<strong>半成熟策略案交接</strong>。</p>
+        </div>
+      </div>
+
+      <h3>主要風險與因應</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>風險</th><th>可能後果</th><th>因應措施</th><th>程度</th></tr></thead>
+          <tbody>
+            <tr><td>把 Phase 2 草稿當定稿</td><td>對客說法與客戶認知不一致，損及信任</td><td>完成 A1 前，所有引用一律標示「草稿・待確認」</td><td><span class="chip s-miss">高</span></td></tr>
+            <tr><td>把內部收斂當客戶共識</td><td>Phase 3 建立在客戶未認可的方向上，需重工</td><td>A3 對每個結論標示 confirmed／assumed</td><td><span class="chip s-miss">高</span></td></tr>
+            <tr><td>忽略 Phase 3 與 Final 缺失</td><td>誤判專案進度與剩餘工作量</td><td>A2 追查，並在 status memo 中明確說明</td><td><span class="chip s-miss">高</span></td></tr>
+            <tr><td>公共使命與商業化敘事未整合</td><td>對外訊息失焦，招商與教育內容互相矛盾</td><td>A4 建立統一故事線（見第 08 節）</td><td><span class="chip s-open">中高</span></td></tr>
+            <tr><td>AI 影片範圍未釐清</td><td>scope creep，或錯過客戶真正想推進的需求</td><td>先列為 potential workstream，確認是否納入 scope</td><td><span class="chip s-part">中</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 Recommendations -->
+  <section id="reco">
+    <div class="sec-head">
+      <div class="sec-num">08</div>
+      <h2>建議與接手行動</h2>
+      <p class="lede">先釐清狀態，再決定是否推進內容。</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <div class="panel"><div class="kicker">建議一</div><h3>先做 Status Clarification</h3><p>確認 Phase 2、Phase 3、Final 的狀態前，不投入大量新分析。</p></div>
+        <div class="panel"><div class="kicker">建議二</div><h3>Phase 2 草稿是高價值待驗證資產</h3><p>不直接當 final，也不當低成熟度文件看待。</p></div>
+        <div class="panel"><div class="kicker">建議三</div><h3>立即補建三份交接文件</h3><p>Internal handover summary、open issues list、status update memo。</p></div>
+        <div class="panel"><div class="kicker">建議四</div><h3>建立統一 narrative</h3><p>把公共使命與商業化延伸寫成同一條故事線。</p></div>
+        <div class="panel"><div class="kicker">建議五</div><h3>AI 影片先列為潛在 workstream</h3><p>用途為客戶教育與招商，正式納入前需確認 scope。</p></div>
+      </div>
+
+      <h3>統一故事線：從公共使命到對外工具</h3>
+      <div class="chain">
+        <div class="link"><span class="k">起點</span><b>健保不足由商保補位</b><p>政策補位背景</p></div>
+        <div class="link"><span class="k">使命</span><b>海外台人即時醫療協助平台</b><p>原始平台角色</p></div>
+        <div class="link"><span class="k">基礎</span><b>保險 B2B2C 與 Token 模式</b><p>既有商業基礎</p></div>
+        <div class="link"><span class="k">Phase 1</span><b>合規健康服務編排者</b><p>平台定位</p></div>
+        <div class="link"><span class="k">Phase 2</span><b>跨境醫療協調平台</b><p>產品化方向（待確認）</p></div>
+        <div class="link future"><span class="k">延伸</span><b>AI 影片：教育與招商</b><p>潛在 workstream</p></div>
+      </div>
+
+      <h3>第一週接手順序（First 5 Moves）</h3>
+      <ol class="moves">
+        <li class="move"><span class="n">1</span><div><h4>確認 Phase 2 草稿是否已對客或已 internal align</h4><p>直接詢問主管，並搜尋對客版本與會議紀錄。對應 OI-1、OI-2。</p></div><div class="when"><b>Day 1–2</b>驗證 H2</div></li>
+        <li class="move"><span class="n">2</span><div><h4>追查 Phase 3 與 Final report 是否存在</h4><p>搜尋共用資料夾、前手信箱與 Teams 檔案，詢問曾參與成員。對應 OI-3、OI-4。</p></div><div class="when"><b>Day 1–3</b>驗證 H3</div></li>
+        <li class="move"><span class="n">3</span><div><h4>確認最後一次客戶互動與專案目前狀態</h4><p>釐清 active、paused、completed 或 pending feedback，並補上 sponsor 與決策者。對應 OI-5、OI-6。</p></div><div class="when"><b>Day 2–3</b>決策閘門</div></li>
+        <li class="move"><span class="n">4</span><div><h4>建立內部 status summary 與 open issue list</h4><p>以本報告附錄為底稿，標示每個結論是 confirmed 或 assumed。</p></div><div class="when"><b>Day 3–4</b>驗證 H1</div></li>
+        <li class="move"><span class="n">5</span><div><h4>整理公共使命與商業化平台敘事</h4><p>為對內、對外溝通與 AI 影片需求做準備。對應 OI-7、OI-8。</p></div><div class="when"><b>Day 5</b>驗證 H4 · H5</div></li>
+      </ol>
+      <p style="font-size:13px;color:var(--muted)">時程為建議節奏，依主管與客戶回覆速度調整。</p>
+
+      <div class="callout">
+        <b>週末決策點</b>
+        <p>完成第 1–3 步後，依第 01 節的觸發條件選定 Proceed、Modify 或 Stop，並以 status update memo 向主管報告。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Appendix -->
+  <section id="appx">
+    <div class="sec-head">
+      <div class="sec-num">A</div>
+      <h2>附錄</h2>
+      <p class="lede">可直接使用的工作底稿。</p>
+    </div>
+    <div class="body">
+      <h3>A1　Open Issues List</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>編號</th><th>Open Issue</th><th>目前狀態</th><th>風險</th><th>下一步</th><th>對應</th></tr></thead>
+          <tbody>
+            <tr><td class="code">OI-1</td><td>Phase 2 草稿是否已對客</td><td><span class="chip s-open">未確認</span></td><td><span class="chip s-miss">高</span></td><td>問主管、找會議紀錄</td><td class="code">2.2</td></tr>
+            <tr><td class="code">OI-2</td><td>Phase 2 方向是否已正式收斂</td><td><span class="chip s-open">未確認</span></td><td><span class="chip s-miss">高</span></td><td>問主管、找 feedback</td><td class="code">2.3 · 4.4</td></tr>
+            <tr><td class="code">OI-3</td><td>Phase 3 成果是否存在</td><td><span class="chip s-miss">缺文件</span></td><td><span class="chip s-miss">高</span></td><td>搜尋檔案、問內部</td><td class="code">2.4</td></tr>
+            <tr><td class="code">OI-4</td><td>Final report 是否存在</td><td><span class="chip s-miss">缺文件</span></td><td><span class="chip s-miss">高</span></td><td>搜尋檔案、問內部</td><td class="code">2.5</td></tr>
+            <tr><td class="code">OI-5</td><td>專案目前狀態為何</td><td><span class="chip s-open">未確認</span></td><td><span class="chip s-miss">高</span></td><td>問主管</td><td class="code">2.6</td></tr>
+            <tr><td class="code">OI-6</td><td>Sponsor／決策者是誰</td><td><span class="chip s-open">未確認</span></td><td><span class="chip s-open">中高</span></td><td>建立 stakeholder map</td><td class="code">4.1</td></tr>
+            <tr><td class="code">OI-7</td><td>原始使命的正式說法是否有文件</td><td><span class="chip s-part">部分確認</span></td><td><span class="chip s-part">中</span></td><td>向 Senior Manager 確認</td><td class="code">1.2</td></tr>
+            <tr><td class="code">OI-8</td><td>AI 影片是否正式納入需求</td><td><span class="chip s-part">部分確認</span></td><td><span class="chip s-part">中</span></td><td>確認是否開新 workstream</td><td class="code">5.6</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>A2　文件盤點</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>文件</th><th>狀態</th><th>用途／備註</th></tr></thead>
+          <tbody>
+            <tr><td>Kickoff 文件</td><td><span class="chip s-ok">已取得</span></td><td>目標、範圍、時程的正式依據</td></tr>
+            <tr><td>訪談紀錄彙整</td><td><span class="chip s-ok">已取得</span></td><td>Stakeholder 線索、痛點來源</td></tr>
+            <tr><td>現況分析</td><td><span class="chip s-ok">已取得</span></td><td>現況定位與能力缺口</td></tr>
+            <tr><td>Phase 1 成果匯報</td><td><span class="chip s-ok">已取得</span></td><td>平台定位、商模方向</td></tr>
+            <tr><td>Phase 2 草稿</td><td><span class="chip s-part">已取得・草稿</span></td><td>跨境醫療協調平台、三層產品架構；決策地位待確認</td></tr>
+            <tr><td>Phase 3 成果匯報</td><td><span class="chip s-miss">缺</span></td><td>差異分析與發展藍圖</td></tr>
+            <tr><td>Final report</td><td><span class="chip s-miss">缺</span></td><td>最終整合與發表版本</td></tr>
+            <tr><td>Client feedback／decision log</td><td><span class="chip s-miss">缺</span></td><td>客戶對齊的唯一可追溯依據</td></tr>
+            <tr><td>最後一次會議紀錄／status summary</td><td><span class="chip s-miss">缺</span></td><td>判斷專案目前狀態</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>A3　狀態圖例</h3>
+      <div class="tbl">
+        <table>
+          <tbody>
+            <tr><td><span class="chip s-ok">已確認</span></td><td>有正式文件支持，可直接引用</td></tr>
+            <tr><td><span class="chip s-rel">相對確認</span></td><td>文件內容一致且成熟，但未見客戶書面確認</td></tr>
+            <tr><td><span class="chip s-part">部分確認</span></td><td>有方向或口述依據，細節或正式性待補</td></tr>
+            <tr><td><span class="chip s-open">未確認</span></td><td>目前沒有可追溯依據，需詢問或搜尋</td></tr>
+            <tr><td><span class="chip s-miss">缺文件</span></td><td>原規劃應存在，但目前找不到</td></tr>
+            <tr><td><span class="src">文件支持</span>　<span class="src oral">主管口述</span></td><td>來源標示：實線為書面文件，虛線為團隊口頭補充、尚待文件佐證</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>IC Care 專案接手診斷報告 · 內部工作稿</span>
+    <span class="num">2026-10-07</span>
+  </footer>
+</div>
