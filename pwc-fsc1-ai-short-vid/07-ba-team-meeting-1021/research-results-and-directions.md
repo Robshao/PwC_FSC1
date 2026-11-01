@@ -22,6 +22,22 @@
 
 **可以放心用的：#2、#4、#5（修正日期後）。#1、#9 要調整說法。其他不用。**
 
+### ⭐ #12 新增：BlackRock「Forward Deployed Business Analyst」職缺（最強佐證）
+
+- **來源：** BlackRock 官方招募網站，BlackRock Transformation Office（BTO），Associate 職級。新加坡（含香港）職缺 2026-10-27 刊登（Requisition R266862），紐約、倫敦也有同名職缺。已讀原文。
+- **為什麼重要：** 這是全球最大資產管理公司、金融業、**直接叫「BA」**的職缺，而且明確寫出 BA 角色怎麼變。
+- **原文重點（逐字）：**
+  - 「This is not a traditional business analysis role centered on gathering requirements and handing them to technology.」（這不是傳統只蒐集需求、再交給技術團隊的 BA 角色）
+  - 要結合「the structured thinking of a business analyst, the prioritization instincts of a product owner, the enterprise perspective of a business architect and the bias to action of a hands-on builder」
+  - 「Create functional prototypes using AI-enabled development capabilities to discover requirements, challenge assumptions and validate future-state processes」→ **對應方向 ①**
+  - 「Build structured business context covering terminology, entities, relationships, decision logic, data dependencies, controls and exceptions for use by subject matter experts, AI tools and engineering teams」→ **對應方向 ②**
+  - 「Decompose business processes into explicit logic, controls and exception paths」、「critically evaluating generated outputs, maintaining traceability and understanding where human judgment remains essential」→ **對應方向 ③**
+- **和我的方向：** 幾乎就是「AI builder＋BA」的職缺描述。
+- **連結：** https://careers.blackrock.com/job/singapore/forward-deployed-business-analyst-associate-bto/45831/102156865664 ／ https://careers.blackrock.com/job/new-york/forward-deployed-business-analyst-associate-bto/45831/102486523888
+
+**更新後：最該用的是 #12（BlackRock），再搭配 #2、#4、#5。** #9 McKinsey 可以不用了，#12 更直接。
+
+
 查證來源：
 - 金管會 AI 指引原文 PDF（https://www.fsc.gov.tw/websitedowndoc?file=chfsc/202408231741530.pdf）
 - 自律規範備查資訊（https://law.lia-roc.org.tw/Search/SpecList）
@@ -78,7 +94,7 @@
 | 時間 | 內容 | 說法重點 |
 |---|---|---|
 | 0:00–0:30 | 開場：問題 | 「客戶自己也會用 AI 了，那客戶為什麼還要付錢請我們？」連到 Luke 第 4 頁「BA 價值轉型」 |
-| 0:30–1:15 | 方向 ①：現場共創 | 國際顧問公司已經在招聘這種角色；我們國發專案已經在做，下一步是變成團隊標準 |
+| 0:30–1:15 | 方向 ①：現場共創 | BlackRock 上週剛開「Forward Deployed BA」職缺，原文寫「這不是傳統只蒐集需求、交給技術團隊的 BA」；我們國發專案已經在做，下一步是變成團隊標準 |
 | 1:15–2:00 | 方向 ③：AI 驗收標準 | 客戶最擔心的是 AI 能不能信任；金管會也要求人類可控。BA 最會寫驗收標準，這是我們的機會 |
 | 2:00–2:40 | 方向 ②：領域脈絡 | 回應組會上「AI 讀不到內部規格」的問題；BA 最懂業務規則，最適合整理成 AI 讀得懂的知識 |
 | 2:40–3:00 | 收尾 | 三個方向對應 Luke 的一年目標（價值、品質、效率），AI 省下的時間拿來沉澱成團隊資產（成長） |
