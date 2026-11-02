@@ -139,14 +139,14 @@ timing = f'''<p:timing xmlns:p="{P}"><p:tnLst><p:par><p:cTn id="1" dur="indefini
 <p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>
 <p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:childTnLst>
 <p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
-{''.join(f"""<p:par><p:cTn id="{5 + k * 3}" presetID="10" presetClass="exit" presetSubtype="0" fill="hold" nodeType="{'clickEffect' if k == 0 else 'withEffect'}"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+{''.join(f"""<p:par><p:cTn id="{5 + k * 3}" presetID="10" presetClass="exit" presetSubtype="0" fill="hold" grpId="0" nodeType="{'clickEffect' if k == 0 else 'withEffect'}"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
 <p:animEffect transition="out" filter="fade"><p:cBhvr><p:cTn id="{6 + k * 3}" dur="1200"/><p:tgtEl><p:spTgt spid="{sid}"/></p:tgtEl></p:cBhvr></p:animEffect>
 <p:set><p:cBhvr><p:cTn id="{7 + k * 3}" dur="1" fill="hold"><p:stCondLst><p:cond delay="1199"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt spid="{sid}"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr><p:to><p:strVal val="hidden"/></p:to></p:set>
 </p:childTnLst></p:cTn></p:par>""" for k, sid in enumerate([8, 9]))}
 </p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn>
 <p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>
 <p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>
-</p:childTnLst></p:cTn></p:par></p:tnLst><p:bldLst/></p:timing>'''
+</p:childTnLst></p:cTn></p:par></p:tnLst><p:bldLst><p:bldP spid="8" grpId="0" animBg="1"/><p:bldP spid="9" grpId="0" animBg="1"/></p:bldLst></p:timing>'''
 sld = m._element
 for old in sld.findall(qn('p:timing')):
     sld.remove(old)
@@ -206,5 +206,10 @@ for i, row in enumerate(refs):
         set_tf(tbl.cell(i, j).text_frame, [(0, v)])
 num(rf, 3, 9)
 
+for s in SL:
+    for e in s._element.iter(qn('p:extLst')):
+        pass
+    for e in [e for e in s._element.iter(qn('p:extLst')) if len(e) == 0]:
+        e.getparent().remove(e)
 p.save(out)
 print("saved", out)
