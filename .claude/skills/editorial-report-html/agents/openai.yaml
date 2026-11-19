@@ -1,0 +1,4 @@
+interface:
+  display_name: "编辑型报告 HTML"
+  short_description: "将封闭源或扩展源材料做成可审校、高可读的单文件 HTML"
+  default_prompt: "使用 $editorial-report-html，将这份材料制作成高可读单文件 HTML：先判断来源模式与页面模型，链接索引按授权范围综合，批量源图先分流去重，再完成结构审计和独立审校。"
