@@ -1,0 +1,4 @@
+interface:
+  display_name: "SZ Grilling"
+  short_description: "用中文一次一个决策地拷问并收敛计划、方案或关键选择"
+  default_prompt: "Use $sz-grilling to grill this plan in Chinese, one decision at a time."

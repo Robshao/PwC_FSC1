@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文档标题｜编辑型报告</title>
+<style>
+  :root{
+    --ink:#171a20;--ink-2:#3d434e;--muted:#626a76;--paper:#faf9f4;
+    --paper-2:#f0eee6;--line:#d9d5c8;--accent:#b83a2f;--blue:#2456c8;
+    --sans:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',system-ui,-apple-system,sans-serif;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono','PingFang SC','Microsoft YaHei',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:62px;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16.5px/1.75 var(--sans)}
+  .wrap{width:min(100% - 44px,1040px);margin:auto}
+  .skip{position:fixed;z-index:100;left:16px;top:10px;transform:translateY(-160%);padding:9px 13px;background:var(--ink);color:#fff;font:12px var(--mono)}
+  .skip:focus{transform:translateY(0)}
+  a{color:var(--blue);text-underline-offset:3px}
+  a:focus-visible,summary:focus-visible,[tabindex="0"]:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .nav{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);background:var(--paper)}
+  .nav__inner{display:flex;align-items:center;min-height:54px;gap:18px;overflow-x:auto}
+  .brand{flex:none;color:var(--ink);font:700 11px var(--mono);letter-spacing:.08em;text-decoration:none;text-transform:uppercase}
+  .nav__links{display:flex;align-self:stretch}
+  .nav__links a{display:flex;align-items:center;padding:0 11px;color:var(--muted);font:11px var(--mono);text-decoration:none;white-space:nowrap}
+  header{padding:56px 0 42px;border-bottom:2px solid var(--ink)}
+  .eyebrow{margin-bottom:12px;color:var(--accent);font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  h1{max-width:18ch;margin:0 0 15px;font-size:clamp(38px,6vw,62px);line-height:1.15;letter-spacing:-.035em;text-wrap:balance}
+  .lede{max-width:68ch;margin:0;color:var(--ink-2);font-size:18px;line-height:1.65}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:24px;color:var(--muted);font:11px var(--mono)}
+  section{padding:64px 0;border-bottom:1px solid var(--line);scroll-margin-top:58px}
+  .section-head{display:grid;grid-template-columns:44px 1fr;gap:14px;margin-bottom:28px}
+  .section-no{display:grid;place-items:center;min-height:28px;background:var(--ink);color:#fff;font:700 11px var(--mono)}
+  h2{margin:0;font-size:clamp(25px,3vw,31px);line-height:1.25}
+  .section-sub{margin-top:5px;color:var(--muted);font:10.5px var(--mono);letter-spacing:.09em;text-transform:uppercase}
+  .prose{max-width:72ch;color:var(--ink-2)}
+  .prose p{margin:0 0 14px}
+  .table-wrap{margin:24px 0;overflow-x:auto;border:1px solid var(--line);background:#fff}
+  table{width:100%;min-width:650px;border-collapse:collapse;font-size:14px}
+  caption{padding:10px 12px;background:var(--paper-2);font-weight:700;text-align:left}
+  th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--paper-2);font-weight:700;font-size:14px}
+  .table-hint{margin:18px 0 -14px;color:var(--muted);font-size:14px}
+  .decision-summary{padding:22px;border-left:5px solid var(--accent);background:var(--paper-2)}
+  .decision-summary p{margin:8px 0 0;max-width:72ch}
+  .decision-gates{margin:24px 0 0}
+  .decision-gates>div{display:grid;grid-template-columns:120px 1fr;gap:18px;padding:14px 0;border-top:1px solid var(--line)}
+  .decision-gates dt{font-weight:700}
+  .decision-gates dd{margin:0;max-width:72ch}
+  .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+  .flow article{padding:18px;border:1px solid var(--line);background:#fff}
+  .flow b{display:block;margin-bottom:6px}
+  .flow p{margin:0;color:var(--ink-2);font-size:14px}
+  details{margin-top:11px;border:1px solid var(--line);background:#fff}
+  summary{padding:14px 17px;cursor:pointer;font-weight:700}
+  details[open] summary{border-bottom:1px dashed var(--line)}
+  .details-body{padding:13px 17px;color:var(--ink-2)}
+  footer{padding:32px 0 46px;border-top:2px solid var(--ink);color:var(--muted);font:11px/1.8 var(--mono)}
+  @media (max-width:760px){
+    .wrap{width:min(100% - 32px,1040px)}
+    .flow{grid-template-columns:1fr}
+    .decision-gates>div{grid-template-columns:1fr;gap:4px}
+    section{padding:50px 0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+  @media print{
+    @page{margin:16mm}
+    body{background:#fff;color:#111;font-size:10.5pt}
+    .skip,.nav,.table-hint{display:none!important}
+    section{padding:9mm 0}
+    .flow article,.decision-summary,.decision-gates>div{break-inside:avoid}
+    .table-wrap,table,details,.details-body{break-inside:auto}
+    .table-wrap{overflow:visible}
+    table{min-width:0;font-size:9pt}
+    th{font-size:9pt}
+    thead{display:table-header-group}
+    tr{break-inside:avoid}
+    h2,h3,caption{break-after:avoid}
+    a{color:inherit;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+  <a class="skip" href="#main-content">跳到正文</a>
+  <nav class="nav" aria-label="报告章节" data-demo="navigation"><div class="wrap nav__inner"><a class="brand" href="#top">Report</a><div class="nav__links"><a href="#decision" data-demo="decision-only">决策组件</a><a href="#section-1">章节一</a><a href="#section-2">章节二</a><a href="#section-3">章节三</a></div></div></nav>
+  <header id="top" data-demo="header"><div class="wrap"><div class="eyebrow">文档类型 · 范围</div><h1>文档标题</h1><p class="lede">说明主题、覆盖范围和阅读入口；不要预设材料中不存在的 verdict。</p><div class="meta"><span>UPDATED · YYYY-MM-DD</span><span>AUDIENCE · 待确认</span><span>SCOPE · 待填写</span></div></div></header>
+  <main id="main-content" tabindex="-1">
+    <!-- 仅决策简报选用下列组件；其他报告删除本节及对应导航。依据材料决定判断与门槛数量，不填满固定槽位。 -->
+    <section id="decision" data-demo="decision-only"><div class="wrap">
+      <div class="section-head"><span class="section-no">可选</span><div><h2>决策简报组件示例</h2><div class="section-sub">按需保留 · 不属于通用报告的必选结构</div></div></div>
+      <div class="decision-summary"><strong>一句有证据支撑的判断</strong><p>说明判断为什么成立，以及可能推翻它的关键条件。只有材料支持时才补影响或建议，不强凑三个判断。</p></div>
+      <dl class="decision-gates">
+        <div><dt>下一步</dt><dd>写出可执行且能减少关键不确定性的动作。</dd></div>
+        <div><dt>继续条件</dt><dd>说明看到什么证据后可以扩大投入。</dd></div>
+        <div><dt>停止条件</dt><dd>说明什么反证会改变当前决策；不存在独立停止条件时删除本项。</dd></div>
+      </dl>
+    </div></section>
+    <section id="section-1" data-demo="section"><div class="wrap"><div class="section-head"><span class="section-no">01</span><div><h2>章节标题</h2><div class="section-sub">Section purpose</div></div></div><div class="prose"><p>用短段落承载论证、定义或说明。</p><p>根据页面模型替换本节，不自动添加判断轴或行动门。</p></div></div></section>
+    <section id="section-2" data-demo="structured-content"><div class="wrap"><div class="section-head"><span class="section-no">02</span><div><h2>结构化内容</h2><div class="section-sub">Comparable fields or parallel objects</div></div></div><p class="table-hint">窄屏可左右滑动查看完整表格。</p><div class="table-wrap" role="region" aria-label="表示例" tabindex="0"><table><caption>只有字段可比时才使用表格</caption><thead><tr><th scope="col">字段</th><th scope="col">对象 A</th><th scope="col">对象 B</th></tr></thead><tbody><tr><th scope="row">字段内容</th><td>内容</td><td>内容</td></tr></tbody></table></div><div class="flow"><article><b>并列对象一</b><p>只在对象真正并列且值得比较时保留。</p></article><article><b>并列对象二</b><p>存在时序或反馈时，应另外构造真实方向。</p></article><article><b>并列对象三</b><p>这是并列网格示例，不代表完整流程。</p></article></div></div></section>
+    <section id="section-3" data-demo="optional-depth"><div class="wrap"><div class="section-head"><span class="section-no">03</span><div><h2>开放项或参考内容</h2><div class="section-sub">Optional depth</div></div></div><details><summary>可选深度问题</summary><div class="details-body">如果正文已经充分回答，删除本组件。</div></details></div></section>
+  </main>
+  <footer><div class="wrap">VERSION v1 · LAST UPDATED YYYY-MM-DD<br>方法与边界：写明来源口径、数据截止日期和未覆盖项。<br>REVISIT WHEN：写明触发回炉更新的信号；无时效性判断时删除本行。</div></footer>
+</body>
+</html>

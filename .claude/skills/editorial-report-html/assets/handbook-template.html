@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学习手册｜阅读骨架</title>
+<style>
+/* 核心是阅读布局，不是 house style。以下色彩、字体、宽度、比例均可按内容调整。 */
+:root{--paper:#f7f6f1;--surface:#fff;--ink:#24312e;--muted:#59675f;--line:#c9d0c8;--accent:#275f50;--soft:#e8eee7;--rail:230px;--reading-width:1120px;--overview-width:1260px;--gutter:clamp(24px,4.8vw,72px);--sans:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}html{scroll-padding-top:76px;scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.75 var(--sans)}
+a{color:var(--accent);text-underline-offset:4px}a:focus-visible,button:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #95602d;outline-offset:4px}
+.skip{position:fixed;top:8px;left:12px;z-index:100;transform:translateY(-160%);padding:8px 12px;background:var(--ink);color:#fff}.skip:focus{transform:none}
+.chapter-nav{position:fixed;inset:0 auto 0 0;width:var(--rail);overflow-y:auto;padding:30px 22px;border-right:1px solid var(--line);background:var(--soft)}
+.brand{font-size:19px;margin:0 0 24px;font-weight:750}.nav-group{display:block;font-size:12px;color:var(--muted);margin:20px 10px 7px}
+.chapter-nav a{display:block;text-decoration:none;color:var(--ink);font-size:14px;padding:8px 10px;border-left:2px solid transparent}
+.chapter-nav a[aria-current="location"]{border-left-color:var(--accent);background:var(--paper);color:var(--accent);font-weight:700}
+.reading-switch{display:none;position:fixed;top:16px;right:24px;z-index:70;gap:3px;padding:4px;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 12px #24312e10}
+.js .reading-switch:not([hidden]){display:flex}.reading-switch button{padding:8px 19px;border:0;background:transparent;color:var(--accent);font:650 14px var(--sans);cursor:pointer}
+.reading-switch button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.page-header,main,.page-footer{margin-left:var(--rail);padding-inline:var(--gutter)}
+.inner{max-width:var(--reading-width);margin-inline:auto}.page-header{padding-top:78px;padding-bottom:34px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.1em;color:var(--accent);margin:0 0 12px}
+h1{font-size:clamp(34px,3.8vw,52px);line-height:1.2;letter-spacing:-.035em;margin:0 0 20px;text-wrap:balance}
+.lead{max-width:72ch;font-size:19px;line-height:1.7;margin:0}.detail-meta{font-size:13px;color:var(--muted);margin-top:22px}
+.chapter{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:76px}h2{font-size:29px;line-height:1.35;margin:0 0 17px}h3{font-size:20px;line-height:1.5;margin:24px 0 10px}
+p{margin:0 0 15px}.prose{max-width:76ch}.chapter-map{display:flex;gap:14px;flex-wrap:wrap}.chapter-map a{font-size:14px}
+details{margin:20px 0;border-block:1px solid var(--line);padding:12px 0}summary{font-weight:650;cursor:pointer}.details-body{padding-top:15px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:10px;border-bottom:1px solid var(--line)}thead{display:table-header-group}
+figure{margin:0}svg{display:block;width:100%;height:auto}figcaption,.caption{font-size:13px;color:var(--muted)}.page-footer{padding-block:25px;font-size:13px;color:var(--muted)}
+/* 只定义可自由填充的区域，不预设图数、节点或固定卡片。可重排、合并、删除。 */
+.overview{display:none;padding:20px 0 28px}.overview-layout{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(240px,1fr);gap:28px}
+.overview-main{min-width:0}.overview-support{min-width:0;border-left:1px solid var(--line);padding-left:24px}
+.overview h2{font-size:23px}.overview h3{font-size:18px;margin-top:0}.overview p{font-size:16px}
+.relationship-slot{min-height:150px;padding:24px;border-top:3px solid var(--accent);background:var(--soft)}
+.overview-end{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);font-size:14px}.overview-end p{font-size:14px}
+@media screen{
+.js[data-view="quick"] .overview{display:block}
+.js[data-view="quick"] .full-only{display:none}
+.js[data-view="quick"] .page-header,.js[data-view="quick"] main{margin-inline:auto;max-width:var(--overview-width)}
+.js[data-view="quick"] .page-header{padding-top:76px;padding-bottom:22px;border-bottom:0}
+.js[data-view="quick"] h1{font-size:clamp(30px,3vw,40px);margin-bottom:12px}
+.js[data-view="quick"] .lead{font-size:17px;max-width:90ch}}
+@media(max-width:720px){.chapter-nav{position:static;width:auto;border-right:0;border-bottom:1px solid var(--line);padding:74px 20px 12px;display:flex;gap:10px;overflow-x:auto}.chapter-nav .brand,.nav-group{display:none}.chapter-nav a{white-space:nowrap}.page-header,main,.page-footer{margin-left:0;padding-inline:22px}.page-header{padding-top:28px}.reading-switch{right:12px;top:10px}.overview-layout{grid-template-columns:1fr}.overview-support{border-left:0;padding-left:0}.js[data-view="quick"] .page-header{padding-top:76px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+@media print{@page{margin:16mm}body{background:#fff;color:#111;font-size:11pt}.skip,.chapter-nav,.reading-switch,.overview{display:none!important}
+.page-header,main,.page-footer,.js[data-view="quick"] .page-header,.js[data-view="quick"] main{margin:0;max-width:none;padding-inline:0}.page-header,.js[data-view="quick"] .page-header{padding-top:0;padding-bottom:6mm}h1,.js[data-view="quick"] h1{font-size:27pt}.chapter{padding:7mm 0}h2,h3{break-after:avoid}.table-wrap{overflow:visible}table{break-inside:auto}tr{break-inside:avoid}details::details-content{display:block!important}details{break-inside:auto}summary{list-style:none}a{color:inherit}.page-footer{padding-block:6mm}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main-content">跳到正文</a>
+<nav class="chapter-nav full-only" aria-label="手册章节" data-demo="reading-shell">
+<p class="brand">手册主题</p><span class="nav-group">共读</span>
+<a href="#reading-start">阅读入口</a><a href="#chapter-01">核心机制</a><span class="nav-group">应用与边界</span><a href="#chapter-02">判断与实践</a>
+</nav>
+<div class="reading-switch" id="mode-controls" role="group" aria-label="整篇阅读深度" hidden data-demo="depth-control">
+<button id="quick-button" type="button" aria-pressed="false" aria-controls="quickview full-reading">速览</button>
+<button id="full-button" type="button" aria-pressed="true" aria-controls="quickview full-reading">全文</button>
+<span id="mode-status" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">全文</span>
+</div>
+<header class="page-header" id="top" data-demo="shared-header"><div class="inner">
+<p class="eyebrow">文档主题与范围</p><h1>材料最值得带走的核心认识</h1>
+<p class="lead">标题与这句核心说明由两种阅读视图共享。写清帮助谁理解什么，保留改变判断的限定条件，不照抄宣传语。</p>
+<p class="detail-meta full-only">来源说明与完整阅读路径放在全文；速览仍须就近保留关键证据边界。未知日期、版本和受众直接省略。</p>
+</div></header>
+<main id="main-content" tabindex="-1">
+<!-- 此区是整篇精华的重组视图，不是第一章摘录。按材料填充，可改变以下所有内部构图。 -->
+<section id="quickview" class="overview" tabindex="-1" aria-label="整篇速览" data-demo="overview">
+<div class="inner">
+<h2 id="quick-summary" tabindex="-1">让读者一眼看清核心关系</h2>
+<div class="overview-layout">
+<div class="overview-main"><div class="relationship-slot"><strong>在这里表达材料真正需要的关系</strong><p>复用正文图或重新绘制都可以。删除本说明，按内容选择流程、反馈、架构、对位或其他形式；不必保留此框、此列数或此比例。</p></div><p class="caption">必要读法、来源或成立条件就近说明，并提供<a href="#chapter-01">对应正文入口</a>。</p></div>
+<aside class="overview-support"><h3>与主关系互补的信息</h3><p>放置跨章节提炼出的关键支撑、判断或下一步。不是必选“右栏”，内容不适合时与主区合并或重排。</p><a href="#chapter-02">进入具体判断与实践 ↗</a></aside>
+</div>
+<div class="overview-end"><p>不能省略的边界与不确定性，与核心认识一起可见。这里不重复整份摘要，不要求固定条数。</p></div>
+</div></section>
+<div class="full-only inner" id="full-reading">
+<section class="chapter" id="reading-start" tabindex="-1" data-demo="full-chapter"><h2>阅读入口</h2><p class="prose">全文默认完整展示。章节数量和顺序按主题决定，以下章节仅演示锚点、深读与返回行为，不是固定目录。</p><nav class="chapter-map" aria-label="阅读路径"><a href="#chapter-01">先理解机制</a><a href="#chapter-02">再看应用与边界</a></nav></section>
+<section class="chapter" id="chapter-01" tabindex="-1" data-demo="full-chapter"><h2>核心机制</h2><div class="prose"><p>保留源材料的事实、论证与条件。图表达真实关系，正文补解释；速览复用或提炼本节时，保持可追溯，不另造事实。</p><h3 id="detail-example" tabindex="-1">具体例子或机制细节</h3><p>此锚点演示章内深链。速览中的链接应先展开全文，再定位并聚焦到对应内容；浏览器后退仍能回到此前的阅读状态。</p></div><details><summary>按需深入的边界澄清</summary><div class="details-body">此处仅承载不影响主线的补充；决定性判断不要藏进折叠区。打印时恢复这部分正文。</div></details></section>
+<section class="chapter" id="chapter-02" tabindex="-1" data-demo="full-chapter"><h2>判断与实践</h2><p class="prose">只有材料支持时才给建议或操作路径。说明适用条件、代价和验证方法。模板不替代来源核对，也不预设每份手册都需要行动建议。</p><a href="#chapter-01">回看核心机制</a></section>
+</div>
+</main>
+<footer class="page-footer full-only" data-demo="footer"><div class="inner">来源、未覆盖项与必要的回炉信号按实际材料填写。打印保留追溯信息；本骨架不提供虚构编号、日期或数据。</div></footer>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const controls = document.getElementById('mode-controls');
+      const quickButton = document.getElementById('quick-button');
+      const fullButton = document.getElementById('full-button');
+      const status = document.getElementById('mode-status');
+      const quick = document.getElementById('quickview');
+      const fullReading = document.getElementById('full-reading');
+      const sections = Array.from(document.querySelectorAll('.chapter'));
+      const chapterLinks = Array.from(document.querySelectorAll('.chapter-nav a'));
+      let currentView = 'full';
+      function targetFor(hash) {
+        try { return document.getElementById(decodeURIComponent(hash.slice(1))); }
+        catch { return null; }
+      }
+      function focusTarget(target) {
+        if (!target) return;
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+      function currentSection() {
+        const scroller = document.scrollingElement || root;
+        const paddingValue = getComputedStyle(scroller).scrollPaddingTop;
+        const padding = (parseFloat(paddingValue) || 0) * (paddingValue.endsWith('%') ? window.innerHeight / 100 : 1);
+        const last = sections.at(-1);
+        // 短末章可能无法滚到锚点判定线；仅在真正滚到底且末章可见时选中。
+        if (window.scrollY > 0 && window.scrollY + window.innerHeight >= scroller.scrollHeight - 2 && last?.getBoundingClientRect().top < window.innerHeight) return last;
+        return sections.filter(section => {
+          const margin = parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+          // 与浏览器锚点落位共用 CSS 偏移，2px 仅吸收子像素取整。
+          return section.getBoundingClientRect().top <= padding + margin + 2;
+        }).at(-1);
+      }
+      function updateCurrent() {
+        const active = currentView === 'full' ? currentSection()?.id : null;
+        for (const link of chapterLinks) {
+          if (link.hash === '#' + active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        }
+      }
+      // 目录和打印增强可独立使用；删除速览不应连带取消它们。
+      window.addEventListener('scroll', updateCurrent, { passive: true });
+      window.addEventListener('resize', updateCurrent);
+      updateCurrent();
+      let printState = [];
+      window.addEventListener('beforeprint', () => {
+        printState = [...document.querySelectorAll('details')].map(item => [item, item.open]);
+        printState.forEach(([item]) => { item.open = true; });
+      });
+      window.addEventListener('afterprint', () => {
+        printState.forEach(([item, open]) => { item.open = open; });
+      });
+      if (!controls || !quickButton || !fullButton || !quick || !fullReading) return;
+      const defaultHash = '#' + (sections[0]?.id || fullReading.id);
+      let returnPoint = { hash: location.hash && fullReading.contains(targetFor(location.hash)) ? location.hash : defaultHash, y: 0 };
+      let historyHandledHref = null;
+      let saveTimer;
+      let restoring = false;
+      root.classList.add('js');
+      controls.hidden = false;
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      function openAncestors(target) {
+        for (let node = target?.parentElement; node; node = node.parentElement) {
+          if (node.tagName === 'DETAILS') node.open = true;
+        }
+      }
+      function visibleReadingTarget() {
+        return [...fullReading.querySelectorAll('h2,h3,p,li,summary,td,th,a,button')].find(node => {
+          const rect = node.getBoundingClientRect();
+          return node.getClientRects().length && rect.top >= 76 && rect.top < window.innerHeight;
+        }) || currentSection() || fullReading;
+      }
+      function applyLocation(options = {}) {
+        clearTimeout(saveTimer);
+        restoring = true;
+        const locationTarget = targetFor(location.hash);
+        const state = history.state || {};
+        currentView = quick.contains(locationTarget) ? 'quick' : fullReading.contains(locationTarget) ? 'full' : state.view === 'quick' ? 'quick' : 'full';
+        root.dataset.view = currentView;
+        quickButton.setAttribute('aria-pressed', String(currentView === 'quick'));
+        fullButton.setAttribute('aria-pressed', String(currentView === 'full'));
+        if (status) status.textContent = currentView === 'quick' ? '速览 · 整篇核心区别与关键边界' : '全文 · 核心图解与全部细节';
+        if (state.returnPoint) returnPoint = state.returnPoint;
+        requestAnimationFrame(() => {
+          const target = targetFor(location.hash);
+          openAncestors(target);
+          const restorePosition = Number.isFinite(state.readY) && !options.forceAnchor;
+          if (restorePosition) window.scrollTo({ top: state.readY, behavior: 'instant' });
+          else if (currentView === 'quick' && target === quick) window.scrollTo({ top: 0, behavior: 'instant' });
+          else if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+          else if (options.history) window.scrollTo({ top: 0, behavior: 'instant' });
+          if (options.focus) focusTarget(restorePosition && currentView === 'full' ? visibleReadingTarget() : target || (currentView === 'quick' ? quick : null));
+          updateCurrent();
+          restoring = false;
+          snapshotPosition();
+        });
+      }
+      function snapshotPosition() {
+        clearTimeout(saveTimer);
+        if (restoring) return;
+        history.replaceState({ ...(history.state || {}), view: currentView, readY: window.scrollY }, '', location.href);
+      }
+      function enterQuick() {
+        if (currentView === 'quick') { focusTarget(quick); return; }
+        returnPoint = { hash: '#' + (currentSection()?.id || sections[0]?.id || fullReading.id), y: window.scrollY };
+        snapshotPosition();
+        history.pushState({ view: 'quick', returnPoint }, '', '#quickview');
+        applyLocation({ focus: true, forceAnchor: true });
+      }
+      function enterFull() {
+        if (currentView === 'full') return;
+        snapshotPosition();
+        history.pushState({ view: 'full', returnPoint, readY: returnPoint.y }, '', returnPoint.hash);
+        applyLocation({ focus: true });
+      }
+      quickButton.addEventListener('click', enterQuick);
+      fullButton.addEventListener('click', enterFull);
+      document.addEventListener('click', event => {
+        const link = event.target.closest('a[href^="#"]');
+        if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const target = targetFor(link.hash);
+        if (!target) return;
+        event.preventDefault();
+        if (link.hash === '#quickview') { enterQuick(); return; }
+        snapshotPosition();
+        const view = quick.contains(target) ? 'quick' : fullReading.contains(target) ? 'full' : currentView;
+        history.pushState({ view, returnPoint }, '', link.hash);
+        applyLocation({ focus: true, forceAnchor: true });
+      });
+      window.addEventListener('popstate', () => {
+        historyHandledHref = location.href;
+        applyLocation({ history: true, focus: true });
+      });
+      window.addEventListener('hashchange', () => {
+        const alreadyHandled = historyHandledHref === location.href;
+        historyHandledHref = null;
+        if (!alreadyHandled) applyLocation({ forceAnchor: true });
+      });
+      window.addEventListener('scroll', () => {
+        clearTimeout(saveTimer);
+        if (!restoring) saveTimer = setTimeout(snapshotPosition, 150);
+      }, { passive: true });
+      window.addEventListener('pagehide', snapshotPosition);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') snapshotPosition();
+      });
+      applyLocation();
+    })();
+  </script>
+
+</body>
+</html>
